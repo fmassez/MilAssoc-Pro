@@ -27,7 +27,7 @@
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         input[type="date"]::-webkit-calendar-picker-indicator,
-        input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(.7); }
+        input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(.5); }
         select option { background: var(--bg-card); color: var(--text); }
         .chat-scroll { scroll-behavior: smooth; }
         .pulse { animation: pulse 2s infinite; }
@@ -46,11 +46,11 @@
         .color-picker-wrapper input[type="color"] { width: 40px; height: 32px; border: none; border-radius: 6px; cursor: pointer; padding: 0; }
         .color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
         .color-picker-wrapper input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
-
+        
         /* ===== CARTE MEMBRE UNC ===== */
         .member-card-preview {
-            width: 560px;
-            height: 350px;
+            width: 595px;
+            height: 374px;
             background: linear-gradient(135deg, #e0e4e8 0%, #f0f0f0 25%, #ffffff 50%, #ffe8e0 75%, #e8d8d0 100%);
             border: 2px solid #b0b0b0;
             border-radius: 6px;
@@ -80,7 +80,7 @@
         }
         .member-card-preview .card-org-block {
             flex: 1;
-            text-align: center;
+            text-align: left;
             padding-top: 2px;
         }
         .member-card-preview .card-org-name {
@@ -226,6 +226,48 @@
             height: 30px;
         }
 
+        /* Calendrier */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 8px 4px;
+            color: var(--text-dim);
+        }
+        .calendar-day {
+            min-height: 80px;
+            padding: 4px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .calendar-day.today {
+            border-color: var(--accent);
+            background: rgba(79,122,63,.1);
+        }
+        .calendar-day.other-month {
+            opacity: .4;
+        }
+        .calendar-day-number {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+        .calendar-event {
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-bottom: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         @media print {
             body * { visibility: hidden; }
             .print-area, .print-area * { visibility: visible; }
@@ -252,6 +294,47 @@
             justify-content: center;
         }
         .sig-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        /* View toggle */
+        .view-toggle { display: flex; gap: 4px; }
+        .view-toggle button {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-dim);
+            transition: all .2s;
+        }
+        .view-toggle button.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Calendar print */
+        .calendar-print {
+            font-family: 'Georgia', serif;
+            background: white;
+            color: black;
+            padding: 20px;
+        }
+        .calendar-print table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .calendar-print th, .calendar-print td {
+            border: 1px solid #333;
+            padding: 4px 8px;
+            font-size: 12px;
+            vertical-align: top;
+        }
+        .calendar-print th {
+            background: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+        }
     </style>
 </head>
 <body id="appBody">
@@ -291,7 +374,7 @@
                 <div id="sidebarLogo" style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent);overflow:hidden;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
                 </div>
-                <div style="min-width:0;"><h1 style="font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--accent-light);" id="appTitle">MILASSOC</h1><p style="font-size:11px;letter-spacing:1px;color:var(--text-dim);">PRO v5.1</p></div>
+                <div style="min-width:0;"><h1 style="font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--accent-light);" id="appTitle">MILASSOC</h1><p style="font-size:11px;letter-spacing:1px;color:var(--text-dim);">PRO v5.2</p></div>
             </div>
         </div>
         <nav style="flex:1;overflow-y:auto;padding:12px 8px;" id="sidebarNav"></nav>
@@ -379,7 +462,8 @@ const DB = {
             {id:12,first:'Isabelle',last:'Simon',grade:'Capitaine',section:'Alpha',status:'Actif',cot:'À jour',email:'i.simon@mil.fr',mat:'FR-2017-0022',phone:'',photo:null,address:''},
             {id:13,first:'Nathalie',last:'Thomas',grade:'Sergent',section:'Bravo',status:'Actif',cot:'À jour',email:'n.thomas@mil.fr',mat:'FR-2021-0067',phone:'',photo:null,address:''},
             {id:14,first:'Emma',last:'Rousseau',grade:'Lieutenant',section:'Alpha',status:'Actif',cot:'En retard',email:'e.rousseau@mil.fr',mat:'FR-2022-0045',phone:'',photo:null,address:''},
-            {id:15,first:'Jean',last:'Petit',grade:'Capitaine',section:'Charlie',status:'Actif',cot:'En retard',email:'j.petit@mil.fr',mat:'FR-2019-0105',phone:'',photo:null,address:''}
+            {id:15,first:'Jean',last:'Petit',grade:'Capitaine',section:'Charlie',status:'Actif',cot:'En retard',email:'j.petit@mil.fr',mat:'FR-2019-0105',phone:'',photo:null,address:''},
+            {id:16,first:'Frederic',last:'Massez',grade:'Soldat',section:'Delta',status:'Actif',cot:'À jour',email:'frederic.massez@gmail.com',mat:'FR-2026-5534',phone:'06 45 67 89 01',photo:null,address:'14 rue le serrurier - Appartement 103'}
         ],
         events: [
             {id:1,title:'Commémoration Armistice 11 Novembre',date:'2026-11-11',time:'09:00',loc:"Place de l'Étoile, Paris",type:'Cérémonie',desc:'Cérémonie annuelle.'},
@@ -433,19 +517,20 @@ const DB = {
             {id:2,text:'<strong>31 cotisations</strong> en retard',time:'Il y a 1 heure',read:false},
             {id:3,text:'AG dans <strong>7 jours</strong>',time:'Il y a 3 heures',read:false}
         ],
-        config: {theme:'kaki',logo:null,logoBg:'#4f7a3f',favicon:null,appName:'MILASSOC PRO',bgColor:'#0f1a0f',customColors:{},
+        config: {
+            theme:'clair_bleu',logo:null,logoBg:'#4f7a3f',favicon:null,appName:'MILASSOC PRO',bgColor:'#f0f5f8',customColors:{},
             cardOrgName:'Union Nationale des Combattants',
             cardOrgAddr:'18, rue Vezelay - 75008 PARIS',
             cardOrgPhone:'01 53 89 04 04',
             cardOrgDecret:"Reconnue d'utilité publique par décret du 20 Mai 1920.",
             cardLogo:null,
-            cardPresNat:'Grégory Legrand',
+            cardPresNat:'',
             cardPresDep:'',
             cardPresSec:'',
             cardSigNat:null,
             cardSigDep:null,
             cardSigSec:null,
-            cardFormat:'a5'
+            cardFormat:'a6'
         }
     },
     _get: function(key, def) { try { var v = localStorage.getItem(this.PREFIX + key); return v !== null ? JSON.parse(v) : def; } catch(e) { return def; } },
@@ -508,6 +593,9 @@ const App = {
     curConv: 0,
     pendingConfirm: null,
     adminTab: 'grades',
+    docViewMode: 'grid',
+    calMonth: new Date().getMonth(),
+    calYear: new Date().getFullYear(),
 
     THEMES: {
         kaki: {name:'Kaki Militaire',bgDark:'#0f1a0f',bgCard:'#1a2a1a',bgInput:'#243524',border:'#2d402d',accent:'#4f7a3f',accentLight:'#6b9e55',text:'#e0e8d8',textDim:'#8a9a80',textMuted:'#5a6a50',light:false},
@@ -581,7 +669,7 @@ const App = {
         document.getElementById('loginScreen').style.display='none';
         document.getElementById('appShell').style.display='';
         var cfg = DB.getConfig();
-        var t = this.THEMES[cfg.theme] || this.THEMES.kaki;
+        var t = this.THEMES[cfg.theme] || this.THEMES.clair_bleu;
         if(cfg.customColors) { for(var k in cfg.customColors) { t[k] = cfg.customColors[k]; } }
         this.applyThemeObject(t);
         if(cfg.logo) this.applyLogo(cfg.logo);
@@ -668,7 +756,7 @@ const App = {
             var active = n.id===this.curPage;
             var badge = '';
             if(n.badge){ var bv = this.getBadgeValue(n.badge); if(bv) badge='<span style="margin-left:auto;font-size:11px;padding:2px 8px;border-radius:9999px;background:var(--accent);color:var(--bg-dark);">'+bv+'</span>'; }
-            var bg = active ? 'background:rgba(79,122,63,.2);color:var(--accent-light);font-weight:600;' : 'background:transparent;color:var(--text-dim);';
+            var bg = active ? 'background:rgba(37,99,235,.1);color:var(--accent);font-weight:600;' : 'background:transparent;color:var(--text-dim);';
             h += '<a href="#" onclick="App.navigateTo(\''+n.id+'\');return false;" data-nav="'+n.id+'" style="display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:14px;border-radius:8px;transition:all .2s;cursor:pointer;text-decoration:none;'+bg+'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+n.icon+'</svg><span>'+n.label+'</span>'+badge+'</a>';
         }
         nav.innerHTML = h;
@@ -683,10 +771,10 @@ const App = {
     navigateTo: function(page) {
         this.curPage = page;
         this.buildSidebar();
-        var titles = {dashboard:'Tableau de Bord',members:'Membres',events:'Événements',finance:'Finances',documents:'Documents',messages:'Messages',units:'Unités',admin:'Administration',settings:'Paramètres',cards:'Cartes Membres'};
+        var titles = {dashboard:'Tableau de Bord',members:'Membres',events:'Événements',finance:'Finances',documents:'Documents',messages:'Messages',units:'Unités',admin:'Administration',settings:'Paramètres',cards:'Cartes Membres',txReleve:'Relevé de Transactions'};
         document.getElementById('pageTitle').textContent = titles[page]||page;
         var area = document.getElementById('contentArea');
-        var fn = {dashboard:this.renderDashboard,members:this.renderMembers,events:this.renderEvents,finance:this.renderFinance,documents:this.renderDocuments,messages:this.renderMessages,units:this.renderUnits,admin:this.renderAdmin,settings:this.renderSettings,cards:this.renderCards};
+        var fn = {dashboard:this.renderDashboard,members:this.renderMembers,events:this.renderEvents,finance:this.renderFinance,documents:this.renderDocuments,messages:this.renderMessages,units:this.renderUnits,admin:this.renderAdmin,settings:this.renderSettings,cards:this.renderCards,txReleve:this.renderTxReleve};
         area.innerHTML = '';
         if(fn[page]) fn[page].call(this);
         area.classList.remove('fade-in'); void area.offsetWidth; area.classList.add('fade-in');
@@ -717,7 +805,7 @@ const App = {
         var id='m'+(Date.now());
         var c = document.getElementById('modalsContainer');
         if(!c){c=document.createElement('div');c.id='modalsContainer';document.body.appendChild(c);}
-        c.innerHTML+='<div id="'+id+'" style="position:fixed;inset:0;z-index:100;"><div style="position:absolute;inset:0;background:rgba(0,0,0,.6);" onclick="App.closeModal(\''+id+'\')"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:12px;border:1px solid var(--border);width:100%;max-width:600px;margin:0 16px;padding:24px;max-height:90vh;overflow-y:auto;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><h3 style="font-size:18px;font-weight:600;color:var(--text);">'+title+'</h3><button onclick="App.closeModal(\''+id+'\')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'+html+'</div></div>';
+        c.innerHTML+='<div id="'+id+'" style="position:fixed;inset:0;z-index:100;"><div style="position:absolute;inset:0;background:rgba(0,0,0,.4);" onclick="App.closeModal(\''+id+'\')"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:12px;border:1px solid var(--border);width:100%;max-width:600px;margin:0 16px;padding:24px;max-height:90vh;overflow-y:auto;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><h3 style="font-size:18px;font-weight:600;color:var(--text);">'+title+'</h3><button onclick="App.closeModal(\''+id+'\')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'+html+'</div></div>';
     },
     closeAllModals: function() { var c=document.getElementById('modalsContainer'); if(c)c.innerHTML=''; },
 
@@ -777,6 +865,11 @@ const App = {
         else { var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);App.showToast('Copié !'); }
     },
 
+    getAssociationName: function() {
+        var cfg = DB.getConfig();
+        return cfg.cardOrgName || cfg.appName || 'MilAssoc Pro';
+    },
+
     // ==================== DASHBOARD ====================
     renderDashboard: function() {
         var members=DB.getMembers(),events=DB.getEvents(),docs=DB.getDocs(),tx=DB.getTx();
@@ -792,17 +885,17 @@ const App = {
         var sh='';var sk=Object.keys(sc).sort();for(var i=0;i<sk.length;i++)sh+='<div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--text-dim);">'+sk[i]+'</span><span style="font-family:monospace;">'+sc[sk[i]]+'</span></div>';
         var se=events.slice().sort(function(a,b){return a.date.localeCompare(b.date);}).slice(0,3);
         var mois=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-        var uh='';for(var i=0;i<se.length;i++){var ev=se[i],d=new Date(ev.date),day=String(d.getDate()).padStart(2,'0'),mo=mois[d.getMonth()];uh+='<div style="border-radius:8px;padding:16px;border:1px solid var(--border);background:var(--bg-input);cursor:pointer;" onclick="App.navigateTo(\'events\')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;background:var(--accent);color:var(--bg-dark);">'+day+' '+mo+'</span><span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(79,122,63,.2);color:var(--accent-light);">'+ev.type+'</span></div><p style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ev.title+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+ev.time+' — '+ev.loc+'</p></div>';}
+        var uh='';for(var i=0;i<se.length;i++){var ev=se[i],d=new Date(ev.date),day=String(d.getDate()).padStart(2,'0'),mo=mois[d.getMonth()];uh+='<div style="border-radius:8px;padding:16px;border:1px solid var(--border);background:var(--bg-input);cursor:pointer;" onclick="App.navigateTo(\'events\')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;background:var(--accent);color:white;">'+day+' '+mo+'</span><span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(37,99,235,.1);color:var(--accent);">'+ev.type+'</span></div><p style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ev.title+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+ev.time+' — '+ev.loc+'</p></div>';}
         if(!uh)uh='<p style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text-dim);">Aucun événement</p>';
         var ns=DB.getNotifs(),ah='';
         for(var i=0;i<Math.min(4,ns.length);i++){ah+='<div style="display:flex;align-items:start;gap:12px;padding:12px;border-radius:8px;"><div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;background:var(--accent);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div style="flex:1;"><p style="font-size:14px;color:var(--text);">'+ns[i].text+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+ns[i].time+'</p></div></div>';}
         if(!ah)ah='<p style="text-align:center;padding:16px;color:var(--text-dim);">Aucune activité</p>';
         var area=document.getElementById('contentArea');
         area.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
-            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'members\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(79,122,63,.2);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--accent);color:var(--bg-dark);">'+members.length+' total</span></div><p style="font-size:24px;font-weight:700;">'+total+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Membres ('+active+' actifs)</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:'+pct+'%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
-            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'finance\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(160,120,64,.2);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div><p style="font-size:24px;font-weight:700;color:var(--accent-light);">€ '+(inc-exp).toLocaleString('fr-FR')+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Solde net</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:72%;background:var(--accent-light);border-radius:9999px;"></div></div></div>'+
-            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'events\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(79,122,63,.2);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+events.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Événements</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:60%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
-            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'documents\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(160,120,64,.2);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+docs.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Documents</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:45%;background:var(--accent-light);border-radius:9999px;"></div></div></div>'+
+            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'members\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--accent);color:white;">'+members.length+' total</span></div><p style="font-size:24px;font-weight:700;">'+total+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Membres ('+active+' actifs)</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:'+pct+'%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
+            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'finance\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(160,120,64,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div><p style="font-size:24px;font-weight:700;color:var(--accent-light);">€ '+(inc-exp).toLocaleString('fr-FR')+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Solde net</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:72%;background:var(--accent-light);border-radius:9999px;"></div></div></div>'+
+            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'events\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+events.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Événements</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:60%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
+            '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'documents\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(160,120,64,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+docs.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Documents</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:45%;background:var(--accent-light);border-radius:9999px;"></div></div></div>'+
         '</div>'+
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:24px;">'+
             '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Activité récente</h3><div style="display:flex;flex-direction:column;gap:8px;">'+ah+'</div></div>'+
@@ -829,7 +922,7 @@ const App = {
             '<button onclick="App.exportCSV()" style="padding:8px 12px;border-radius:8px;font-size:13px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Export</button>'+
             (this.canEdit()?'<button onclick="App.openAddMember()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">+ Ajouter</button>':'')+
             '</div></div>'+
-            '<div style="border-radius:12px;border:1px solid var(--border);overflow-hidden;background:var(--bg-card);"><div style="overflow-x:auto;"><table style="width:100%;font-size:14px;"><thead><tr style="border-bottom:1px solid var(--border);font-size:12px;text-transform:uppercase;color:var(--text-dim);">'+
+            '<div style="border-radius:12px;border:1px solid var(--border);overflow-hidden;background:var(--bg-card);"><div style="overflow-x-auto;"><table style="width:100%;font-size:14px;"><thead><tr style="border-bottom:1px solid var(--border);font-size:12px;text-transform:uppercase;color:var(--text-dim);">'+
             '<th style="text-align:left;padding:12px 16px;cursor:pointer;" onclick="App.sortMem(\'last\')">Membre ↕</th>'+
             '<th style="text-align:left;padding:12px 16px;cursor:pointer;display:none;" class="csm" onclick="App.sortMem(\'grade\')">Grade ↕</th>'+
             '<th style="text-align:left;padding:12px 16px;cursor:pointer;display:none;" class="cmd" onclick="App.sortMem(\'section\')">Section ↕</th>'+
@@ -866,9 +959,9 @@ const App = {
         var tb=document.getElementById('memTable');if(!tb)return;tb.innerHTML='';
         var me=document.getElementById('memEmpty');if(me)me.style.display=f.length===0?'':'none';
         if(!f.length){var pi=document.getElementById('memPageInfo');if(pi)pi.textContent='Aucun résultat';var pb=document.getElementById('memPageBtns');if(pb)pb.innerHTML='';return;}
-        var stC={'Actif':'background:rgba(39,174,96,.2);color:#27ae60;','Inactif':'background:rgba(239,68,68,.2);color:#ef4444;'};
-        var ctC={'À jour':'background:rgba(39,174,96,.2);color:#27ae60;','En retard':'background:rgba(243,156,18,.2);color:#f39c12;','Non payée':'background:rgba(239,68,68,.2);color:#ef4444;','Exonéré':'background:rgba(52,152,219,.2);color:#3498db;'};
-        var avC=['background:rgba(202,138,4,.2);color:#fbbf24;','background:rgba(79,122,63,.2);color:#6b9e55;','background:rgba(52,152,219,.2);color:#60a5fa;','background:rgba(139,92,246,.2);color:#a78bfa;'];
+        var stC={'Actif':'background:rgba(39,174,96,.1);color:#27ae60;','Inactif':'background:rgba(239,68,68,.1);color:#ef4444;'};
+        var ctC={'À jour':'background:rgba(39,174,96,.1);color:#27ae60;','En retard':'background:rgba(243,156,18,.1);color:#f39c12;','Non payée':'background:rgba(239,68,68,.1);color:#ef4444;','Exonéré':'background:rgba(52,152,219,.1);color:#3498db;'};
+        var avC=['background:rgba(202,138,4,.15);color:#d97706;','background:rgba(34,197,94,.15);color:#16a34a;','background:rgba(59,130,246,.15);color:#2563eb;','background:rgba(139,92,246,.15);color:#7c3aed;'];
         for(var i=0;i<paged.length;i++){
             var m=paged[i],ini=m.first[0]+m.last[0],ac=avC[m.id%avC.length];
             var photoHtml = m.photo ? '<img src="'+m.photo+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">' : '<div style="width:32px;height:32px;border-radius:50%;'+ac+'display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+ini+'</div>';
@@ -968,7 +1061,7 @@ const App = {
         '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text-dim);">Adresse</span><span>'+(m.address||'—')+'</span></div>'+
         '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text-dim);">Cotisation</span><span style="color:'+(m.cot==='À jour'?'#27ae60':'#ef4444')+';">'+m.cot+'</span></div>'+
         '</div>'+
-        '<div style="display:flex;gap:12px;margin-top:24px;">'+(this.canEdit()?'<button onclick="App.closeAllModals();App.openEditMem('+m.id+')" style="flex:1;padding:10px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Modifier</button><button onclick="App.closeAllModals();App.delMem('+m.id+')" style="flex:1;padding:10px;border-radius:8px;font-size:14px;background:rgba(239,68,68,.2);color:#ef4444;border:none;cursor:pointer;">Supprimer</button>':'')+'</div>';
+        '<div style="display:flex;gap:12px;margin-top:24px;">'+(this.canEdit()?'<button onclick="App.closeAllModals();App.openEditMem('+m.id+')" style="flex:1;padding:10px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Modifier</button><button onclick="App.closeAllModals();App.delMem('+m.id+')" style="flex:1;padding:10px;border-radius:8px;font-size:14px;background:rgba(239,68,68,.1);color:#ef4444;border:none;cursor:pointer;">Supprimer</button>':'')+'</div>';
         this.showGenericModal('Fiche membre',h);
     },
 
@@ -1007,7 +1100,6 @@ const App = {
         input.click();
     },
 
-    // Feuille d'émargement
     attendanceSheet: function() {
         var events=DB.getEvents();
         if(!events.length){this.showToast('Aucun événement');return;}
@@ -1045,7 +1137,7 @@ const App = {
         '.sig-line{border-bottom:1px solid #333;width:160px;height:30px;margin:0 auto 4px;}'+
         '@media print{body{padding:10px;}}'+
         '</style></head><body class="print-area">';
-        html+='<div class="header"><h1>'+cfg.cardOrgName+'</h1>';
+        html+='<div class="header"><h1>'+(cfg.cardOrgName||this.getAssociationName())+'</h1>';
         html+='<h2>'+title+'</h2>';
         html+='<p><strong>Événement :</strong> '+ev.title+'</p>';
         html+='<p><strong>Date :</strong> '+ev.date+' à '+ev.time+'</p>';
@@ -1063,19 +1155,152 @@ const App = {
     // ==================== EVENTS ====================
     renderEvents: function() {
         var types=DB.getEventTypes(),area=document.getElementById('contentArea');
+        var today = new Date().toISOString().split('T')[0];
         area.innerHTML='<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;">'+
         '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">'+
         '<select id="evtType" onchange="App.applyEvtFilters()" style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="">Tous types</option>'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select>'+
         '<select id="evtMonth" onchange="App.applyEvtFilters()" style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="">Tous</option><option value="04">Avril</option><option value="05">Mai</option><option value="06">Juin</option><option value="11">Novembre</option></select>'+
         '<select id="evtSort" onchange="App.applyEvtFilters()" style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="asc">Date ↑</option><option value="desc">Date ↓</option></select>'+
-        '</div>'+(this.canEdit()?'<button onclick="App.openAddEvent()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">+ Événement</button>':'')+
-        '</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="evtGrid"></div><div id="evtEmpty" style="display:none;padding:48px;text-align:center;color:var(--text-dim);">Aucun événement</div>';
+        '<input type="date" id="evtToday" value="'+today+'" style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">' +
+        '<button onclick="App.applyEvtFilters()" style="padding:8px 12px;border-radius:8px;font-size:13px;background:var(--accent);color:white;border:none;cursor:pointer;">Aujourd\'hui</button>'+
+        '</div>'+
+        '<div style="display:flex;gap:8px;">'+
+        '<button onclick="App.printCalendar()" style="padding:8px 12px;border-radius:8px;font-size:13px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">🖨️ Imprimer calendrier</button>'+
+        (this.canEdit()?'<button onclick="App.openAddEvent()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">+ Événement</button>':'')+
+        '</div></div>'+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="evtGrid"></div>'+
+        '<div id="evtEmpty" style="display:none;padding:48px;text-align:center;color:var(--text-dim);">Aucun événement</div>'+
+        '<div style="margin-top:24px;border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">'+
+        '<button onclick="App.calMonth--;App.renderCalendar()" style="padding:6px 12px;border-radius:6px;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">◀</button>'+
+        '<h3 style="font-size:18px;font-weight:600;" id="calTitle"></h3>'+
+        '<button onclick="App.calMonth++;App.renderCalendar()" style="padding:6px 12px;border-radius:6px;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">▶</button>'+
+        '</div>'+
+        '<div id="calendarContainer"></div>'+
+        '</div>';
         this.applyEvtFilters();
+        this.renderCalendar();
     },
+
+    renderCalendar: function() {
+        var container = document.getElementById('calendarContainer');
+        if(!container) return;
+        var monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+        var dayNames = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+        var year = this.calYear;
+        var month = this.calMonth;
+        document.getElementById('calTitle').textContent = monthNames[month]+' '+year;
+        
+        var firstDay = new Date(year, month, 1);
+        var lastDay = new Date(year, month+1, 0);
+        var startDay = firstDay.getDay() || 7;
+        var today = new Date();
+        var todayStr = today.toISOString().split('T')[0];
+        
+        var events = DB.getEvents();
+        
+        var html = '<div class="calendar-grid">';
+        dayNames.forEach(function(d){ html += '<div class="calendar-day-header">'+d+'</div>'; });
+        
+        var day = 1 - (startDay - 1);
+        var totalDays = 6*7;
+        for(var i=0; i<totalDays; i++){
+            var d = new Date(year, month, day);
+            var dateStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+            var isToday = dateStr === todayStr;
+            var isOtherMonth = d.getMonth() !== month;
+            var dayEvents = events.filter(function(e){return e.date===dateStr;});
+            
+            html += '<div class="calendar-day'+(isToday?' today':'')+(isOtherMonth?' other-month':'')+'">';
+            html += '<div class="calendar-day-number">'+d.getDate()+'</div>';
+            dayEvents.forEach(function(ev){
+                var color = ev.type==='Cérémonie'?'background:rgba(202,138,4,.15);color:#d97706;':
+                           ev.type==='Réunion'?'background:rgba(37,99,235,.15);color:#2563eb;':
+                           ev.type==='Formation'?'background:rgba(34,197,94,.15);color:#16a34a;':
+                           'background:rgba(139,92,246,.15);color:#7c3aed;';
+                html += '<div class="calendar-event" style="'+color+'" title="'+ev.title+' ('+ev.time+')">'+ev.title.substring(0,20)+'</div>';
+            });
+            html += '</div>';
+            day++;
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    },
+
+    printCalendar: function() {
+        var cfg = DB.getConfig();
+        var monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+        var dayNames = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+        var year = this.calYear;
+        var month = this.calMonth;
+        var events = DB.getEvents();
+        
+        var firstDay = new Date(year, month, 1);
+        var lastDay = new Date(year, month+1, 0);
+        var startDay = firstDay.getDay() || 7;
+        var today = new Date();
+        var todayStr = today.toISOString().split('T')[0];
+        
+        var html = '<!DOCTYPE html><html><head><title>Calendrier - '+monthNames[month]+' '+year+'</title><style>'+
+        'body{font-family:Georgia,serif;margin:0;padding:20px;color:#000;}'+
+        '.header{text-align:center;margin-bottom:20px;border-bottom:2px solid #c0392b;padding-bottom:12px;}'+
+        '.header h1{font-size:22px;color:#c0392b;margin:0;}'+
+        '.header h2{font-size:16px;margin:8px 0 4px;color:#333;}'+
+        'table{border-collapse:collapse;width:100%;}'+
+        'th,td{border:1px solid #333;padding:4px 8px;font-size:11px;vertical-align:top;height:60px;}'+
+        'th{background:#f0f0f0;font-weight:bold;text-align:center;height:auto;}'+
+        '.today{background:#fff3cd;}'+
+        '.event{font-size:10px;padding:1px 3px;border-radius:2px;margin:1px 0;}'+
+        '@media print{body{padding:10px;}}'+
+        '</style></head><body class="print-area">';
+        html += '<div class="header"><h1>'+(cfg.cardOrgName||this.getAssociationName())+'</h1><h2>Calendrier - '+monthNames[month]+' '+year+'</h2></div>';
+        html += '<table><thead><tr>';
+        dayNames.forEach(function(d){ html += '<th>'+d+'</th>'; });
+        html += '</tr></thead><tbody>';
+        
+        var day = 1 - (startDay - 1);
+        var weeks = Math.ceil((lastDay.getDate() + startDay - 1) / 7);
+        for(var w=0; w<weeks; w++){
+            html += '<tr>';
+            for(var d=0; d<7; d++){
+                var date = new Date(year, month, day);
+                var dateStr = date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+                var isToday = dateStr === todayStr;
+                var isOtherMonth = date.getMonth() !== month;
+                var dayEvents = events.filter(function(e){return e.date===dateStr;});
+                
+                html += '<td class="'+(isToday?'today':'')+(isOtherMonth?' style="opacity:.4;"':'')+'">';
+                if(!isOtherMonth) html += '<strong>'+date.getDate()+'</strong><br>';
+                dayEvents.forEach(function(ev){
+                    html += '<div class="event" style="background:#e3f2fd;color:#1565c0;">'+ev.time+' '+ev.title+'</div>';
+                });
+                html += '</td>';
+                day++;
+            }
+            html += '</tr>';
+        }
+        html += '</tbody></table></body></html>';
+        
+        var win=window.open('','','width=900,height=700');
+        win.document.write(html);win.document.close();
+        setTimeout(function(){win.print();},500);
+    },
+
     applyEvtFilters: function() {
-        var t=document.getElementById('evtType')?document.getElementById('evtType').value:'',m=document.getElementById('evtMonth')?document.getElementById('evtMonth').value:'',s=document.getElementById('evtSort')?document.getElementById('evtSort').value:'asc';
+        var t=document.getElementById('evtType')?document.getElementById('evtType').value:'';
+        var m=document.getElementById('evtMonth')?document.getElementById('evtMonth').value:'';
+        var s=document.getElementById('evtSort')?document.getElementById('evtSort').value:'asc';
+        var todayBtn=document.getElementById('evtToday');
+        var todayDate=todayBtn?todayBtn.value:'';
+        
         var all=DB.getEvents(),f=[];
-        for(var i=0;i<all.length;i++){var ev=all[i];if(t&&ev.type!==t)continue;if(m&&ev.date.substring(5,7)!==m)continue;f.push(ev);}
+        for(var i=0;i<all.length;i++){
+            var ev=all[i];
+            if(t&&ev.type!==t)continue;
+            if(m&&ev.date.substring(5,7)!==m)continue;
+            if(todayDate&&ev.date!==todayDate)continue;
+            f.push(ev);
+        }
         f.sort(function(a,b){return s==='asc'?a.date.localeCompare(b.date):b.date.localeCompare(a.date);});
         var g=document.getElementById('evtGrid');if(!g)return;g.innerHTML='';
         var me=document.getElementById('evtEmpty');if(me)me.style.display=f.length===0?'':'none';
@@ -1083,7 +1308,7 @@ const App = {
         var mois=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
         for(var i=0;i<f.length;i++){
             var ev=f[i],d=new Date(ev.date),day=String(d.getDate()).padStart(2,'0'),mo=mois[d.getMonth()];
-            g.innerHTML+='<div style="border-radius:12px;border:1px solid var(--border);overflow-hidden;background:var(--bg-card);"><div style="display:flex;"><div style="width:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;flex-shrink:0;background:var(--bg-input);"><span style="font-size:24px;font-weight:700;color:var(--accent-light);">'+day+'</span><span style="font-size:11px;color:var(--text-dim);">'+mo+'</span></div><div style="flex:1;padding:16px;min-width:0;"><span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(79,122,63,.2);color:var(--accent-light);">'+ev.type+'</span><h4 style="font-size:14px;font-weight:500;margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ev.title+'</h4><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+ev.time+' — '+ev.loc+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ev.desc+'</p></div></div>'+(this.canEdit()?'<div style="padding:8px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;"><button onclick="App.openEditEvt('+ev.id+')" style="font-size:12px;color:var(--text-dim);background:none;border:none;cursor:pointer;">Modifier</button><button onclick="App.delEvt('+ev.id+')" style="font-size:12px;color:var(--text-dim);background:none;border:none;cursor:pointer;">Supprimer</button></div>':'')+'</div>';
+            g.innerHTML+='<div style="border-radius:12px;border:1px solid var(--border);overflow-hidden;background:var(--bg-card);"><div style="display:flex;"><div style="width:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;flex-shrink:0;background:var(--bg-input);"><span style="font-size:24px;font-weight:700;color:var(--accent);">'+day+'</span><span style="font-size:11px;color:var(--text-dim);">'+mo+'</span></div><div style="flex:1;padding:16px;min-width:0;"><span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(37,99,235,.1);color:var(--accent);">'+ev.type+'</span><h4 style="font-size:14px;font-weight:500;margin-top:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ev.title+'</h4><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+ev.time+' — '+ev.loc+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ev.desc+'</p></div></div>'+(this.canEdit()?'<div style="padding:8px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;"><button onclick="App.openEditEvt('+ev.id+')" style="font-size:12px;color:var(--text-dim);background:none;border:none;cursor:pointer;">Modifier</button><button onclick="App.delEvt('+ev.id+')" style="font-size:12px;color:var(--text-dim);background:none;border:none;cursor:pointer;">Supprimer</button></div>':'')+'</div>';
         }
     },
     openAddEvent: function() {
@@ -1128,7 +1353,10 @@ const App = {
         var tx=DB.getTx(),inc=0,exp=0;
         for(var i=0;i<tx.length;i++){if(tx[i].type==='income')inc+=tx[i].amt;else exp+=tx[i].amt;}
         var area=document.getElementById('contentArea');
-        area.innerHTML='<div style="margin-bottom:16px;display:flex;justify-content:flex-end;"><button onclick="App.printAccountStatement()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">🖨️ Imprimer état des comptes</button></div>'+
+        area.innerHTML='<div style="margin-bottom:16px;display:flex;justify-content:flex-end;gap:8px;">'+
+        '<button onclick="App.printAccountStatement()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">🖨️ Imprimer état des comptes</button>'+
+        '<button onclick="App.navigateTo(\'txReleve\')" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent-light);border:none;cursor:pointer;">📋 Relevé de transactions</button>'+
+        '</div>'+
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
         '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);" class="clickable-zone" onclick="App.showTxDetail(\'income\')"><p style="font-size:14px;margin-bottom:4px;color:var(--text-dim);">Recettes</p><p style="font-size:24px;font-weight:700;color:#27ae60;">€ '+inc.toLocaleString('fr-FR')+'</p><p style="font-size:11px;color:var(--text-dim);margin-top:4px;">Cliquer pour détails</p></div>'+
         '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);" class="clickable-zone" onclick="App.showTxDetail(\'expense\')"><p style="font-size:14px;margin-bottom:4px;color:var(--text-dim);">Dépenses</p><p style="font-size:24px;font-weight:700;color:#ef4444;">€ '+exp.toLocaleString('fr-FR')+'</p><p style="font-size:11px;color:var(--text-dim);margin-top:4px;">Cliquer pour détails</p></div>'+
@@ -1148,6 +1376,97 @@ const App = {
         '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);margin-bottom:24px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><h3 style="font-size:18px;font-weight:600;">Cotisations 2026</h3><button onclick="App.showCotDetails()" style="font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;">📊 Détail</button></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:16px;text-align:center;" id="cotSummary"></div></div>'+
         '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Statistiques détaillées</h3><div id="txStats"></div></div>';
         this.renderTxList();this.renderCotSummary();this.renderTxStats();
+    },
+
+    renderTxReleve: function() {
+        var tx=DB.getTx(),cfg=DB.getConfig();
+        var inc=0,exp=0;
+        for(var i=0;i<tx.length;i++){if(tx[i].type==='income')inc+=tx[i].amt;else exp+=tx[i].amt;}
+        var sortedTx=tx.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
+        
+        var area=document.getElementById('contentArea');
+        area.innerHTML='<div style="margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;">'+
+        '<div><h3 style="font-size:24px;font-weight:700;">Relevé de Transactions</h3><p style="font-size:14px;color:var(--text-dim);">Compte bancaire de l\'association</p></div>'+
+        '<button onclick="App.printTxReleve()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">🖨️ Imprimer le relevé</button>'+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
+        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;margin-bottom:4px;color:var(--text-dim);">Total Recettes</p><p style="font-size:24px;font-weight:700;color:#27ae60;">€ '+inc.toLocaleString('fr-FR')+'</p></div>'+
+        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;margin-bottom:4px;color:var(--text-dim);">Total Dépenses</p><p style="font-size:24px;font-weight:700;color:#ef4444;">€ '+exp.toLocaleString('fr-FR')+'</p></div>'+
+        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;margin-bottom:4px;color:var(--text-dim);">Solde</p><p style="font-size:24px;font-weight:700;color:var(--accent-light);">€ '+(inc-exp).toLocaleString('fr-FR')+'</p></div>'+
+        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;margin-bottom:4px;color:var(--text-dim);">Nombre d\'opérations</p><p style="font-size:24px;font-weight:700;">'+tx.length+'</p></div>'+
+        '</div>'+
+        '<div style="border-radius:12px;border:1px solid var(--border);overflow-hidden;background:var(--bg-card);">'+
+        '<table style="width:100%;font-size:14px;"><thead><tr style="border-bottom:2px solid var(--border);font-size:12px;text-transform:uppercase;color:var(--text-dim);">'+
+        '<th style="text-align:left;padding:12px 16px;">Date</th>'+
+        '<th style="text-align:left;padding:12px 16px;">Libellé</th>'+
+        '<th style="text-align:left;padding:12px 16px;">Catégorie</th>'+
+        '<th style="text-align:right;padding:12px 16px;">Débit</th>'+
+        '<th style="text-align:right;padding:12px 16px;">Crédit</th>'+
+        '<th style="text-align:right;padding:12px 16px;">Solde</th>'+
+        '</tr></thead><tbody id="txReleveBody"></tbody></table>'+
+        '</div>';
+        
+        var runningBalance=0;
+        var tbody=document.getElementById('txReleveBody');
+        sortedTx.forEach(function(t){
+            if(t.type==='income') runningBalance+=t.amt;
+            else runningBalance-=t.amt;
+            tbody.innerHTML+='<tr style="border-bottom:1px solid var(--border);">'+
+            '<td style="padding:10px 16px;color:var(--text-dim);">'+t.date+'</td>'+
+            '<td style="padding:10px 16px;">'+t.desc+'</td>'+
+            '<td style="padding:10px 16px;"><span style="font-size:12px;padding:2px 8px;border-radius:4px;background:var(--bg-input);color:var(--text-dim);">'+(t.category||'Autre')+'</span></td>'+
+            '<td style="padding:10px 16px;text-align:right;color:'+(t.type==='expense'?'#ef4444':'var(--text-dim)')+';">'+(t.type==='expense'?'€'+t.amt.toFixed(2):'')+'</td>'+
+            '<td style="padding:10px 16px;text-align:right;color:'+(t.type==='income'?'#27ae60':'var(--text-dim)')+';">'+(t.type==='income'?'€'+t.amt.toFixed(2):'')+'</td>'+
+            '<td style="padding:10px 16px;text-align:right;font-weight:600;color:'+(runningBalance>=0?'#27ae60':'#ef4444')+';">€'+runningBalance.toFixed(2)+'</td>'+
+            '</tr>';
+        });
+    },
+
+    printTxReleve: function() {
+        var tx=DB.getTx(),cfg=DB.getConfig();
+        var sortedTx=tx.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
+        var inc=0,exp=0;
+        for(var i=0;i<tx.length;i++){if(tx[i].type==='income')inc+=tx[i].amt;else exp+=tx[i].amt;}
+        
+        var html='<!DOCTYPE html><html><head><title>Relevé de Transactions</title><style>'+
+        'body{font-family:Georgia,serif;margin:0;padding:30px;color:#000;max-width:800px;margin:0 auto;}'+
+        '.header{text-align:center;margin-bottom:30px;border-bottom:2px solid #c0392b;padding-bottom:16px;}'+
+        '.header h1{font-size:22px;color:#c0392b;margin:0;}'+
+        '.header h2{font-size:16px;margin:8px 0 4px;color:#333;}'+
+        '.header p{font-size:12px;color:#666;margin:2px 0;}'+
+        '.summary{display:flex;justify-content:space-around;margin:20px 0;padding:16px;background:#f5f5f5;border-radius:8px;}'+
+        '.summary div{text-align:center;}'+
+        '.summary .label{font-size:12px;color:#666;}'+
+        '.summary .value{font-size:20px;font-weight:bold;margin-top:4px;}'+
+        'table{border-collapse:collapse;width:100%;margin-top:20px;}'+
+        'th,td{border:1px solid #ccc;padding:8px 12px;font-size:12px;}'+
+        'th{background:#f0f0f0;font-weight:bold;text-align:left;}'+
+        '.total{font-weight:bold;background:#f9f9f9;}'+
+        '.footer{margin-top:30px;text-align:center;font-size:11px;color:#999;}'+
+        '@media print{body{padding:20px;}}'+
+        '</style></head><body class="print-area">';
+        html+='<div class="header"><h1>'+(cfg.cardOrgName||this.getAssociationName())+'</h1><h2>Relevé de Transactions</h2>';
+        html+='<p>Date d\'édition : '+new Date().toLocaleDateString('fr-FR')+'</p>';
+        html+='<p>Exercice 2026</p></div>';
+        html+='<div class="summary">'+
+        '<div><div class="label">Total Recettes</div><div class="value" style="color:#27ae60;">€'+inc.toLocaleString('fr-FR')+'</div></div>'+
+        '<div><div class="label">Total Dépenses</div><div class="value" style="color:#ef4444;">€'+exp.toLocaleString('fr-FR')+'</div></div>'+
+        '<div><div class="label">Solde</div><div class="value" style="color:'+(inc-exp>=0?'#27ae60':'#ef4444')+';">€'+(inc-exp).toLocaleString('fr-FR')+'</div></div></div>';
+        html+='<table><thead><tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th style="text-align:right;">Débit</th><th style="text-align:right;">Crédit</th></tr></thead><tbody>';
+        var bal=0;
+        sortedTx.forEach(function(t){
+            if(t.type==='income')bal+=t.amt;else bal-=t.amt;
+            html+='<tr><td>'+t.date+'</td><td>'+t.desc+'</td><td>'+(t.category||'Autre')+'</td>'+
+            '<td style="text-align:right;color:'+(t.type==='expense'?'#ef4444':'#999')+';">'+(t.type==='expense'?'€'+t.amt.toFixed(2):'')+'</td>'+
+            '<td style="text-align:right;color:'+(t.type==='income'?'#27ae60':'#999')+';">'+(t.type==='income'?'€'+t.amt.toFixed(2):'')+'</td></tr>';
+        });
+        html+='<tr class="total"><td colspan="4">SOLDE</td><td style="text-align:right;color:'+(bal>=0?'#27ae60':'#ef4444')+';">€'+bal.toFixed(2)+'</td></tr>';
+        html+='</tbody></table>';
+        html+='<div class="footer"><p>Document généré automatiquement par MilAssoc Pro</p></div>';
+        html+='</body></html>';
+        var win=window.open('','','width=800,height=700');
+        win.document.write(html);win.document.close();
+        setTimeout(function(){win.print();},500);
     },
 
     showTxDetail: function(type) {
@@ -1180,6 +1499,7 @@ const App = {
             var net=cats[c].income-cats[c].expense;
             rows+='<tr><td>'+c+'</td><td style="text-align:right;color:#27ae60;">€'+cats[c].income.toLocaleString('fr-FR')+'</td><td style="text-align:right;color:#ef4444;">€'+cats[c].expense.toLocaleString('fr-FR')+'</td><td style="text-align:right;font-weight:bold;color:'+(net>=0?'#27ae60':'#ef4444')+';">€'+net.toLocaleString('fr-FR')+'</td></tr>';
         }
+        var assocName=cfg.cardOrgName||cfg.appName||'MilAssoc Pro';
         var html='<!DOCTYPE html><html><head><title>État des Comptes</title><style>'+
         'body{font-family:Georgia,serif;margin:0;padding:30px;color:#000;max-width:800px;margin:0 auto;}'+
         '.header{text-align:center;margin-bottom:30px;border-bottom:2px solid #c0392b;padding-bottom:16px;}'+
@@ -1197,7 +1517,7 @@ const App = {
         '.footer{margin-top:30px;text-align:center;font-size:11px;color:#999;}'+
         '@media print{body{padding:20px;}}'+
         '</style></head><body class="print-area">';
-        html+='<div class="header"><h1>'+cfg.cardOrgName+'</h1><h2>État des Comptes</h2>';
+        html+='<div class="header"><h1>'+assocName+'</h1><h2>État des Comptes</h2>';
         html+='<p>Date d\'édition : '+new Date().toLocaleDateString('fr-FR')+'</p>';
         html+='<p>Exercice 2026</p></div>';
         html+='<div class="summary">'+
@@ -1230,7 +1550,7 @@ const App = {
     renderTxList: function() {
         var l=document.getElementById('txList');if(!l)return;var tx=DB.getTx(),h='';
         for(var i=0;i<tx.length;i++){var t=tx[i],inc=t.type==='income';
-        h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);"><div style="display:flex;align-items:center;gap:12px;min-width:0;"><div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;background:'+(inc?'rgba(39,174,96,.2)':'rgba(239,68,68,.2)')+';">'+(inc?'📈':'📉')+'</div><div style="min-width:0;"><p style="font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+t.desc+'</p><p style="font-size:11px;color:var(--text-dim);">'+t.date+(t.category?' • '+t.category:'')+'</p></div></div><span style="font-size:14px;font-family:monospace;flex-shrink:0;margin-left:8px;'+(inc?'color:#27ae60;':'color:#ef4444;')+'">'+(inc?'+':'-')+'€'+t.amt.toFixed(2)+'</span></div>';}
+        h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border);"><div style="display:flex;align-items:center;gap:12px;min-width:0;"><div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;background:'+(inc?'rgba(39,174,96,.15)':'rgba(239,68,68,.15)')+';">'+(inc?'📈':'')+'</div><div style="min-width:0;"><p style="font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+t.desc+'</p><p style="font-size:11px;color:var(--text-dim);">'+t.date+(t.category?' • '+t.category:'')+'</p></div></div><span style="font-size:14px;font-family:monospace;flex-shrink:0;margin-left:8px;'+(inc?'color:#27ae60;':'color:#ef4444;')+'">'+(inc?'+':'-')+'€'+t.amt.toFixed(2)+'</span></div>';}
         l.innerHTML=h;
     },
 
@@ -1273,7 +1593,7 @@ const App = {
         var c={'À jour':0,'En retard':0,'Non payée':0,'Exonéré':0},members=DB.getMembers();
         for(var i=0;i<members.length;i++){if(c[members[i].cot]!==undefined)c[members[i].cot]++;}
         var el=document.getElementById('cotSummary');if(!el)return;
-        el.innerHTML=[{l:'À jour',v:c['À jour'],c:'#27ae60'},{l:'En retard',v:c['En retard'],c:'#f39c12'},{l:'Non payées',v:c['Non payée'],c:'#ef4444'},{l:'Exonérés',v:c['Exonéré'],c:'#3498db'}].map(function(i){return '<div style="padding:16px;border-radius:8px;background:var(--bg-input);"><p style="font-size:24px;font-weight:700;color:'+i.c+';">'+i.v+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+i.l+'</p></div>';}).join('');
+        el.innerHTML=[{l:'À jour',v:c['À jour'],c:'#27ae60'},{l:'En retard',v:c['En retard'],c:'#f39c12'},{l:'Non payées',v:c['Non payée'],c:'#ef4444'},{l:'Exonérés',v:c['Exonéré'],c:'#3498db'}].map(function(i){return '<div style="padding:16px;border-radius:8px;background:var(--bg-input);cursor:pointer;" class="clickable-stat" onclick="App.showCotDetails()"><p style="font-size:24px;font-weight:700;color:'+i.c+';">'+i.v+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+i.l+'</p></div>';}).join('');
     },
 
     // ==================== DOCUMENTS ====================
@@ -1281,24 +1601,68 @@ const App = {
         var types=DB.getDocTypes(),area=document.getElementById('contentArea');
         area.innerHTML='<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;">'+
         '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">'+
+        '<div class="view-toggle">'+
+        '<button onclick="App.setDocView(\'grid\')" id="docViewGrid" class="'+(this.docViewMode==='grid'?'active':'')+'">⊞ Vignettes</button>'+
+        '<button onclick="App.setDocView(\'table\')" id="docViewTable" class="'+(this.docViewMode==='table'?'active':'')+'">☰ Tableau</button>'+
+        '</div>'+
         '<div style="position:relative;"><input type="text" placeholder="Rechercher..." id="docSearch" oninput="App.applyDocFilters()" style="border-radius:8px;padding:8px 12px 8px 36px;font-size:13px;outline:none;width:200px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>'+
         '<select id="docType" onchange="App.applyDocFilters()" style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="">Tous types</option>'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select>'+
         '</div><button onclick="App.openUploadDoc()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">+ Document</button>'+
-        '</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;" id="docGrid"></div><div id="docEmpty" style="display:none;padding:48px;text-align:center;color:var(--text-dim);">Aucun document</div>';
+        '</div><div id="docContainer"></div><div id="docEmpty" style="display:none;padding:48px;text-align:center;color:var(--text-dim);">Aucun document</div>';
         this.applyDocFilters();
     },
+
+    setDocView: function(mode) {
+        this.docViewMode = mode;
+        document.getElementById('docViewGrid').className = mode==='grid'?'active':'';
+        document.getElementById('docViewTable').className = mode==='table'?'active':'';
+        this.applyDocFilters();
+    },
+
     applyDocFilters: function() {
-        var s=document.getElementById('docSearch')?document.getElementById('docSearch').value.toLowerCase():'',t=document.getElementById('docType')?document.getElementById('docType').value:'';
+        var s=document.getElementById('docSearch')?document.getElementById('docSearch').value.toLowerCase():'';
+        var t=document.getElementById('docType')?document.getElementById('docType').value:'';
         var all=DB.getDocs(),f=[];
         for(var i=0;i<all.length;i++){var d=all[i];if(s&&d.title.toLowerCase().indexOf(s)===-1&&d.author.toLowerCase().indexOf(s)===-1)continue;if(t&&d.type!==t)continue;f.push(d);}
-        var g=document.getElementById('docGrid');if(!g)return;g.innerHTML='';
+        var container=document.getElementById('docContainer');if(!container)return;
         var me=document.getElementById('docEmpty');if(me)me.style.display=f.length===0?'':'none';
-        if(!f.length)return;
-        for(var i=0;i<f.length;i++){
-            var doc=f[i];
-            g.innerHTML+='<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);"><div style="display:flex;align-items:start;gap:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg-input);">📄</div><div style="flex:1;min-width:0;"><h4 style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+doc.title+'</h4><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+doc.type+' · '+doc.size+'</p><div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;"><span style="font-size:11px;color:var(--text-muted);">'+doc.author+' · '+doc.date+'</span><div style="display:flex;gap:4px;">'+(doc.file?'<button onclick="App.downloadDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--accent);" title="Télécharger">⬇️</button>':'')+'<button onclick="App.editDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Modifier">✏️</button><button onclick="App.emailDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Envoyer par mail">📧</button><button onclick="App.delDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Supprimer">🗑️</button></div></div></div></div></div>';
+        if(!f.length){container.innerHTML='';return;}
+        
+        if(this.docViewMode==='table'){
+            var h='<div style="border-radius:12px;border:1px solid var(--border);overflow-hidden;background:var(--bg-card);"><table style="width:100%;font-size:14px;"><thead><tr style="border-bottom:1px solid var(--border);font-size:12px;text-transform:uppercase;color:var(--text-dim);">'+
+            '<th style="text-align:left;padding:12px 16px;">Titre</th>'+
+            '<th style="text-align:left;padding:12px 16px;">Type</th>'+
+            '<th style="text-align:left;padding:12px 16px;">Taille</th>'+
+            '<th style="text-align:left;padding:12px 16px;">Auteur</th>'+
+            '<th style="text-align:left;padding:12px 16px;">Date</th>'+
+            '<th style="text-align:center;padding:12px 16px;">Actions</th>'+
+            '</tr></thead><tbody>';
+            f.forEach(function(doc){
+                h+='<tr class="table-row" style="border-bottom:1px solid var(--border);">'+
+                '<td style="padding:12px 16px;"><div style="display:flex;align-items:center;gap:8px;">📄 <span style="font-weight:500;">'+doc.title+'</span></div></td>'+
+                '<td style="padding:12px 16px;"><span style="font-size:12px;padding:2px 8px;border-radius:4px;background:var(--bg-input);color:var(--text-dim);">'+doc.type+'</span></td>'+
+                '<td style="padding:12px 16px;color:var(--text-dim);">'+doc.size+'</td>'+
+                '<td style="padding:12px 16px;color:var(--text-dim);">'+doc.author+'</td>'+
+                '<td style="padding:12px 16px;color:var(--text-dim);">'+doc.date+'</td>'+
+                '<td style="padding:12px 16px;text-align:center;"><div style="display:flex;gap:4px;justify-content:center;">'+
+                (doc.file?'<button onclick="App.downloadDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--accent);" title="Télécharger">⬇️</button>':'')+
+                '<button onclick="App.editDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Modifier">✏️</button>'+
+                '<button onclick="App.emailDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Envoyer par mail">📧</button>'+
+                '<button onclick="App.delDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Supprimer">🗑️</button>'+
+                '</div></td></tr>';
+            });
+            h+='</tbody></table></div>';
+            container.innerHTML=h;
+        } else {
+            var h='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">';
+            f.forEach(function(doc){
+                h+='<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);"><div style="display:flex;align-items:start;gap:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg-input);">📄</div><div style="flex:1;min-width:0;"><h4 style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+doc.title+'</h4><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+doc.type+' · '+doc.size+'</p><div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;"><span style="font-size:11px;color:var(--text-muted);">'+doc.author+' · '+doc.date+'</span><div style="display:flex;gap:4px;">'+(doc.file?'<button onclick="App.downloadDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--accent);" title="Télécharger">⬇️</button>':'')+'<button onclick="App.editDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Modifier">✏️</button><button onclick="App.emailDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Envoyer par mail">📧</button><button onclick="App.delDoc('+doc.id+')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Supprimer">🗑️</button></div></div></div></div></div>';
+            });
+            h+='</div>';
+            container.innerHTML=h;
         }
     },
+
     openUploadDoc: function() {
         var types=DB.getDocTypes();
         var h='<form onsubmit="App.handleDocUpload(event)" style="display:flex;flex-direction:column;gap:16px;">'+
@@ -1362,9 +1726,9 @@ const App = {
     emailDoc: function(id) {
         var doc=DB.getDocs().find(function(x){return x.id===id;});if(!doc)return;
         var subject=encodeURIComponent('Document : '+doc.title);
-        var body=encodeURIComponent('Bonjour,\n\nVeuillez trouver ci-joint le document : '+doc.title+'\nType : '+doc.type+'\nDate : '+doc.date+'\n\nCordialement,\n'+App.currentUser.name);
+        var body=encodeURIComponent('Bonjour,\n\nVeuillez trouver ci-joint le document : '+doc.title+'\nType : '+doc.type+'\nDate : '+doc.date+'\nAuteur : '+doc.author+'\n\nCordialement,\n'+App.currentUser.name);
         window.location.href='mailto:?subject='+subject+'&body='+body;
-        App.showToast('Ouverture du client mail...');
+        this.showToast('Client mail ouvert (joignez le fichier manuellement)');
     },
     downloadDoc: function(id) {
         var doc=DB.getDocs().find(function(x){return x.id===id;});
@@ -1385,11 +1749,11 @@ const App = {
         area.innerHTML='<div style="display:flex;flex-direction:column;height:calc(100vh - 180px);gap:16px;">'+
         '<div style="border-radius:12px;border:1px solid var(--border);overflow-hidden;display:flex;flex-direction:column;background:var(--bg-card);max-width:320px;">'+
         '<div style="padding:12px;border-bottom:1px solid var(--border);"><input type="text" placeholder="Rechercher..." id="convSearch" oninput="App.renderConvs()" style="width:100%;border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div style="flex:1;overflow-y:auto;" id="convList"></div>'+
+        '<div style="flex:1;overflow-y-auto;" id="convList"></div>'+
         '</div>'+
         '<div style="border-radius:12px;border:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg-card);flex:1;" id="chatPanel">'+
         '<div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;" id="chatHeader"></div>'+
-        '<div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;" id="chatMsgs"></div>'+
+        '<div style="flex:1;overflow-y-auto;padding:16px;display:flex;flex-direction:column;gap:12px;" id="chatMsgs"></div>'+
         '<div style="padding:16px;border-top:1px solid var(--border);display:flex;gap:12px;"><input type="text" placeholder="Message..." id="msgInput" onkeypress="if(event.key===\'Enter\')App.sendMsg()" style="flex:1;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><button onclick="App.sendMsg()" style="padding:10px 16px;border-radius:8px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Envoyer</button></div>'+
         '</div></div>';
         this.renderConvs();
@@ -1464,13 +1828,14 @@ const App = {
     // ==================== ADMIN ====================
     renderAdmin: function() {
         var area=document.getElementById('contentArea');
-        area.innerHTML='<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Administration</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les listes et gestionnaires</p></div>'+
+        area.innerHTML='<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Administration</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les listes, gestionnaires et configuration des cartes</p></div>'+
         '<div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:0;overflow-x:auto;" id="adminTabs">'+
         '<button onclick="App.switchAdminTab(\'grades\')" data-tab="grades" style="padding:10px 16px;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid transparent;">Grades</button>'+
         '<button onclick="App.switchAdminTab(\'sections\')" data-tab="sections" style="padding:10px 16px;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid transparent;">Sections</button>'+
         '<button onclick="App.switchAdminTab(\'evtTypes\')" data-tab="evtTypes" style="padding:10px 16px;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid transparent;">Types événements</button>'+
         '<button onclick="App.switchAdminTab(\'docTypes\')" data-tab="docTypes" style="padding:10px 16px;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid transparent;">Types documents</button>'+
         '<button onclick="App.switchAdminTab(\'managers\')" data-tab="managers" style="padding:10px 16px;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid transparent;">Gestionnaires</button>'+
+        '<button onclick="App.switchAdminTab(\'cards\')" data-tab="cards" style="padding:10px 16px;font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;color:var(--text-dim);white-space:nowrap;border-bottom:2px solid transparent;">Cartes membres</button>'+
         '</div><div id="adminContent"></div>';
         this.switchAdminTab('grades');
     },
@@ -1480,7 +1845,7 @@ const App = {
         for(var i=0;i<btns.length;i++){btns[i].style.color='var(--text-dim)';btns[i].style.borderBottomColor='transparent';}
         var btn=document.querySelector('#adminTabs [data-tab="'+tab+'"]');
         if(btn){btn.style.color='var(--accent)';btn.style.borderBottomColor='var(--accent)';}
-        var fns={grades:this.renderAdminGrades,sections:this.renderAdminSections,evtTypes:this.renderAdminEvtTypes,docTypes:this.renderAdminDocTypes,managers:this.renderAdminManagers};
+        var fns={grades:this.renderAdminGrades,sections:this.renderAdminSections,evtTypes:this.renderAdminEvtTypes,docTypes:this.renderAdminDocTypes,managers:this.renderAdminManagers,cards:this.renderAdminCards};
         if(fns[tab])fns[tab].call(this);
     },
     renderAdminGrades: function() {
@@ -1520,6 +1885,78 @@ const App = {
     addDocType: function(){var inp=document.getElementById('newDocTypeInput');if(!inp)return;var v=inp.value.trim();if(!v)return;if(DB.getDocTypes().indexOf(v)>-1){App.showToast('Existant');return;}var t=DB.getDocTypes();t.push(v);DB.setDocTypes(t);inp.value='';App.renderAdminDocTypes();App.showToast('Ajouté');},
     editDocTypeItem: function(i){var nv=prompt('Modifier:',DB.getDocTypes()[i]);if(nv&&nv.trim()){var old=DB.getDocTypes()[i],t=DB.getDocTypes();t[i]=nv.trim();DB.setDocTypes(t);var docs=DB.getDocs();for(var j=0;j<docs.length;j++){if(docs[j].type===old)docs[j].type=nv.trim();}DB.setDocs(docs);App.renderAdminDocTypes();App.showToast('Modifié');}},
     delDocTypeItem: function(i){App.showConfirm('Supprimer?',DB.getDocTypes()[i],function(){var t=DB.getDocTypes();t.splice(i,1);DB.setDocTypes(t);App.renderAdminDocTypes();App.showToast('Supprimé');});},
+
+    renderAdminCards: function() {
+        var c=document.getElementById('adminContent');if(!c)return;
+        var cfg=DB.getConfig();
+        var mgrs=DB.getManagers();
+        var mgrOptions=mgrs.filter(function(m){return m.status==='Actif';}).map(function(m){return '<option value="'+m.id+'">'+m.first+' '+m.last+'</option>';}).join('');
+        var h='<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+        '<h4 style="font-weight:600;margin-bottom:16px;">Configuration des cartes de membre</h4>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom de l\'association</label><input type="text" id="cardOrgName" value="'+(cfg.cardOrgName||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" id="cardOrgAddr" value="'+(cfg.cardOrgAddr||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="text" id="cardOrgPhone" value="'+(cfg.cardOrgPhone||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Décret</label><input type="text" id="cardOrgDecret" value="'+(cfg.cardOrgDecret||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+        '</div>'+
+        '<div style="margin-top:16px;"><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Logo de l\'association</label><input type="file" id="cardLogo" accept="image/*" style="width:100%;border-radius:8px;padding:8px;font-size:13px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+(cfg.cardLogo?'<img src="'+cfg.cardLogo+'" style="width:60px;height:60px;margin-top:8px;object-fit:contain;border:1px solid var(--border);border-radius:4px;">':'')+'</div>'+
+        '<h4 style="font-weight:600;margin:20px 0 12px;">Présidents et signatures</h4>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président National</label><select id="cardPresNat" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:8px;"><option value="">-- Aucun --</option>'+mgrOptions+'</select>'+
+        '<div class="sig-upload-area" onclick="document.getElementById(\'cardSigNat\').click()"><div id="cardSigNatPreview" class="sig-preview">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'<span style="color:var(--text-dim);font-size:12px;">Signature Pr. National</span>')+'</div><input type="file" id="cardSigNat" accept="image/*" style="display:none;" onchange="App.previewCardSig(this,\'cardSigNatPreview\',\'cardSigNat\')"></div></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président Départemental</label><select id="cardPresDep" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:8px;"><option value="">-- Aucun --</option>'+mgrOptions+'</select>'+
+        '<div class="sig-upload-area" onclick="document.getElementById(\'cardSigDep\').click()"><div id="cardSigDepPreview" class="sig-preview">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'<span style="color:var(--text-dim);font-size:12px;">Signature Pr. Dép.</span>')+'</div><input type="file" id="cardSigDep" accept="image/*" style="display:none;" onchange="App.previewCardSig(this,\'cardSigDepPreview\',\'cardSigDep\')"></div></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président de Section</label><select id="cardPresSec" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:8px;"><option value="">-- Aucun --</option>'+mgrOptions+'</select>'+
+        '<div class="sig-upload-area" onclick="document.getElementById(\'cardSigSec\').click()"><div id="cardSigSecPreview" class="sig-preview">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'<span style="color:var(--text-dim);font-size:12px;">Signature Pr. Section</span>')+'</div><input type="file" id="cardSigSec" accept="image/*" style="display:none;" onchange="App.previewCardSig(this,\'cardSigSecPreview\',\'cardSigSec\')"></div></div>'+
+        '</div>'+
+        '<div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;"><button onclick="App.saveCardConfigFromAdmin()" style="padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Sauvegarder la configuration</button></div>'+
+        '</div>';
+        c.innerHTML=h;
+        // Set selected values
+        setTimeout(function(){
+            if(cfg.cardPresNat){var sel=document.getElementById('cardPresNat');if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value==cfg.cardPresNat){sel.selectedIndex=i;break;}}}}
+            if(cfg.cardPresDep){var sel=document.getElementById('cardPresDep');if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value==cfg.cardPresDep){sel.selectedIndex=i;break;}}}}
+            if(cfg.cardPresSec){var sel=document.getElementById('cardPresSec');if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value==cfg.cardPresSec){sel.selectedIndex=i;break;}}}}
+        },50);
+    },
+
+    previewCardSig: function(input,previewId,configKey) {
+        if(input.files&&input.files[0]){
+            var reader=new FileReader();
+            reader.onload=function(e){
+                document.getElementById(previewId).innerHTML='<img src="'+e.target.result+'" style="max-width:100%;max-height:100%;">';
+                var cfg=DB.getConfig();
+                cfg[configKey]=e.target.result;
+                DB.setConfig(cfg);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    },
+
+    saveCardConfigFromAdmin: function() {
+        var cfg=DB.getConfig();
+        cfg.cardOrgName=document.getElementById('cardOrgName').value;
+        cfg.cardOrgAddr=document.getElementById('cardOrgAddr').value;
+        cfg.cardOrgPhone=document.getElementById('cardOrgPhone').value;
+        cfg.cardOrgDecret=document.getElementById('cardOrgDecret').value;
+        cfg.cardPresNat=document.getElementById('cardPresNat').value;
+        cfg.cardPresDep=document.getElementById('cardPresDep').value;
+        cfg.cardPresSec=document.getElementById('cardPresSec').value;
+        var logoFile=document.getElementById('cardLogo');
+        var self=this;
+        var save=function(){
+            DB.setConfig(cfg);
+            self.showToast('Configuration des cartes sauvegardée');
+        };
+        if(logoFile&&logoFile.files&&logoFile.files[0]){
+            var reader=new FileReader();
+            reader.onload=function(ev){cfg.cardLogo=ev.target.result;save();};
+            reader.readAsDataURL(logoFile.files[0]);
+        } else {
+            save();
+        }
+    },
+
     renderAdminManagers: function() {
         var c=document.getElementById('adminContent');if(!c)return;var mgrs=DB.getManagers();
         var h='<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><h4 style="font-weight:600;">Gestionnaires</h4><button onclick="App.openAddManager()" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">+ Ajouter</button></div>';
@@ -1541,9 +1978,9 @@ const App = {
         '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email *</label><input type="email" id="mgrfEmail" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
         '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" id="mgrfPhone" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
         '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Photo</label><input type="file" id="mgrfPhoto" accept="image/*" style="width:100%;border-radius:8px;padding:8px;font-size:13px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Signature Président National</label><div class="sig-upload-area" onclick="document.getElementById(\'mgrSigNat\').click()"><div id="mgrSigNatPreview" class="sig-preview"><span style="color:var(--text-dim);font-size:12px;">Cliquer pour ajouter</span></div><input type="file" id="mgrSigNat" accept="image/*" style="display:none;" onchange="App.previewSig(this,\'mgrSigNatPreview\')"></div></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Signature Président Dép.</label><div class="sig-upload-area" onclick="document.getElementById(\'mgrSigDep\').click()"><div id="mgrSigDepPreview" class="sig-preview"><span style="color:var(--text-dim);font-size:12px;">Cliquer pour ajouter</span></div><input type="file" id="mgrSigDep" accept="image/*" style="display:none;" onchange="App.previewSig(this,\'mgrSigDepPreview\')"></div></div></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Signature Président Section</label><div class="sig-upload-area" onclick="document.getElementById(\'mgrSigSec\').click()"><div id="mgrSigSecPreview" class="sig-preview"><span style="color:var(--text-dim);font-size:12px;">Cliquer pour ajouter</span></div><input type="file" id="mgrSigSec" accept="image/*" style="display:none;" onchange="App.previewSig(this,\'mgrSigSecPreview\')"></div></div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Signature Pr. National</label><div class="sig-upload-area" onclick="document.getElementById(\'mgrSigNat\').click()"><div id="mgrSigNatPreview" class="sig-preview"><span style="color:var(--text-dim);font-size:12px;">Cliquer pour ajouter</span></div><input type="file" id="mgrSigNat" accept="image/*" style="display:none;" onchange="App.previewSig(this,\'mgrSigNatPreview\')"></div></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Signature Pr. Dép.</label><div class="sig-upload-area" onclick="document.getElementById(\'mgrSigDep\').click()"><div id="mgrSigDepPreview" class="sig-preview"><span style="color:var(--text-dim);font-size:12px;">Cliquer pour ajouter</span></div><input type="file" id="mgrSigDep" accept="image/*" style="display:none;" onchange="App.previewSig(this,\'mgrSigDepPreview\')"></div></div></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Signature Pr. Section</label><div class="sig-upload-area" onclick="document.getElementById(\'mgrSigSec\').click()"><div id="mgrSigSecPreview" class="sig-preview"><span style="color:var(--text-dim);font-size:12px;">Cliquer pour ajouter</span></div><input type="file" id="mgrSigSec" accept="image/*" style="display:none;" onchange="App.previewSig(this,\'mgrSigSecPreview\')"></div></div>'+
         '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Rôle</label><select id="mgrfRole" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option>Administrateur</option><option>Trésorier</option><option>Secrétaire</option><option>Gestionnaire</option><option>Lecteur seul</option></select></div>'+
         '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Statut</label><select id="mgrfStatus" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option>Actif</option><option>Inactif</option></select></div>'+
         '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Ajouter</button></div></form>';
@@ -1592,7 +2029,6 @@ const App = {
             else{var mx=0;for(var i=0;i<mgrs.length;i++){if(mgrs[i].id>mx)mx=mgrs[i].id;}d.id=mx+1;mgrs.push(d);DB.setManagers(mgrs);App.showToast(d.first+' '+d.last+' ajouté');}
             App.closeAllModals();App.renderAdminManagers();
         };
-        // Read signatures first, then photo
         var sigCount=0;
         var checkDone=function(){
             sigCount++;
@@ -1626,24 +2062,28 @@ const App = {
     renderCards: function() {
         var members=DB.getMembers(),cfg=DB.getConfig();
         var area=document.getElementById('contentArea');
+        // Get manager names for presidents
+        var mgrs=DB.getManagers();
+        var natName='',depName='',secName='';
+        if(cfg.cardPresNat){var mgr=mgrs.find(function(m){return m.id==cfg.cardPresNat;});if(mgr)natName=mgr.first+' '+mgr.last;}
+        if(cfg.cardPresDep){var mgr=mgrs.find(function(m){return m.id==cfg.cardPresDep;});if(mgr)depName=mgr.first+' '+mgr.last;}
+        if(cfg.cardPresSec){var mgr=mgrs.find(function(m){return m.id==cfg.cardPresSec;});if(mgr)secName=mgr.first+' '+mgr.last;}
+        
         var logoHtml=cfg.cardLogo?'<img src="'+cfg.cardLogo+'" style="width:100%;height:100%;object-fit:contain;">':'<div style="width:100%;height:100%;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
-        area.innerHTML='<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Cartes de Membre</h3><p style="font-size:14px;color:var(--text-dim);">Créez et imprimez les cartes de membre UNC</p></div>'+
+        
+        area.innerHTML='<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Cartes de Membre</h3><p style="font-size:14px;color:var(--text-dim);">Générez les cartes au format UNC</p></div>'+
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">'+
         '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
-        '<h4 style="font-weight:600;margin-bottom:16px;">Configuration de la carte</h4>'+
+        '<h4 style="font-weight:600;margin-bottom:16px;">Configuration (modifiable dans Administration)</h4>'+
         '<div style="display:flex;flex-direction:column;gap:12px;">'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom de l\'association</label><input type="text" id="cardOrgName" value="'+(cfg.cardOrgName||'Union Nationale des Combattants')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" id="cardOrgAddr" value="'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="text" id="cardOrgPhone" value="'+(cfg.cardOrgPhone||'01 53 89 04 04')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Décret</label><input type="text" id="cardOrgDecret" value="'+(cfg.cardOrgDecret||"Reconnue d'utilité publique par décret du 20 Mai 1920.")+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Logo de l\'association</label><input type="file" id="cardLogo" accept="image/*" style="width:100%;border-radius:8px;padding:8px;font-size:13px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+(cfg.cardLogo?'<img src="'+cfg.cardLogo+'" style="width:60px;height:60px;margin-top:8px;object-fit:contain;border:1px solid var(--border);border-radius:4px;">':'')+'</div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président National</label><input type="text" id="cardPresNat" value="'+(cfg.cardPresNat||'')+'" placeholder="Nom du président" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président Départemental</label><input type="text" id="cardPresDep" value="'+(cfg.cardPresDep||'')+'" placeholder="Nom du président" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président de Section</label><input type="text" id="cardPresSec" value="'+(cfg.cardPresSec||'')+'" placeholder="Nom du président" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom de l\'association</label><input type="text" value="'+(cfg.cardOrgName||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" value="'+(cfg.cardOrgAddr||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président National</label><input type="text" value="'+natName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président Départemental</label><input type="text" value="'+depName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président de Section</label><input type="text" value="'+secName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Format</label><select id="cardFormat" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="a6"'+(cfg.cardFormat==='a6'?' selected':'')+'>A6 (105×148mm)</option><option value="a5"'+(cfg.cardFormat==='a5'?' selected':'')+'>A5 (148×210mm)</option></select></div>'+
+        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Format</label><select id="cardFormat" onchange="App.previewCard()" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="a6"'+(cfg.cardFormat==='a6'?' selected':'')+'>A6 (105×148mm)</option><option value="a5"'+(cfg.cardFormat==='a5'?' selected':'')+'>A5 (148×210mm)</option></select></div>'+
         '</div>'+
-        '<button onclick="App.saveCardConfig()" style="padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Sauvegarder la configuration</button>'+
         '</div></div>'+
         '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
         '<h4 style="font-weight:600;margin-bottom:16px;">Sélectionner un membre</h4>'+
@@ -1657,32 +2097,6 @@ const App = {
         '</div>'+
         '</div></div>';
     },
-    saveCardConfig: function() {
-        var cfg=DB.getConfig();
-        cfg.cardOrgName=document.getElementById('cardOrgName').value;
-        cfg.cardOrgAddr=document.getElementById('cardOrgAddr').value;
-        cfg.cardOrgPhone=document.getElementById('cardOrgPhone').value;
-        cfg.cardOrgDecret=document.getElementById('cardOrgDecret').value;
-        cfg.cardPresNat=document.getElementById('cardPresNat').value;
-        cfg.cardPresDep=document.getElementById('cardPresDep').value;
-        cfg.cardPresSec=document.getElementById('cardPresSec').value;
-        cfg.cardFormat=document.getElementById('cardFormat').value;
-        var logoFile=document.getElementById('cardLogo');
-        var self=this;
-        var save=function(logoData){
-            cfg.cardLogo=logoData;
-            DB.setConfig(cfg);
-            self.showToast('Configuration sauvegardée');
-            self.renderCards();
-        };
-        if(logoFile&&logoFile.files&&logoFile.files[0]){
-            var reader=new FileReader();
-            reader.onload=function(ev){save(ev.target.result);};
-            reader.readAsDataURL(logoFile.files[0]);
-        } else {
-            save(cfg.cardLogo||null);
-        }
-    },
     previewCard: function() {
         var mid=document.getElementById('cardMemberSelect').value;
         if(!mid){document.getElementById('cardPreviewContainer').innerHTML='<p style="color:var(--text-dim);">Sélectionnez un membre</p>';document.getElementById('cardActions').style.display='none';return;}
@@ -1692,226 +2106,4 @@ const App = {
         var format=document.getElementById('cardFormat').value;
         var w=format==='a5'?595:420;
         var h=format==='a5'?374:264;
-        var logoHtml=cfg.cardLogo?'<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">':'<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
-        var cardHtml='<div class="member-card-preview print-area" style="width:'+w+'px;height:'+h+'px;" id="memberCardPrint">'+
-        '<div class="card-header">'+logoHtml+
-        '<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
-        '<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
-        '<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
-        '<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
-        '<div class="card-fields">'+
-        '<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
-        '<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
-        '</div>'+
-        '<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
-        '<div class="card-footer">'+
-        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(cfg.cardPresNat||'')+'</div><div class="sig-label">Le Président National</div></div>'+
-        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(cfg.cardPresDep||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
-        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(cfg.cardPresSec||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
-        '</div></div>';
-        document.getElementById('cardPreviewContainer').innerHTML=cardHtml;
-        document.getElementById('cardActions').style.display='flex';
-    },
-    printCard: function() {
-        var card=document.getElementById('memberCardPrint');
-        if(!card)return;
-        var win=window.open('','','width=650,height=450');
-        win.document.write('<html><head><title>Carte de Membre</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#fff;}@media print{body{margin:0;}}</style></head><body>');
-        win.document.write(card.outerHTML);
-        win.document.write('</body></html>');
-        win.document.close();
-        setTimeout(function(){win.print();},500);
-    },
-    generateAllCards: function() {
-        var members=DB.getMembers().filter(function(m){return m.status==='Actif';});
-        if(!members.length){this.showToast('Aucun membre actif');return;}
-        var cfg=DB.getConfig();
-        var format=document.getElementById('cardFormat').value;
-        var w=format==='a5'?595:420;
-        var h=format==='a5'?374:264;
-        var logoHtml=cfg.cardLogo?'<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">':'<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
-        var html='<html><head><title>Cartes de Membres</title><style>body{margin:0;padding:20px;font-family:Georgia,serif;}.page-break{page-break-after:always;}.member-card-preview{width:'+w+'px;height:'+h+'px;background:linear-gradient(135deg,#e0e4e8 0%,#f0f0f0 25%,#ffffff 50%,#ffe8e0 75%,#e8d8d0 100%);border:2px solid #b0b0b0;border-radius:6px;position:relative;overflow:hidden;margin:10px auto;box-shadow:0 2px 8px rgba(0,0,0,.1);}.card-header{display:flex;align-items:flex-start;padding:10px 16px 6px;gap:12px;}.card-org-name{font-size:18px;font-weight:bold;color:#c0392b;line-height:1.2;letter-spacing:0.5px;}.card-org-addr{font-size:10px;color:#4a4a6a;margin-top:2px;}.card-org-decret{font-size:8px;color:#777;font-style:italic;}.card-type-line{text-align:center;padding:6px 0 4px;border-bottom:1px solid #ccc;margin:0 16px;}.card-type{font-size:17px;font-style:italic;color:#2c2c2c;}.card-number{font-size:13px;font-style:normal;color:#555;}.card-fields{padding:6px 16px;}.card-field{display:flex;align-items:baseline;margin-bottom:5px;font-size:12px;}.card-field label{font-size:10px;color:#666;min-width:90px;}.card-field .value{font-size:16px;font-weight:bold;color:#1a1a1a;border-bottom:1px dotted #999;flex:1;padding:0 6px;min-height:22px;}.card-section{padding:2px 16px;}.card-section .section-label{font-size:10px;color:#666;}.card-section .section-value{font-size:14px;font-weight:bold;color:#1a1a1a;}.card-footer{display:flex;justify-content:space-around;padding:6px 12px 8px;margin-top:4px;}.card-signature{text-align:center;flex:1;}.card-signature .sig-img{width:80px;height:32px;margin:0 auto 2px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}.card-signature .sig-img img{max-width:100%;max-height:100%;object-fit:contain;}.card-signature .sig-line{font-size:14px;font-style:italic;color:#333;min-height:20px;display:flex;align-items:flex-end;justify-content:center;font-family:\'Brush Script MT\',cursive;}.card-signature .sig-label{font-size:7px;color:#888;}@media print{.member-card-preview{box-shadow:none;border:2px solid #b0b0b0;}}</style></head><body>';
-        members.forEach(function(m){
-            html+='<div class="member-card-preview">'+
-            '<div class="card-header">'+logoHtml+
-            '<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
-            '<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
-            '<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
-            '<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
-            '<div class="card-fields">'+
-            '<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
-            '<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
-            '</div>'+
-            '<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
-            '<div class="card-footer">'+
-            '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(cfg.cardPresNat||'')+'</div><div class="sig-label">Le Président National</div></div>'+
-            '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(cfg.cardPresDep||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
-            '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(cfg.cardPresSec||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
-            '</div></div><div class="page-break"></div>';
-        });
-        html+='</body></html>';
-        var win=window.open('','','width=800,height=600');
-        win.document.write(html);
-        win.document.close();
-        setTimeout(function(){win.print();},500);
-    },
-
-    // ==================== SETTINGS ====================
-    renderSettings: function() {
-        var cfg=DB.getConfig(),area=document.getElementById('contentArea');
-        var customColors=cfg.customColors||{};
-        area.innerHTML='<div style="max-width:768px;display:flex;flex-direction:column;gap:24px;">'+
-        '<div style="border-radius:12px;border:1px solid var(--border);padding:24px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Informations</h3>'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom</label><input type="text" id="settName" value="'+(cfg.appName||'MILASSOC PRO')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">RNA / SIRET</label><input type="text" value="W751234567890" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email</label><input type="email" value="contact@milassoc.fr" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" value="+33 1 42 68 53 00" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '<div style="grid-column:1/-1;"><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" value="12 Rue de la Paix, 75002 Paris" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-        '</div><div style="margin-top:20px;display:flex;justify-content:flex-end;"><button onclick="App.saveSettings()" style="padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Sauvegarder</button></div></div>'+
-        '<div style="border-radius:12px;border:1px solid var(--border);padding:24px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Apparence</h3>'+
-        '<div style="display:flex;flex-direction:column;gap:20px;">'+
-        '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Thème prédéfini</label><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">'+
-        Object.keys(this.THEMES).map(function(key){
-            if(key==='custom')return '';
-            var t=App.THEMES[key],active=key===cfg.theme;
-            return '<button onclick="App.applyTheme(\''+key+'\');App.renderSettings();" style="border-radius:8px;padding:12px;border:2px solid '+(active?'var(--accent)':'transparent')+';transition:all .2s;cursor:pointer;background:'+t.bgDark+';"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:16px;height:16px;border-radius:50%;background:'+t.accent+';"></div><div style="width:16px;height:16px;border-radius:50%;background:'+t.accentLight+';"></div></div><p style="font-size:12px;color:'+t.text+';">'+t.name+(t.light?' (Clair)':'')+'</p></button>';
-        }).join('')+
-        '</div></div>'+
-        '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Couleurs personnalisées</label>'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Fond principal</label><input type="color" id="customBgDark" value="'+(customColors.bgDark||cfg.bgDark||'#0f1a0f')+'" onchange="App.updateCustomColor(\'bgDark\',this.value)"></div>'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Fond carte</label><input type="color" id="customBgCard" value="'+(customColors.bgCard||'#1a2a1a')+'" onchange="App.updateCustomColor(\'bgCard\',this.value)"></div>'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Couleur accent</label><input type="color" id="customAccent" value="'+(customColors.accent||'#4f7a3f')+'" onchange="App.updateCustomColor(\'accent\',this.value)"></div>'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Accent clair</label><input type="color" id="customAccentLight" value="'+(customColors.accentLight||'#6b9e55')+'" onchange="App.updateCustomColor(\'accentLight\',this.value)"></div>'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Texte</label><input type="color" id="customText" value="'+(customColors.text||'#e0e8d8')+'" onchange="App.updateCustomColor(\'text\',this.value)"></div>'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Texte dim</label><input type="color" id="customTextDim" value="'+(customColors.textDim||'#8a9a80')+'" onchange="App.updateCustomColor(\'textDim\',this.value)"></div>'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Bordure</label><input type="color" id="customBorder" value="'+(customColors.border||'#2d402d')+'" onchange="App.updateCustomColor(\'border\',this.value)"></div>'+
-        '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Fond input</label><input type="color" id="customBgInput" value="'+(customColors.bgInput||'#243524')+'" onchange="App.updateCustomColor(\'bgInput\',this.value)"></div>'+
-        '</div>'+
-        '<button onclick="App.applyTheme(\'custom\')" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;margin-top:8px;">Appliquer couleurs personnalisées</button>'+
-        '</div>'+
-        '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Logo du site</label><div style="display:flex;align-items:center;gap:16px;">'+
-        '<div style="width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg-input);border:1px solid var(--border);">'+(cfg.logo?'<img src="'+cfg.logo+'" style="width:100%;height:100%;object-fit:cover;">':'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>')+'</div>'+
-        '<div><label style="display:inline-block;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);cursor:pointer;" for="logoUpload">Choisir</label><input type="file" id="logoUpload" accept="image/*" style="display:none;" onchange="App.handleLogoUpload(this)"><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">PNG, JPG — Max 2MB</p>'+(cfg.logo?'<button onclick="App.removeLogo()" style="font-size:12px;margin-top:8px;color:var(--danger);background:none;border:none;cursor:pointer;">Supprimer</button>':'')+'</div></div></div>'+
-        '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Favicon</label><div style="display:flex;align-items:center;gap:16px;">'+
-        '<div style="width:32px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg-input);border:1px solid var(--border);">'+(cfg.favicon?'<img src="'+cfg.favicon+'" style="width:100%;height:100%;object-fit:cover;">':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>')+'</div>'+
-        '<div><label style="display:inline-block;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);cursor:pointer;" for="faviconUpload">Choisir</label><input type="file" id="faviconUpload" accept="image/*" style="display:none;" onchange="App.handleFaviconUpload(this)"><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">PNG, ICO — 32×32 recommandé</p>'+(cfg.favicon?'<button onclick="App.removeFavicon()" style="font-size:12px;margin-top:8px;color:var(--danger);background:none;border:none;cursor:pointer;">Supprimer</button>':'')+'</div></div></div>'+
-        '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Couleur de fond du logo</label><div class="color-picker-wrapper"><input type="color" id="logoBgColor" value="'+(cfg.logoBg||'#4f7a3f')+'" onchange="App.updateLogoBg(this.value)"><span style="font-size:13px;color:var(--text-dim);">Utilisé quand aucun logo n\'est défini</span></div></div>'+
-        '</div></div>'+
-        '<div style="border-radius:12px;border:1px solid var(--border);padding:24px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Données</h3><div style="display:flex;flex-wrap:wrap;gap:12px;">'+
-        '<button onclick="App.exportAllData()" style="padding:10px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Exporter JSON</button>'+
-        '<button onclick="App.importAllData()" style="padding:10px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Importer JSON</button>'+
-        '<button onclick="App.clearAllData()" style="padding:10px 16px;border-radius:8px;font-size:14px;background:rgba(239,68,68,.2);color:#ef4444;border:1px solid rgba(239,68,68,.3);cursor:pointer;">Réinitialiser</button>'+
-        '</div></div></div>';
-    },
-    saveSettings: function() {
-        var cfg=DB.getConfig();
-        var nameEl=document.getElementById('settName');
-        if(nameEl){cfg.appName=nameEl.value.trim()||'MILASSOC PRO';}
-        DB.setConfig(cfg);
-        document.getElementById('loginAppTitle').textContent=cfg.appName;
-        document.getElementById('appTitle').textContent=cfg.appName;
-        document.getElementById('pageTitleMeta').textContent=cfg.appName;
-        this.showToast('Paramètres sauvegardés');
-    },
-    handleLogoUpload: function(input) {
-        var file=input.files[0];if(!file)return;
-        if(file.size>2*1024*1024){this.showToast('Trop volumineux');return;}
-        var self=this;
-        var reader=new FileReader();
-        reader.onload=function(e){self.applyLogo(e.target.result);self.renderSettings();self.showToast('Logo mis à jour');};
-        reader.readAsDataURL(file);
-    },
-    removeLogo: function(){this.applyLogo(null);this.renderSettings();this.showToast('Logo supprimé');},
-    handleFaviconUpload: function(input) {
-        var file=input.files[0];if(!file)return;
-        if(file.size>2*1024*1024){this.showToast('Trop volumineux');return;}
-        var self=this;
-        var reader=new FileReader();
-        reader.onload=function(e){self.applyFavicon(e.target.result);self.renderSettings();self.showToast('Favicon mis à jour');};
-        reader.readAsDataURL(file);
-    },
-    removeFavicon: function(){
-        var cfg=DB.getConfig();cfg.favicon=null;DB.setConfig(cfg);
-        document.getElementById('favicon').href='';
-        this.renderSettings();this.showToast('Favicon supprimé');
-    },
-    updateCustomColor: function(key,value) {
-        var cfg=DB.getConfig();
-        if(!cfg.customColors)cfg.customColors={};
-        cfg.customColors[key]=value;
-        DB.setConfig(cfg);
-    },
-    applyTheme: function(key) {
-        var t=this.THEMES[key];
-        if(!t)return;
-        var cfg=DB.getConfig();
-        if(key==='custom'&&cfg.customColors){
-            for(var k in cfg.customColors){t[k]=cfg.customColors[k];}
-        }
-        cfg.theme=key;
-        DB.setConfig(cfg);
-        this.applyThemeObject(t);
-        this.renderSettings();
-        this.showToast('Thème "'+t.name+'" appliqué');
-    },
-    updateLogoBg: function(color) {
-        var cfg=DB.getConfig();cfg.logoBg=color;DB.setConfig(cfg);
-        if(!cfg.logo) {
-            var ids=['sidebarLogo','loginLogoContainer','headerLogo'];
-            for(var i=0;i<ids.length;i++){
-                var el=document.getElementById(ids[i]);
-                if(el)el.style.background=color;
-            }
-        }
-        this.showToast('Couleur de fond mise à jour');
-    },
-    exportAllData: function() {
-        var data=DB.exportAll();
-        var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-        a.href=url;a.download='milassoc_'+new Date().toISOString().split('T')[0]+'.json';a.click();URL.revokeObjectURL(url);
-        this.showToast('Données exportées');
-    },
-    importAllData: function() {
-        var input=document.createElement('input');input.type='file';input.accept='.json';
-        var self=this;
-        input.onchange=function(e){
-            var file=e.target.files[0];if(!file)return;
-            var reader=new FileReader();
-            reader.onload=function(ev){
-                try{
-                    var data=JSON.parse(ev.target.result);
-                    if(DB.importAll(data)){
-                        self.showToast('Données importées avec succès');
-                        location.reload();
-                    } else {
-                        self.showToast('Erreur: fichier invalide');
-                    }
-                }catch(err){self.showToast('Erreur de lecture du fichier');}
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-    },
-
-    // ==================== QUICK ACTION ====================
-    openQuickAction: function() {
-        var cm=this.canEdit(),cf=this.canFinance();
-        var h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
-        if(cm)h+='<button onclick="App.closeAllModals();App.openAddMember()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">➕ Membre</button>';
-        if(cm)h+='<button onclick="App.closeAllModals();App.openAddEvent()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📅 Événement</button>';
-        if(cf)h+='<button onclick="App.closeAllModals();App.openAddTx()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">💰 Transaction</button>';
-        h+='<button onclick="App.closeAllModals();App.openUploadDoc()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📄 Document</button>';
-        h+='</div>';
-        this.showGenericModal('Action rapide',h);
-    }
-};
-
-// Initialisation
-document.addEventListener('DOMContentLoaded', function() {
-    App.init();
-});
-</script>
-</body>
-</html>
+        var logoHtml=cfg.cardLogo?'<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">':'
