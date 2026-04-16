@@ -1,6 +1,10 @@
-import { db } from './database.js';
-import { Themes } from './themes.js';
-import { Utils } from './utils.js';
+// Commentez ou supprimez ces lignes :
+// import { db } from './database.js';
+// import { Themes } from './themes.js';
+// import { Utils } from './utils.js';
+
+// Et utilisez les objets globaux :
+const db = window.DB;  // ou référence directe
 
 class App {
     constructor() {
