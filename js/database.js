@@ -1,6 +1,6 @@
 import { CONFIG } from './config.js';
 
-export class Database {
+class Database {
     constructor(prefix = CONFIG.APP.storagePrefix) {
         this.prefix = prefix;
         this.defaults = {
@@ -14,16 +14,22 @@ export class Database {
             config: { theme:'clair_bleu', logo:null, logoBg:'#4f7a3f', appName:'MILASSOC PRO' }
         };
     }
+
     _get(key, def = null) {
-        try { const v = localStorage.getItem(this.prefix + key); return v !== null ? JSON.parse(v) : def; }
-        catch(e) { console.warn('[DB] Erreur lecture '+key, e); return def; }
+        try {
+            const v = localStorage.getItem(this.prefix + key);
+            return v !== null ? JSON.parse(v) : def;
+        } catch(e) { console.warn('[DB] Erreur lecture '+key, e); return def; }
     }
+
     _set(key, v) {
         try { localStorage.setItem(this.prefix + key, JSON.stringify(v)); return true; }
         catch(e) { console.error('[DB] Erreur écriture '+key, e); return false; }
     }
+
     getAll(collection) { return this._get(collection, this.defaults[collection] || []); }
     getById(collection, id) { return this.getAll(collection).find(item => item.id === id) || null; }
+    
     add(collection, item) {
         const items = this.getAll(collection);
         item.id = item.id || Date.now();
@@ -32,6 +38,7 @@ export class Database {
         this._set(collection, items);
         return item;
     }
+    
     update(collection, id, updates) {
         const items = this.getAll(collection);
         const idx = items.findIndex(i => i.id === id);
@@ -40,6 +47,7 @@ export class Database {
         this._set(collection, items);
         return true;
     }
+    
     remove(collection, id) {
         const items = this.getAll(collection);
         const filtered = items.filter(i => i.id !== id);
@@ -47,6 +55,7 @@ export class Database {
         this._set(collection, filtered);
         return true;
     }
+
     // Méthodes spécifiques
     getUsers() { return this.getAll('users'); }
     setUsers(v) { this._set('users', v); }
@@ -74,17 +83,20 @@ export class Database {
     setNotifs(v) { this._set('notifs', v); }
     getConfig() { return this._get('config', this.defaults.config); }
     setConfig(v) { this._set('config', v); }
+    
     exportAll() {
         const data = {};
         Object.keys(this.defaults).forEach(k => { data[k] = this._get(k, this.defaults[k]); });
         return data;
     }
+    
     importAll(data) {
         if(!data || typeof data !== 'object') return false;
         Object.keys(this.defaults).forEach(k => { if(data[k] !== undefined) this._set(k, data[k]); });
         if(data.config) this.setConfig(data.config);
         return true;
     }
+    
     resetAll() { Object.keys(this.defaults).forEach(k => localStorage.removeItem(this.prefix + k)); }
 }
 
