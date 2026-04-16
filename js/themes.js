@@ -1,5 +1,3 @@
-import { CONFIG } from './config.js';
-
 export class Themes {
     constructor() {
         this.themes = {
@@ -8,6 +6,7 @@ export class Themes {
             clair_bleu: {name:'Clair - Bleu Ciel',bgDark:'#e8edf2',bgCard:'#ffffff',bgInput:'#f0f4f8',border:'#c4d0de',accent:'#2563eb',accentLight:'#3b82f6',text:'#112030',textDim:'#4a6a88',textMuted:'#7a9ab8',light:true}
         };
     }
+    
     apply(themeName) {
         const theme = this.themes[themeName] || this.themes.clair_bleu;
         const root = document.documentElement.style;
@@ -15,7 +14,9 @@ export class Themes {
         document.body.style.background = theme.bgDark;
         document.body.style.color = theme.text;
     }
+    
     getThemes() { return Object.keys(this.themes); }
     getTheme(name) { return this.themes[name]; }
 }
+
 export default Themes;
