@@ -1,0 +1,4 @@
+/* Styles des cartes, boutons, tableaux, etc. */
+.card-hover { transition: all .25s ease; }
+.card-hover:hover { transform: translateY(-3px); }
+/* ... etc */
