@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitleMeta">MilAssoc Pro</title>
     <link id="favicon" rel="icon" type="image/png" href="">
+    
+    <!-- Tailwind CSS (CDN pour développement) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.0.0/index.min.css" rel="stylesheet">
     <script>
@@ -12,37 +14,12 @@
             theme: { extend: { fontFamily: { sans: ['Fira Sans', 'system-ui', 'sans-serif'] } } }
         }
     </script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Fira Sans', sans-serif; }
-        .sidebar-overlay { display: none; }
-        @media(max-width:1024px) { .sidebar-open { transform: translateX(0) !important; } .sidebar-overlay { display: block !important; } }
-        .fade-in { animation: fadeIn .3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(.5); }
-        select option { background: var(--bg-card); color: var(--text); }
-        .chat-scroll { scroll-behavior: smooth; }
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-        .tab-active { border-bottom: 2px solid var(--accent) !important; color: var(--accent) !important; }
-        .progress-fill { transition: width .8s ease; }
-        .card-hover { transition: all .25s ease; }
-        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,.3); }
-        .table-row:hover { background: rgba(79,122,63,.08); }
-        .avatar-photo { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .clickable-zone { cursor: pointer; transition: all .2s; }
-        .clickable-zone:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-        .copy-btn { opacity: 0; transition: opacity .2s; cursor: pointer; font-size: 12px; }
-        .table-row:hover .copy-btn { opacity: 1; }
-        .color-picker-wrapper { display: flex; align-items: center; gap: 8px; }
-        .color-picker-wrapper input[type="color"] { width: 40px; height: 32px; border: none; border-radius: 6px; cursor: pointer; padding: 0; }
-        .color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
-        .color-picker-wrapper input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
-    </style>
+    
+    <!-- Styles CSS -->
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body id="appBody">
 
@@ -137,19 +114,12 @@
 </div>
 <div id="modalsContainer"></div>
 
-<!-- Scripts en modules ES6 -->
-<script type="module">
-    import { CONFIG } from './js/config.js';
-    import { db } from './js/database.js';
-    import { Utils } from './js/utils.js';
-    import { Themes } from './js/themes.js';
-    import { App } from './js/app.js';
-    
-    // Exposition globale pour les callbacks inline
-    window.App = App;
-    window.DB = db;
-    window.CONFIG = CONFIG;
-</script>
+<!-- ⚠️ SCRIPTS EN MODULES ES6 - ORDRE IMPORTANT ⚠️ -->
+<script type="module" src="js/config.js"></script>
+<script type="module" src="js/utils.js"></script>
+<script type="module" src="js/themes.js"></script>
+<script type="module" src="js/database.js"></script>
+<script type="module" src="js/app.js"></script>
 
 </body>
 </html>
