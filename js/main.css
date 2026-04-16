@@ -1,0 +1,5 @@
+/* Copiez ici tous les styles de base du fichier original */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Fira Sans', sans-serif; }
+.sidebar-overlay { display: none; }
+/* ... etc */
