@@ -1,0 +1,29 @@
+/* Styles d'impression */
+@media print {
+    body * { visibility: hidden; }
+    .print-area, .print-area * { visibility: visible; }
+    .print-area { position: absolute; left: 0; top: 0; }
+    .no-print { display: none !important; }
+    
+    /* Cartes membres */
+    .member-card-preview {
+        box-shadow: none !important;
+        border: 2px solid #b0b0b0 !important;
+        page-break-inside: avoid;
+    }
+    
+    /* Feuilles d'émargement */
+    .attendance-sheet {
+        font-family: Georgia, serif !important;
+        color: black !important;
+    }
+    .attendance-sheet table { border-collapse: collapse; width: 100%; }
+    .attendance-sheet th, .attendance-sheet td { border: 1px solid #333; padding: 6px 10px; font-size: 12px; }
+    .attendance-sheet th { background: #f0f0f0; font-weight: bold; }
+    
+    /* Calendrier */
+    .calendar-print { font-family: Georgia, serif; background: white; color: black; padding: 20px; }
+    .calendar-print table { border-collapse: collapse; width: 100%; }
+    .calendar-print th, .calendar-print td { border: 1px solid #333; padding: 4px 8px; font-size: 12px; vertical-align: top; }
+    .calendar-print th { background: #f0f0f0; font-weight: bold; text-align: center; }
+}

@@ -1,0 +1,41 @@
+/* Composants UI MilAssoc Pro */
+
+/* Cartes */
+.card { border-radius: 12px; border: 1px solid var(--border); background: var(--bg-card); }
+.card-hover { transition: all .25s ease; }
+.card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,.3); }
+
+/* Boutons */
+.btn { padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; transition: all .2s; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-light); }
+.btn-secondary { background: var(--bg-input); color: var(--text); border: 1px solid var(--border); }
+
+/* Tableaux */
+.table-row { border-bottom: 1px solid var(--border); }
+.table-row:hover { background: rgba(79,122,63,.08); }
+
+/* Modals */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 100; }
+.modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 12px; border: 1px solid var(--border); width: 100%; max-width: 600px; margin: 0 16px; padding: 24px; max-height: 90vh; overflow-y: auto; background: var(--bg-card); }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.3); font-size: 14px; font-weight: 500; z-index: 200; display: flex; align-items: center; gap: 8px; max-width: 320px; color: white; background: var(--accent); transform: translateY(100px); opacity: 0; transition: all .3s; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Sidebar */
+.sidebar { position: fixed; left: 0; top: 0; height: 100%; width: 256px; z-index: 50; display: flex; flex-direction: column; transition: transform .3s; background: var(--bg-card); border-right: 1px solid var(--border); }
+.sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; font-size: 14px; border-radius: 8px; transition: all .2s; cursor: pointer; text-decoration: none; }
+.sidebar-item:hover { background: rgba(37,99,235,.1); color: var(--accent); }
+.sidebar-item.active { background: rgba(37,99,235,.1); color: var(--accent); font-weight: 600; }
+
+/* Inputs */
+.input-field { border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; background: var(--bg-input); border: 1px solid var(--border); color: var(--text); width: 100%; }
+.input-field:focus { border-color: var(--accent); }
+
+/* Badges */
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 9999px; font-weight: 700; }
+.badge-success { background: rgba(39,174,96,.15); color: #27ae60; }
+.badge-warning { background: rgba(243,156,18,.15); color: #f39c12; }
+.badge-danger { background: rgba(239,68,68,.15); color: #ef4444; }
+.badge-info { background: rgba(52,152,219,.15); color: #3498db; }
