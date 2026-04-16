@@ -1,0 +1,47 @@
+# Dépendances
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environnement
+.env
+.env.local
+.env*.local
+
+# Build
+dist/
+build/
+*.min.js
+*.min.css
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Données sensibles (ne jamais commiter)
+*.key
+*.pem
+*.crt
+*.p12
+
+# Données utilisateur (optionnel - selon stratégie de backup)
+# *.json.backup
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.tmp/
