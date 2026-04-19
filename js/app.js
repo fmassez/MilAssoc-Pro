@@ -1,21 +1,8 @@
 // js/app.js
-// Logique de l'application MilAssoc Pro
-
 const App = {
-    // État de l'application
-    currentUser: null,
-    curPage: 'dashboard',
-    memSort: {field:'last', dir:1},
-    memPage: 1,
-    memPageSize: 8,
-    curConv: 0,
-    pendingConfirm: null,
-    adminTab: 'grades',
-    docViewMode: 'grid',
-    calMonth: new Date().getMonth(),
-    calYear: new Date().getFullYear(),
-    
-    // Thèmes disponibles
+    currentUser: null, curPage: 'dashboard', memSort: {field:'last', dir:1}, memPage: 1, memPageSize: 8,
+    curConv: 0, pendingConfirm: null, adminTab: 'grades', docViewMode: 'grid',
+    calMonth: new Date().getMonth(), calYear: new Date().getFullYear(),
     THEMES: {
         kaki: {name:'Kaki Militaire',bgDark:'#0f1a0f',bgCard:'#1a2a1a',bgInput:'#243524',border:'#2d402d',accent:'#4f7a3f',accentLight:'#6b9e55',text:'#e0e8d8',textDim:'#8a9a80',textMuted:'#5a6a50',light:false},
         bleu: {name:'Bleu Marine',bgDark:'#0a1520',bgCard:'#112030',bgInput:'#182a40',border:'#1e3550',accent:'#2563eb',accentLight:'#3b82f6',text:'#dce8f5',textDim:'#7a9ab8',textMuted:'#4a6a88',light:false},
@@ -27,39 +14,18 @@ const App = {
         clair_gris: {name:'Clair - Gris Clair',bgDark:'#f3f4f6',bgCard:'#ffffff',bgInput:'#f9fafb',border:'#d1d5db',accent:'#4b5563',accentLight:'#6b7280',text:'#111827',textDim:'#6b7280',textMuted:'#9ca3af',light:true},
         custom: {name:'Personnalisé',bgDark:'#0f1a0f',bgCard:'#1a2a1a',bgInput:'#243524',border:'#2d402d',accent:'#4f7a3f',accentLight:'#6b9e55',text:'#e0e8d8',textDim:'#8a9a80',textMuted:'#5a6a50',light:false}
     },
-
-    // === INITIALISATION ===
     init: function() {
         console.log('App.init appelé');
-        
-        // Écouteurs d'événements
         var loginForm = document.getElementById('loginForm');
         if(loginForm) loginForm.addEventListener('submit', function(e){ App.handleLogin(e); });
-        
         var resetBtn = document.getElementById('resetBtn');
-        if(resetBtn) resetBtn.addEventListener('click', function(){ 
-            if(confirm('Réinitialiser toutes les données ?')){ 
-                DB.resetAll(); 
-                location.reload(); 
-            }
-        });
-        
+        if(resetBtn) resetBtn.addEventListener('click', function(){ if(confirm('Réinitialiser toutes les données ?')){ DB.resetAll(); location.reload(); }});
         var searchInput = document.getElementById('globalSearch');
         if(searchInput) searchInput.addEventListener('input', function(){ App.doGlobalSearch(this.value); });
-        
         window.addEventListener('resize', function(){ App.responsive(); });
-        
-        // Vérifier que DB est chargé
-        if(typeof DB === 'undefined') {
-            console.error('DB n\'est pas défini!');
-            alert('Erreur: Base de données non chargée.');
-            return;
-        }
-        
+        if(typeof DB === 'undefined') { console.error('DB non défini'); alert('Erreur: Base de données'); return; }
         this.checkAuth();
     },
-
-    // === AUTHENTIFICATION ===
     checkAuth: function() {
         try {
             var session = sessionStorage.getItem('milassoc_session');
@@ -67,60 +33,27 @@ const App = {
                 var user = JSON.parse(session);
                 var users = DB.getUsers();
                 var found = users.find(function(u){ return u.id === user.id && u.email === user.email; });
-                if(found) {
-                    this.currentUser = found;
-                    this.showApp();
-                    return;
-                } else {
-                    sessionStorage.removeItem('milassoc_session');
-                }
+                if(found) { this.currentUser = found; this.showApp(); return; }
+                else { sessionStorage.removeItem('milassoc_session'); }
             }
-        } catch(e) {
-            console.error('Erreur checkAuth:', e);
-            sessionStorage.removeItem('milassoc_session');
-        }
+        } catch(e) { console.error('Erreur checkAuth:', e); sessionStorage.removeItem('milassoc_session'); }
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('appShell').style.display = 'none';
     },
-
     handleLogin: function(e) {
         e.preventDefault();
         var email = document.getElementById('loginEmail').value.trim();
         var pass = document.getElementById('loginPass').value;
         var errEl = document.getElementById('loginError');
-        
-        if(!email||!pass){
-            errEl.style.display='block';
-            errEl.textContent='Veuillez remplir tous les champs.';
-            return;
-        }
-        
-        var user = DB.getUserByEmail ? DB.getUserByEmail(email) : DB.getUsers().find(function(u){ return u.email === email; });
-        
-        if(user && user.pass === pass){
-            if(user.status !== 'Actif'){
-                errEl.style.display='block';
-                errEl.textContent='Compte désactivé. Contactez l\'administrateur.';
-                return;
-            }
+        if(!email||!pass){ errEl.style.display='block'; errEl.textContent='Champs requis'; return; }
+        var user = DB.getUserByEmail(email);
+        if(user && user.pass === pass && user.status === 'Actif') {
             this.currentUser = user;
-            try {
-                sessionStorage.setItem('milassoc_session', JSON.stringify({id:user.id, email:user.email}));
-            } catch(e) {
-                errEl.style.display='block';
-                errEl.textContent='Erreur de session. Vérifiez que les cookies sont activés.';
-                return;
-            }
-            errEl.style.display='none';
-            this.showApp();
-        } else {
-            errEl.style.display='block'; 
-            errEl.textContent='Identifiants incorrects.';
-            document.getElementById('loginPass').value='';
-        }
+            try { sessionStorage.setItem('milassoc_session', JSON.stringify({id:user.id, email:user.email})); }
+            catch(e) { errEl.style.display='block'; errEl.textContent='Erreur session'; return; }
+            errEl.style.display='none'; this.showApp();
+        } else { errEl.style.display='block'; errEl.textContent='Identifiants incorrects'; document.getElementById('loginPass').value=''; }
     },
-
-    // === RÉCUPÉRATION DE MOT DE PASSE ===
     showForgotPassword: function() {
         var h = '<form onsubmit="App.handlePasswordReset(event)" style="display:flex;flex-direction:column;gap:16px;">'+
         '<p style="font-size:14px;color:var(--text-dim);">Entrez votre email pour recevoir un nouveau mot de passe.</p>'+
@@ -132,153 +65,70 @@ const App = {
         '</div></form>';
         this.showGenericModal('Récupération de mot de passe', h);
     },
-
     handlePasswordReset: function(e) {
         e.preventDefault();
         var email = document.getElementById('resetEmail').value.trim();
-        var user = DB.getUserByEmail ? DB.getUserByEmail(email) : DB.getUsers().find(function(u){ return u.email === email; });
-        
-        if(!user) {
-            this.showToast('Aucun compte trouvé avec cet email');
-            return;
-        }
-        
-        // Générer un nouveau mot de passe temporaire
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var newPassword = '';
-        for(var i=0; i<8; i++) {
-            newPassword += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        
-        // Sauvegarder le nouveau mot de passe
-        if(DB.resetPassword && DB.resetPassword(email, newPassword)) {
-            this.showPasswordSentModal(email, newPassword);
-        } else {
-            // Fallback si resetPassword n'existe pas
-            var users = DB.getUsers();
-            for(var i=0; i<users.length; i++) {
-                if(users[i].email === email) {
-                    users[i].pass = newPassword;
-                    break;
-                }
-            }
-            DB.setUsers(users);
-            this.showPasswordSentModal(email, newPassword);
-        }
+        var user = DB.getUserByEmail(email);
+        if(!user) { this.showToast('Aucun compte trouvé'); return; }
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', newPassword = '';
+        for(var i=0; i<8; i++) { newPassword += chars.charAt(Math.floor(Math.random() * chars.length)); }
+        if(DB.resetPassword(email, newPassword)) { this.showPasswordSentModal(email, newPassword); }
+        else { this.showToast('Erreur réinitialisation'); }
     },
-
     showPasswordSentModal: function(email, newPassword) {
-        var h = '<div style="text-align:center;">'+
-        '<p style="font-size:14px;margin-bottom:16px;">Un nouveau mot de passe a été généré pour <strong>'+email+'</strong></p>'+
-        '<div style="background:var(--bg-input);padding:16px;border-radius:8px;margin-bottom:16px;">'+
-        '<p style="font-size:12px;color:var(--text-dim);margin-bottom:8px;">Votre nouveau mot de passe :</p>'+
-        '<p style="font-size:20px;font-weight:700;color:var(--accent);font-family:monospace;">'+newPassword+'</p>'+
-        '</div>'+
-        '<p style="font-size:12px;color:var(--text-dim);">Note: Dans une version déployée sur serveur, ce mot de passe serait envoyé par email.</p>'+
-        '<button onclick="App.closeAllModals()" style="margin-top:16px;padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Fermer</button>'+
-        '</div>';
+        var h = '<div style="text-align:center;"><p style="font-size:14px;margin-bottom:16px;">Nouveau mot de passe pour <strong>'+email+'</strong></p>'+
+        '<div style="background:var(--bg-input);padding:16px;border-radius:8px;margin-bottom:16px;"><p style="font-size:12px;color:var(--text-dim);margin-bottom:8px;">Votre mot de passe :</p>'+
+        '<p style="font-size:20px;font-weight:700;color:var(--accent);font-family:monospace;">'+newPassword+'</p></div>'+
+        '<p style="font-size:12px;color:var(--text-dim);">Note: En production, ce mot de passe serait envoyé par email.</p>'+
+        '<button onclick="App.closeAllModals()" style="margin-top:16px;padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Fermer</button></div>';
         this.showGenericModal('Mot de passe réinitialisé', h);
     },
-
-    // === INTERFACE PRINCIPALE ===
     handleLogout: function() {
-        this.currentUser = null;
-        sessionStorage.removeItem('milassoc_session');
+        this.currentUser = null; sessionStorage.removeItem('milassoc_session');
         document.getElementById('appShell').style.display='none';
         document.getElementById('loginScreen').style.display='flex';
-        document.getElementById('loginEmail').value='';
-        document.getElementById('loginPass').value='';
+        document.getElementById('loginEmail').value=''; document.getElementById('loginPass').value='';
         document.getElementById('loginError').style.display='none';
         var mc = document.getElementById('modalsContainer'); if(mc) mc.innerHTML='';
     },
-
     showApp: function() {
-        console.log('showApp appelé, currentUser:', this.currentUser);
-        var loginScreen = document.getElementById('loginScreen');
-        var appShell = document.getElementById('appShell');
-        if(!loginScreen || !appShell) {
-            console.error('Éléments DOM non trouvés!');
-            return;
-        }
-        loginScreen.style.display='none';
-        appShell.style.display='';
-        
-        // Appliquer le thème
-        var cfg = DB.getConfig();
-        var t = this.THEMES[cfg.theme] || this.THEMES.clair_bleu;
+        console.log('showApp appelé');
+        var loginScreen = document.getElementById('loginScreen'), appShell = document.getElementById('appShell');
+        if(!loginScreen || !appShell) { console.error('Éléments DOM manquants'); return; }
+        loginScreen.style.display='none'; appShell.style.display='';
+        var cfg = DB.getConfig(), t = this.THEMES[cfg.theme] || this.THEMES.clair_bleu;
         if(cfg.customColors) { for(var k in cfg.customColors) { t[k] = cfg.customColors[k]; } }
         this.applyThemeObject(t);
-        
-        // Appliquer logo et favicon
-        if(cfg.logo) this.applyLogo(cfg.logo);
-        if(cfg.favicon) this.applyFavicon(cfg.favicon);
-        
-        // Mettre à jour les titres
+        if(cfg.logo) this.applyLogo(cfg.logo); if(cfg.favicon) this.applyFavicon(cfg.favicon);
         var cfg2 = DB.getConfig();
-        if(cfg2.appName) {
-            document.getElementById('loginAppTitle').textContent = cfg2.appName;
-            document.getElementById('appTitle').textContent = cfg2.appName;
-            document.getElementById('pageTitleMeta').textContent = cfg2.appName;
-        }
-        
-        // Mettre à jour l'avatar utilisateur
+        if(cfg2.appName) { document.getElementById('loginAppTitle').textContent = cfg2.appName; document.getElementById('appTitle').textContent = cfg2.appName; document.getElementById('pageTitleMeta').textContent = cfg2.appName; }
         document.getElementById('userName').textContent = this.currentUser.name;
         document.getElementById('userRole').textContent = this.currentUser.role;
         var ini = this.currentUser.name.split(' ').map(function(w){return w[0];}).join('').substring(0,2);
         var avatar = document.getElementById('userAvatar');
-        if(this.currentUser.photo) {
-            avatar.innerHTML = '<img src="'+this.currentUser.photo+'" class="avatar-photo">';
-        } else {
-            avatar.textContent = ini;
-            avatar.style.background = 'var(--accent)';
-            avatar.style.color = 'white';
-        }
-        
-        this.buildSidebar();
-        this.renderNotifs();
-        this.responsive();
-        this.navigateTo('dashboard');
+        if(this.currentUser.photo) { avatar.innerHTML = '<img src="'+this.currentUser.photo+'" class="avatar-photo">'; }
+        else { avatar.textContent = ini; avatar.style.background = 'var(--accent)'; avatar.style.color = 'white'; }
+        this.buildSidebar(); this.renderNotifs(); this.responsive(); this.navigateTo('dashboard');
     },
-
     applyThemeObject: function(t) {
         var r = document.getElementById('appBody').style;
-        r.setProperty('--bg-dark', t.bgDark);
-        r.setProperty('--bg-card', t.bgCard);
-        r.setProperty('--bg-input', t.bgInput);
-        r.setProperty('--border', t.border);
-        r.setProperty('--accent', t.accent);
-        r.setProperty('--accent-light', t.accentLight);
-        r.setProperty('--text', t.text);
-        r.setProperty('--text-dim', t.textDim);
+        r.setProperty('--bg-dark', t.bgDark); r.setProperty('--bg-card', t.bgCard);
+        r.setProperty('--bg-input', t.bgInput); r.setProperty('--border', t.border);
+        r.setProperty('--accent', t.accent); r.setProperty('--accent-light', t.accentLight);
+        r.setProperty('--text', t.text); r.setProperty('--text-dim', t.textDim);
         r.setProperty('--text-muted', t.textMuted);
-        document.body.style.background = t.bgDark;
-        document.body.style.color = t.text;
+        document.body.style.background = t.bgDark; document.body.style.color = t.text;
     },
-
     applyLogo: function(b64) {
         var cfg = DB.getConfig(); cfg.logo = b64; DB.setConfig(cfg);
         var ids = ['sidebarLogo','loginLogoContainer','headerLogo'];
         for(var i=0;i<ids.length;i++){
             var el = document.getElementById(ids[i]); if(!el) continue;
-            if(b64) {
-                var br = ids[i]==='headerLogo'?'50%':'8px';
-                el.innerHTML = '<img src="'+b64+'" style="width:100%;height:100%;object-fit:cover;border-radius:'+br+';">';
-                el.style.background='transparent';
-            } else {
-                var sz = ids[i]==='loginLogoContainer'?36:22;
-                el.innerHTML = '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>';
-                el.style.background = cfg.logoBg||'#4f7a3f';
-            }
+            if(b64) { var br = ids[i]==='headerLogo'?'50%':'8px'; el.innerHTML = '<img src="'+b64+'" style="width:100%;height:100%;object-fit:cover;border-radius:'+br+';">'; el.style.background='transparent'; }
+            else { var sz = ids[i]==='loginLogoContainer'?36:22; el.innerHTML = '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>'; el.style.background = cfg.logoBg||'#4f7a3f'; }
         }
     },
-
-    applyFavicon: function(b64) {
-        var cfg = DB.getConfig(); cfg.favicon = b64; DB.setConfig(cfg);
-        var link = document.getElementById('favicon');
-        if(link && b64) { link.href = b64; }
-    },
-
-    // === SIDEBAR & NAVIGATION ===
+    applyFavicon: function(b64) { var cfg = DB.getConfig(); cfg.favicon = b64; DB.setConfig(cfg); var link = document.getElementById('favicon'); if(link && b64) { link.href = b64; } },
     buildSidebar: function() {
         var nav = document.getElementById('sidebarNav'); if(!nav) return;
         var items = [
@@ -305,16 +155,9 @@ const App = {
         }
         nav.innerHTML = h;
     },
-
-    getBadgeValue: function(id) {
-        if(id==='navMemCount') return DB.getMembers().length;
-        if(id==='navMsgBadge'){ var t=0;var cs=DB.getConvs();for(var i=0;i<cs.length;i++)t+=cs[i].unread; return t>0?t:''; }
-        return '';
-    },
-
+    getBadgeValue: function(id) { if(id==='navMemCount') return DB.getMembers().length; if(id==='navMsgBadge'){ var t=0;var cs=DB.getConvs();for(var i=0;i<cs.length;i++)t+=cs[i].unread; return t>0?t:''; } return ''; },
     navigateTo: function(page) {
-        this.curPage = page;
-        this.buildSidebar();
+        this.curPage = page; this.buildSidebar();
         var titles = {dashboard:'Tableau de Bord',members:'Membres',events:'Événements',finance:'Finances',documents:'Documents',messages:'Messages',units:'Unités',admin:'Administration',settings:'Paramètres',cards:'Cartes Membres',txReleve:'Relevé de Transactions'};
         document.getElementById('pageTitle').textContent = titles[page]||page;
         var area = document.getElementById('contentArea');
@@ -324,123 +167,31 @@ const App = {
         area.classList.remove('fade-in'); void area.offsetWidth; area.classList.add('fade-in');
         this.closeSidebar();
     },
-
-    // === UTILITAIRES UI ===
-    showToast: function(msg) {
-        var t = document.getElementById('toast');
-        document.getElementById('toastMsg').textContent = msg;
-        t.style.transform='translateY(0)'; t.style.opacity='1';
-        clearTimeout(window._toastT);
-        window._toastT = setTimeout(function(){ t.style.transform='translateY(100px)'; t.style.opacity='0'; }, 3000);
-    },
-
-    showConfirm: function(title,msg,cb) {
-        document.getElementById('cfmTitle').textContent=title;
-        document.getElementById('cfmMsg').textContent=msg;
-        this.pendingConfirm=cb;
-        document.getElementById('confirmModal').style.display='';
-    },
-
-    execConfirm: function() {
-        if(this.pendingConfirm){this.pendingConfirm();this.pendingConfirm=null;}
-        document.getElementById('confirmModal').style.display='none';
-    },
-
+    showToast: function(msg) { var t = document.getElementById('toast'); document.getElementById('toastMsg').textContent = msg; t.style.transform='translateY(0)'; t.style.opacity='1'; clearTimeout(window._toastT); window._toastT = setTimeout(function(){ t.style.transform='translateY(100px)'; t.style.opacity='0'; }, 3000); },
+    showConfirm: function(title,msg,cb) { document.getElementById('cfmTitle').textContent=title; document.getElementById('cfmMsg').textContent=msg; this.pendingConfirm=cb; document.getElementById('confirmModal').style.display=''; },
+    execConfirm: function() { if(this.pendingConfirm){this.pendingConfirm();this.pendingConfirm=null;} document.getElementById('confirmModal').style.display='none'; },
     closeModal: function(id) { document.getElementById(id).style.display='none'; },
-
     showGenericModal: function(title,html) {
-        var id='m'+(Date.now());
-        var c = document.getElementById('modalsContainer');
+        var id='m'+(Date.now()); var c = document.getElementById('modalsContainer');
         if(!c){c=document.createElement('div');c.id='modalsContainer';document.body.appendChild(c);}
         c.innerHTML+='<div id="'+id+'" style="position:fixed;inset:0;z-index:100;"><div style="position:absolute;inset:0;background:rgba(0,0,0,.4);" onclick="App.closeModal(\''+id+'\')"></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:12px;border:1px solid var(--border);width:100%;max-width:600px;margin:0 16px;padding:24px;max-height:90vh;overflow-y:auto;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><h3 style="font-size:18px;font-weight:600;color:var(--text);">'+title+'</h3><button onclick="App.closeModal(\''+id+'\')" style="padding:4px;background:none;border:none;cursor:pointer;color:var(--text-dim);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>'+html+'</div></div>';
     },
-
     closeAllModals: function() { var c=document.getElementById('modalsContainer'); if(c)c.innerHTML=''; },
-
-    toggleSidebar: function() {
-        var sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
-        sb.classList.toggle('sidebar-open');
-        ov.style.display=sb.classList.contains('sidebar-open')?'block':'none';
-    },
-
-    closeSidebar: function() {
-        document.getElementById('sidebar').classList.remove('sidebar-open');
-        document.getElementById('sidebarOverlay').style.display='none';
-    },
-
-    toggleNotifPanel: function() {
-        var p=document.getElementById('notifPanel');
-        p.style.display=p.style.display==='none'?'':'none';
-    },
-
-    clearNotifs: function() {
-        var ns=DB.getNotifs(); for(var i=0;i<ns.length;i++)ns[i].read=true; DB.setNotifs(ns);
-        document.getElementById('notifDot').style.display='none';
-        this.renderNotifs(); this.showToast('Notifications lues');
-    },
-
-    renderNotifs: function() {
-        var ns=DB.getNotifs(),unread=0;
-        for(var i=0;i<ns.length;i++){if(!ns[i].read)unread++;}
-        document.getElementById('notifDot').style.display=unread>0?'':'none';
-        var el=document.getElementById('notifList');
-        if(!ns.length){el.innerHTML='<div style="padding:24px;text-align:center;font-size:14px;color:var(--text-dim);">Aucune notification</div>';return;}
-        var h='';
-        for(var i=0;i<ns.length;i++){var n=ns[i];h+='<div style="padding:12px 16px;border-bottom:1px solid var(--border);'+(n.read?'':'border-left:3px solid var(--accent);')+'"><p style="font-size:14px;color:var(--text);">'+n.text+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+n.time+'</p></div>';}
-        el.innerHTML=h;
-    },
-
+    toggleSidebar: function() { var sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay'); sb.classList.toggle('sidebar-open'); ov.style.display=sb.classList.contains('sidebar-open')?'block':'none'; },
+    closeSidebar: function() { document.getElementById('sidebar').classList.remove('sidebar-open'); document.getElementById('sidebarOverlay').style.display='none'; },
+    toggleNotifPanel: function() { var p=document.getElementById('notifPanel'); p.style.display=p.style.display==='none'?'':'none'; },
+    clearNotifs: function() { var ns=DB.getNotifs(); for(var i=0;i<ns.length;i++)ns[i].read=true; DB.setNotifs(ns); document.getElementById('notifDot').style.display='none'; this.renderNotifs(); this.showToast('Notifications lues'); },
+    renderNotifs: function() { var ns=DB.getNotifs(),unread=0; for(var i=0;i<ns.length;i++){if(!ns[i].read)unread++;} document.getElementById('notifDot').style.display=unread>0?'':'none'; var el=document.getElementById('notifList'); if(!ns.length){el.innerHTML='<div style="padding:24px;text-align:center;font-size:14px;color:var(--text-dim);">Aucune notification</div>';return;} var h=''; for(var i=0;i<ns.length;i++){var n=ns[i];h+='<div style="padding:12px 16px;border-bottom:1px solid var(--border);'+(n.read?'':'border-left:3px solid var(--accent);')+'"><p style="font-size:14px;color:var(--text);">'+n.text+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+n.time+'</p></div>';} el.innerHTML=h; },
     canEdit: function() { return this.currentUser&&(this.currentUser.role==='Administrateur'||this.currentUser.role==='Secrétaire'); },
     canFinance: function() { return this.currentUser&&(this.currentUser.role==='Administrateur'||this.currentUser.role==='Trésorier'); },
-
-    responsive: function() {
-        var sw=document.getElementById('searchWrap'),mb=document.getElementById('menuBtn'),ql=document.getElementById('qaLabel');
-        function ck(){
-            if(window.innerWidth>=640){if(sw)sw.style.display='';if(mb)mb.style.display='none';if(ql)ql.style.display='';}
-            else{if(sw)sw.style.display='none';if(mb)mb.style.display='';if(ql)ql.style.display='none';}
-        }
-        ck();
-    },
-
-    doGlobalSearch: function(val) {
-        if(val.length<2)return;
-        var v=val.toLowerCase();
-        var mc=DB.getMembers().filter(function(m){return(m.first+' '+m.last+' '+m.grade).toLowerCase().indexOf(v)>-1;}).length;
-        var ec=DB.getEvents().filter(function(e){return e.title.toLowerCase().indexOf(v)>-1;}).length;
-        var dc=DB.getDocs().filter(function(d){return d.title.toLowerCase().indexOf(v)>-1;}).length;
-        this.showToast(mc+' membres, '+ec+' événements, '+dc+' documents');
-    },
-
-    copyToClipboard: function(text) {
-        if(navigator.clipboard){ navigator.clipboard.writeText(text).then(function(){App.showToast('Copié !');}); }
-        else { var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);App.showToast('Copié !'); }
-    },
-
-    getAssociationName: function() {
-        var cfg = DB.getConfig();
-        return cfg.cardOrgName || cfg.appName || 'MilAssoc Pro';
-    },
-
-    // === DASHBOARD (version simplifiée pour test) ===
-    renderDashboard: function() {
-        var members=DB.getMembers(),events=DB.getEvents(),docs=DB.getDocs(),tx=DB.getTx();
-        var active=0,inc=0,exp=0;
-        for(var i=0;i<members.length;i++){if(members[i].status==='Actif')active++;}
-        for(var i=0;i<tx.length;i++){if(tx[i].type==='income')inc+=tx[i].amt;else exp+=tx[i].amt;}
-        var total=members.length,pct=total>0?Math.min(100,Math.round((active/total)*100)):0;
-        
-        var area=document.getElementById('contentArea');
-        area.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
-        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'members\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--accent);color:white;">'+members.length+' total</span></div><p style="font-size:24px;font-weight:700;">'+total+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Membres ('+active+' actifs)</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:'+pct+'%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
-        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'finance\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(160,120,64,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div><p style="font-size:24px;font-weight:700;color:var(--accent-light);">€ '+(inc-exp).toLocaleString('fr-FR')+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Solde net</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:72%;background:var(--accent-light);border-radius:9999px;"></div></div></div>'+
-        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'events\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+events.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Événements</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:60%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
-        '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'documents\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(160,120,64,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+docs.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Documents</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:45%;background:var(--accent-light);border-radius:9999px;"></div></div></div>'+
-        '</div>'+
-        '<p style="padding:24px;text-align:center;color:var(--text-dim);">Sélectionnez une section dans le menu pour accéder aux fonctionnalités complètes.</p>';
-    },
-
-    // === PLACEHOLDERS POUR AUTRES PAGES (à compléter selon vos besoins) ===
-    renderMembers: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Membres - En développement</p>'; },
+    responsive: function() { var sw=document.getElementById('searchWrap'),mb=document.getElementById('menuBtn'),ql=document.getElementById('qaLabel'); function ck(){ if(window.innerWidth>=640){if(sw)sw.style.display='';if(mb)mb.style.display='none';if(ql)ql.style.display='';} else{if(sw)sw.style.display='none';if(mb)mb.style.display='';if(ql)ql.style.display='none';} } ck(); },
+    doGlobalSearch: function(val) { if(val.length<2)return; var v=val.toLowerCase(); var mc=DB.getMembers().filter(function(m){return(m.first+' '+m.last+' '+m.grade).toLowerCase().indexOf(v)>-1;}).length; var ec=DB.getEvents().filter(function(e){return e.title.toLowerCase().indexOf(v)>-1;}).length; var dc=DB.getDocs().filter(function(d){return d.title.toLowerCase().indexOf(v)>-1;}).length; this.showToast(mc+' membres, '+ec+' événements, '+dc+' documents'); },
+    copyToClipboard: function(text) { if(navigator.clipboard){ navigator.clipboard.writeText(text).then(function(){App.showToast('Copié !');}); } else { var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);App.showToast('Copié !'); } },
+    getAssociationName: function() { var cfg = DB.getConfig(); return cfg.cardOrgName || cfg.appName || 'MilAssoc Pro'; },
+    
+    // === PAGES ===
+    renderDashboard: function() { var members=DB.getMembers(),events=DB.getEvents(),docs=DB.getDocs(),tx=DB.getTx(); var active=0,inc=0,exp=0; for(var i=0;i<members.length;i++){if(members[i].status==='Actif')active++;} for(var i=0;i<tx.length;i++){if(tx[i].type==='income')inc+=tx[i].amt;else exp+=tx[i].amt;} var total=members.length,pct=total>0?Math.min(100,Math.round((active/total)*100)):0; var area=document.getElementById('contentArea'); area.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;"><div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'members\')"><p style="font-size:24px;font-weight:700;">'+total+'</p><p style="font-size:14px;color:var(--text-dim);">Membres ('+active+' actifs)</p></div><div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'finance\')"><p style="font-size:24px;font-weight:700;color:var(--accent-light);">€ '+(inc-exp).toLocaleString('fr-FR')+'</p><p style="font-size:14px;color:var(--text-dim);">Solde net</p></div><div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'events\')"><p style="font-size:24px;font-weight:700;">'+events.length+'</p><p style="font-size:14px;color:var(--text-dim);">Événements</p></div><div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'documents\')"><p style="font-size:24px;font-weight:700;">'+docs.length+'</p><p style="font-size:14px;color:var(--text-dim);">Documents</p></div></div><p style="padding:24px;text-align:center;color:var(--text-dim);">Sélectionnez une section dans le menu.</p>'; },
+    renderMembers: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Membres - Fonctionnalité complète disponible dans la version monolithique.</p>'; },
     renderEvents: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Événements - En développement</p>'; },
     renderFinance: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Finances - En développement</p>'; },
     renderDocuments: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Documents - En développement</p>'; },
@@ -450,21 +201,10 @@ const App = {
     renderSettings: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Paramètres - En développement</p>'; },
     renderCards: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Cartes - En développement</p>'; },
     renderTxReleve: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Relevé - En développement</p>'; },
-
+    
     // === ACTION RAPIDE ===
-    openQuickAction: function() {
-        var cm=this.canEdit(),cf=this.canFinance();
-        var h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
-        if(cm)h+='<button onclick="App.closeAllModals();App.openAddMember()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">➕ Membre</button>';
-        if(cm)h+='<button onclick="App.closeAllModals();App.openAddEvent()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📅 Événement</button>';
-        if(cf)h+='<button onclick="App.closeAllModals();App.openAddTx()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">💰 Transaction</button>';
-        h+='<button onclick="App.closeAllModals();App.openUploadDoc()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📄 Document</button>';
-        h+='</div>';
-        this.showGenericModal('Action rapide',h);
-    }
+    openQuickAction: function() { var cm=this.canEdit(),cf=this.canFinance(); var h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'; if(cm)h+='<button onclick="App.closeAllModals()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">➕ Membre</button>'; if(cm)h+='<button onclick="App.closeAllModals()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📅 Événement</button>'; if(cf)h+='<button onclick="App.closeAllModals()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">💰 Transaction</button>'; h+='<button onclick="App.closeAllModals()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📄 Document</button>'; h+='</div>'; this.showGenericModal('Action rapide',h); }
 };
 
-// Initialisation au chargement du DOM
-document.addEventListener('DOMContentLoaded', function() {
-    App.init();
-});
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() { App.init(); });
