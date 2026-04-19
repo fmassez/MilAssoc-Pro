@@ -1,6 +1,8 @@
 // js/app.js
+// Logique de l'application MilAssoc Pro
 
 const App = {
+    // État de l'application
     currentUser: null,
     curPage: 'dashboard',
     memSort: {field:'last', dir:1},
@@ -13,6 +15,7 @@ const App = {
     calMonth: new Date().getMonth(),
     calYear: new Date().getFullYear(),
     
+    // Thèmes disponibles
     THEMES: {
         kaki: {name:'Kaki Militaire',bgDark:'#0f1a0f',bgCard:'#1a2a1a',bgInput:'#243524',border:'#2d402d',accent:'#4f7a3f',accentLight:'#6b9e55',text:'#e0e8d8',textDim:'#8a9a80',textMuted:'#5a6a50',light:false},
         bleu: {name:'Bleu Marine',bgDark:'#0a1520',bgCard:'#112030',bgInput:'#182a40',border:'#1e3550',accent:'#2563eb',accentLight:'#3b82f6',text:'#dce8f5',textDim:'#7a9ab8',textMuted:'#4a6a88',light:false},
@@ -25,23 +28,38 @@ const App = {
         custom: {name:'Personnalisé',bgDark:'#0f1a0f',bgCard:'#1a2a1a',bgInput:'#243524',border:'#2d402d',accent:'#4f7a3f',accentLight:'#6b9e55',text:'#e0e8d8',textDim:'#8a9a80',textMuted:'#5a6a50',light:false}
     },
 
+    // === INITIALISATION ===
     init: function() {
         console.log('App.init appelé');
+        
+        // Écouteurs d'événements
         var loginForm = document.getElementById('loginForm');
         if(loginForm) loginForm.addEventListener('submit', function(e){ App.handleLogin(e); });
+        
         var resetBtn = document.getElementById('resetBtn');
-        if(resetBtn) resetBtn.addEventListener('click', function(){ if(confirm('Réinitialiser toutes les données ?')){ DB.resetAll(); location.reload(); }});
+        if(resetBtn) resetBtn.addEventListener('click', function(){ 
+            if(confirm('Réinitialiser toutes les données ?')){ 
+                DB.resetAll(); 
+                location.reload(); 
+            }
+        });
+        
         var searchInput = document.getElementById('globalSearch');
         if(searchInput) searchInput.addEventListener('input', function(){ App.doGlobalSearch(this.value); });
+        
         window.addEventListener('resize', function(){ App.responsive(); });
+        
+        // Vérifier que DB est chargé
         if(typeof DB === 'undefined') {
             console.error('DB n\'est pas défini!');
             alert('Erreur: Base de données non chargée.');
             return;
         }
+        
         this.checkAuth();
     },
 
+    // === AUTHENTIFICATION ===
     checkAuth: function() {
         try {
             var session = sessionStorage.getItem('milassoc_session');
@@ -70,20 +88,16 @@ const App = {
         var email = document.getElementById('loginEmail').value.trim();
         var pass = document.getElementById('loginPass').value;
         var errEl = document.getElementById('loginError');
+        
         if(!email||!pass){
             errEl.style.display='block';
             errEl.textContent='Veuillez remplir tous les champs.';
             return;
         }
-        var users = DB.getUsers();
-        var user = null;
-        for(var i=0;i<users.length;i++){
-            if(users[i].email===email && users[i].pass===pass){
-                user=users[i];
-                break;
-            }
-        }
-        if(user){
+        
+        var user = DB.getUserByEmail ? DB.getUserByEmail(email) : DB.getUsers().find(function(u){ return u.email === email; });
+        
+        if(user && user.pass === pass){
             if(user.status !== 'Actif'){
                 errEl.style.display='block';
                 errEl.textContent='Compte désactivé. Contactez l\'administrateur.';
@@ -106,7 +120,7 @@ const App = {
         }
     },
 
-    // === NOUVELLE FONCTION: Récupération de mot de passe ===
+    // === RÉCUPÉRATION DE MOT DE PASSE ===
     showForgotPassword: function() {
         var h = '<form onsubmit="App.handlePasswordReset(event)" style="display:flex;flex-direction:column;gap:16px;">'+
         '<p style="font-size:14px;color:var(--text-dim);">Entrez votre email pour recevoir un nouveau mot de passe.</p>'+
@@ -137,12 +151,8 @@ const App = {
         }
         
         // Sauvegarder le nouveau mot de passe
-        if(DB.resetPassword) {
-            if(DB.resetPassword(email, newPassword)) {
-                this.showPasswordSentModal(email, newPassword);
-            } else {
-                this.showToast('Erreur lors de la réinitialisation');
-            }
+        if(DB.resetPassword && DB.resetPassword(email, newPassword)) {
+            this.showPasswordSentModal(email, newPassword);
         } else {
             // Fallback si resetPassword n'existe pas
             var users = DB.getUsers();
@@ -170,6 +180,7 @@ const App = {
         this.showGenericModal('Mot de passe réinitialisé', h);
     },
 
+    // === INTERFACE PRINCIPALE ===
     handleLogout: function() {
         this.currentUser = null;
         sessionStorage.removeItem('milassoc_session');
@@ -191,18 +202,26 @@ const App = {
         }
         loginScreen.style.display='none';
         appShell.style.display='';
+        
+        // Appliquer le thème
         var cfg = DB.getConfig();
         var t = this.THEMES[cfg.theme] || this.THEMES.clair_bleu;
         if(cfg.customColors) { for(var k in cfg.customColors) { t[k] = cfg.customColors[k]; } }
         this.applyThemeObject(t);
+        
+        // Appliquer logo et favicon
         if(cfg.logo) this.applyLogo(cfg.logo);
         if(cfg.favicon) this.applyFavicon(cfg.favicon);
+        
+        // Mettre à jour les titres
         var cfg2 = DB.getConfig();
         if(cfg2.appName) {
             document.getElementById('loginAppTitle').textContent = cfg2.appName;
             document.getElementById('appTitle').textContent = cfg2.appName;
             document.getElementById('pageTitleMeta').textContent = cfg2.appName;
         }
+        
+        // Mettre à jour l'avatar utilisateur
         document.getElementById('userName').textContent = this.currentUser.name;
         document.getElementById('userRole').textContent = this.currentUser.role;
         var ini = this.currentUser.name.split(' ').map(function(w){return w[0];}).join('').substring(0,2);
@@ -214,6 +233,7 @@ const App = {
             avatar.style.background = 'var(--accent)';
             avatar.style.color = 'white';
         }
+        
         this.buildSidebar();
         this.renderNotifs();
         this.responsive();
@@ -258,6 +278,7 @@ const App = {
         if(link && b64) { link.href = b64; }
     },
 
+    // === SIDEBAR & NAVIGATION ===
     buildSidebar: function() {
         var nav = document.getElementById('sidebarNav'); if(!nav) return;
         var items = [
@@ -304,6 +325,7 @@ const App = {
         this.closeSidebar();
     },
 
+    // === UTILITAIRES UI ===
     showToast: function(msg) {
         var t = document.getElementById('toast');
         document.getElementById('toastMsg').textContent = msg;
@@ -399,26 +421,14 @@ const App = {
         return cfg.cardOrgName || cfg.appName || 'MilAssoc Pro';
     },
 
-    // === DASHBOARD ===
+    // === DASHBOARD (version simplifiée pour test) ===
     renderDashboard: function() {
         var members=DB.getMembers(),events=DB.getEvents(),docs=DB.getDocs(),tx=DB.getTx();
         var active=0,inc=0,exp=0;
         for(var i=0;i<members.length;i++){if(members[i].status==='Actif')active++;}
         for(var i=0;i<tx.length;i++){if(tx[i].type==='income')inc+=tx[i].amt;else exp+=tx[i].amt;}
         var total=members.length,pct=total>0?Math.min(100,Math.round((active/total)*100)):0;
-        var gc={};for(var i=0;i<members.length;i++)gc[members[i].grade]=(gc[members[i].grade]||0)+1;
-        var sorted=[];for(var g in gc)sorted.push([g,gc[g]]);sorted.sort(function(a,b){return b[1]-a[1];});
-        var colors=['from-yellow-600 to-yellow-800','from-green-600 to-green-800','from-blue-600 to-blue-800','from-purple-600 to-purple-800','from-red-600 to-red-800'];
-        var gh='';for(var i=0;i<sorted.length;i++){var p=Math.round((sorted[i][1]/Math.max(total,1))*100);gh+='<div style="display:flex;align-items:center;gap:12px;"><span style="font-size:12px;width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim);">'+sorted[i][0]+'</span><div style="flex:1;border-radius:9999px;height:16px;position:relative;overflow:hidden;background:var(--bg-input);"><div class="progress-fill bg-gradient-to-r '+colors[i%colors.length]+'" style="height:100%;width:'+p+'%;"></div><span style="position:absolute;right:8px;top:1px;font-size:11px;color:var(--text);">'+sorted[i][1]+'</span></div></div>';}
-        var sc={};for(var i=0;i<members.length;i++)sc[members[i].section]=(sc[members[i].section]||0)+1;
-        var sh='';var sk=Object.keys(sc).sort();for(var i=0;i<sk.length;i++)sh+='<div style="display:flex;justify-content:space-between;font-size:14px;"><span style="color:var(--text-dim);">'+sk[i]+'</span><span style="font-family:monospace;">'+sc[sk[i]]+'</span></div>';
-        var se=events.slice().sort(function(a,b){return a.date.localeCompare(b.date);}).slice(0,3);
-        var mois=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-        var uh='';for(var i=0;i<se.length;i++){var ev=se[i],d=new Date(ev.date),day=String(d.getDate()).padStart(2,'0'),mo=mois[d.getMonth()];uh+='<div style="border-radius:8px;padding:16px;border:1px solid var(--border);background:var(--bg-input);cursor:pointer;" onclick="App.navigateTo(\'events\')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;background:var(--accent);color:white;">'+day+' '+mo+'</span><span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(37,99,235,.1);color:var(--accent);">'+ev.type+'</span></div><p style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+ev.title+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+ev.time+' — '+ev.loc+'</p></div>';}
-        if(!uh)uh='<p style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text-dim);">Aucun événement</p>';
-        var ns=DB.getNotifs(),ah='';
-        for(var i=0;i<Math.min(4,ns.length);i++){ah+='<div style="display:flex;align-items:start;gap:12px;padding:12px;border-radius:8px;"><div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;background:var(--accent);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div style="flex:1;"><p style="font-size:14px;color:var(--text);">'+ns[i].text+'</p><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">'+ns[i].time+'</p></div></div>';}
-        if(!ah)ah='<p style="text-align:center;padding:16px;color:var(--text-dim);">Aucune activité</p>';
+        
         var area=document.getElementById('contentArea');
         area.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
         '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'members\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--accent);color:white;">'+members.length+' total</span></div><p style="font-size:24px;font-weight:700;">'+total+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Membres ('+active+' actifs)</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:'+pct+'%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
@@ -426,15 +436,35 @@ const App = {
         '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'events\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+events.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Événements</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:60%;background:var(--accent);border-radius:9999px;"></div></div></div>'+
         '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);cursor:pointer;" onclick="App.navigateTo(\'documents\')"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(160,120,64,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div><p style="font-size:24px;font-weight:700;">'+docs.length+'</p><p style="font-size:14px;margin-top:4px;color:var(--text-dim);">Documents</p><div style="margin-top:12px;width:100%;border-radius:9999px;height:6px;background:var(--bg-input);"><div class="progress-fill" style="height:100%;width:45%;background:var(--accent-light);border-radius:9999px;"></div></div></div>'+
         '</div>'+
-        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:24px;">'+
-        '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Activité récente</h3><div style="display:flex;flex-direction:column;gap:8px;">'+ah+'</div></div>'+
-        '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Par grade</h3><div style="display:flex;flex-direction:column;gap:12px;">'+gh+'</div><div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);"><h4 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--accent-light);">Par section</h4><div style="display:flex;flex-direction:column;gap:8px;">'+sh+'</div></div></div>'+
-        '</div>'+
-        '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><h3 style="font-size:18px;font-weight:600;">Prochains événements</h3><button onclick="App.navigateTo(\'events\')" style="font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;">Voir tout →</button></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">'+uh+'</div></div>';
+        '<p style="padding:24px;text-align:center;color:var(--text-dim);">Sélectionnez une section dans le menu pour accéder aux fonctionnalités complètes.</p>';
+    },
+
+    // === PLACEHOLDERS POUR AUTRES PAGES (à compléter selon vos besoins) ===
+    renderMembers: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Membres - En développement</p>'; },
+    renderEvents: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Événements - En développement</p>'; },
+    renderFinance: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Finances - En développement</p>'; },
+    renderDocuments: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Documents - En développement</p>'; },
+    renderMessages: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Messages - En développement</p>'; },
+    renderUnits: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Unités - En développement</p>'; },
+    renderAdmin: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Administration - En développement</p>'; },
+    renderSettings: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Paramètres - En développement</p>'; },
+    renderCards: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Cartes - En développement</p>'; },
+    renderTxReleve: function() { document.getElementById('contentArea').innerHTML = '<p style="padding:24px;text-align:center;color:var(--text-dim);">Page Relevé - En développement</p>'; },
+
+    // === ACTION RAPIDE ===
+    openQuickAction: function() {
+        var cm=this.canEdit(),cf=this.canFinance();
+        var h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
+        if(cm)h+='<button onclick="App.closeAllModals();App.openAddMember()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">➕ Membre</button>';
+        if(cm)h+='<button onclick="App.closeAllModals();App.openAddEvent()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📅 Événement</button>';
+        if(cf)h+='<button onclick="App.closeAllModals();App.openAddTx()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">💰 Transaction</button>';
+        h+='<button onclick="App.closeAllModals();App.openUploadDoc()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📄 Document</button>';
+        h+='</div>';
+        this.showGenericModal('Action rapide',h);
     }
 };
 
-// Initialisation
+// Initialisation au chargement du DOM
 document.addEventListener('DOMContentLoaded', function() {
     App.init();
 });
