@@ -1,21 +1,330 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitleMeta">MilAssoc Pro</title>
-    <link id="favicon" rel="icon" type="image/png" href="">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.0.0/index.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { sans: ['Fira Sans', 'system-ui', 'sans-serif'] } } }
-        }
-    </script>
-    <link rel="stylesheet" href="css/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitleMeta">MilAssoc Pro</title>
+<link id="favicon" rel="icon" type="image/png" href="">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.0.0/index.min.css" rel="stylesheet">
+<script>
+tailwind.config = {
+theme: { extend: { fontFamily: { sans: ['Fira Sans', 'system-ui', 'sans-serif'] } } }
+}
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Fira Sans', sans-serif; }
+.sidebar-overlay { display: none; }
+@media(max-width:1024px) {
+.sidebar-open { transform: translateX(0) !important; }
+.sidebar-overlay { display: block !important; }
+}
+.fade-in { animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(.5); }
+select option { background: var(--bg-card); color: var(--text); }
+.chat-scroll { scroll-behavior: smooth; }
+.pulse { animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+.tab-active { border-bottom: 2px solid var(--accent) !important; color: var(--accent) !important; }
+.progress-fill { transition: width .8s ease; }
+.card-hover { transition: all .25s ease; }
+.card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,.3); }
+.table-row:hover { background: rgba(79,122,63,.08); }
+.avatar-photo { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.clickable-zone { cursor: pointer; transition: all .2s; }
+.clickable-zone:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+.copy-btn { opacity: 0; transition: opacity .2s; cursor: pointer; font-size: 12px; }
+.table-row:hover .copy-btn { opacity: 1; }
+.color-picker-wrapper { display: flex; align-items: center; gap: 8px; }
+.color-picker-wrapper input[type="color"] { width: 40px; height: 32px; border: none; border-radius: 6px; cursor: pointer; padding: 0; }
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+.member-card-preview {
+width: 595px;
+height: 374px;
+background: linear-gradient(135deg, #e0e4e8 0%, #f0f0f0 25%, #ffffff 50%, #ffe8e0 75%, #e8d8d0 100%);
+border: 2px solid #b0b0b0;
+border-radius: 6px;
+position: relative;
+overflow: hidden;
+font-family: 'Georgia', 'Times New Roman', serif;
+box-shadow: 0 4px 20px rgba(0,0,0,.15);
+}
+.member-card-preview .card-header {
+display: flex;
+align-items: flex-start;
+padding: 10px 16px 6px;
+gap: 12px;
+}
+.member-card-preview .card-logo {
+width: 60px;
+height: 60px;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.member-card-preview .card-logo img {
+width: 100%;
+height: 100%;
+object-fit: contain;
+}
+.member-card-preview .card-org-block {
+flex: 1;
+text-align: left;
+padding-top: 2px;
+}
+.member-card-preview .card-org-name {
+font-size: 18px;
+font-weight: bold;
+color: #c0392b;
+line-height: 1.2;
+letter-spacing: 0.5px;
+}
+.member-card-preview .card-org-addr {
+font-size: 10px;
+color: #4a4a6a;
+margin-top: 2px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-org-decret {
+font-size: 8px;
+color: #777;
+font-style: italic;
+margin-top: 1px;
+}
+.member-card-preview .card-type-line {
+text-align: center;
+padding: 6px 0 4px;
+border-bottom: 1px solid #ccc;
+margin: 0 16px;
+}
+.member-card-preview .card-type {
+font-size: 17px;
+font-style: italic;
+color: #2c2c2c;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-number {
+font-size: 13px;
+font-style: normal;
+color: #555;
+font-weight: normal;
+}
+.member-card-preview .card-fields {
+padding: 6px 16px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-field {
+display: flex;
+align-items: baseline;
+margin-bottom: 5px;
+font-size: 12px;
+}
+.member-card-preview .card-field label {
+font-size: 10px;
+color: #666;
+min-width: 90px;
+flex-shrink: 0;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-field .value {
+font-size: 16px;
+font-weight: bold;
+color: #1a1a1a;
+border-bottom: 1px dotted #999;
+flex: 1;
+padding: 0 6px;
+min-height: 22px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-section {
+padding: 2px 16px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-section .section-label {
+font-size: 10px;
+color: #666;
+font-weight: normal;
+}
+.member-card-preview .card-section .section-value {
+font-size: 14px;
+font-weight: bold;
+color: #1a1a1a;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-footer {
+display: flex;
+justify-content: space-around;
+padding: 6px 12px 8px;
+margin-top: 4px;
+}
+.member-card-preview .card-signature {
+text-align: center;
+flex: 1;
+}
+.member-card-preview .card-signature .sig-img {
+width: 80px;
+height: 32px;
+margin: 0 auto 2px;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+overflow: hidden;
+}
+.member-card-preview .card-signature .sig-img img {
+max-width: 100%;
+max-height: 100%;
+object-fit: contain;
+}
+.member-card-preview .card-signature .sig-line {
+font-size: 14px;
+font-style: italic;
+color: #333;
+min-height: 20px;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+font-family: 'Brush Script MT', 'Segoe Script', cursive;
+}
+.member-card-preview .card-signature .sig-label {
+font-size: 7px;
+color: #888;
+font-family: 'Georgia', serif;
+}
+.attendance-sheet {
+font-family: 'Georgia', serif;
+background: white;
+color: black;
+}
+.attendance-sheet table {
+border-collapse: collapse;
+width: 100%;
+}
+.attendance-sheet th, .attendance-sheet td {
+border: 1px solid #333;
+padding: 6px 10px;
+font-size: 12px;
+}
+.attendance-sheet th {
+background: #f0f0f0;
+font-weight: bold;
+}
+.attendance-sheet .sig-col {
+width: 150px;
+height: 30px;
+}
+.calendar-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 2px;
+}
+.calendar-day-header {
+text-align: center;
+font-weight: 600;
+font-size: 12px;
+padding: 8px 4px;
+color: var(--text-dim);
+}
+.calendar-day {
+min-height: 80px;
+padding: 4px;
+border: 1px solid var(--border);
+border-radius: 4px;
+font-size: 11px;
+}
+.calendar-day.today {
+border-color: var(--accent);
+background: rgba(79,122,63,.1);
+}
+.calendar-day.other-month {
+opacity: .4;
+}
+.calendar-day-number {
+font-weight: 600;
+font-size: 13px;
+margin-bottom: 2px;
+}
+.calendar-event {
+font-size: 10px;
+padding: 1px 4px;
+border-radius: 3px;
+margin-bottom: 1px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+@media print {
+body * { visibility: hidden; }
+.print-area, .print-area * { visibility: visible; }
+.print-area { position: absolute; left: 0; top: 0; }
+.no-print { display: none !important; }
+}
+.sig-upload-area {
+border: 2px dashed var(--border);
+border-radius: 8px;
+padding: 12px;
+text-align: center;
+cursor: pointer;
+transition: border-color .2s;
+}
+.sig-upload-area:hover { border-color: var(--accent); }
+.sig-preview {
+width: 100px;
+height: 36px;
+margin: 0 auto;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.sig-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.view-toggle { display: flex; gap: 4px; }
+.view-toggle button {
+padding: 6px 12px;
+border-radius: 6px;
+font-size: 13px;
+cursor: pointer;
+border: 1px solid var(--border);
+background: var(--bg-input);
+color: var(--text-dim);
+transition: all .2s;
+}
+.view-toggle button.active {
+background: var(--accent);
+color: white;
+border-color: var(--accent);
+}
+.calendar-print {
+font-family: 'Georgia', serif;
+background: white;
+color: black;
+padding: 20px;
+}
+.calendar-print table {
+border-collapse: collapse;
+width: 100%;
+}
+.calendar-print th, .calendar-print td {
+border: 1px solid #333;
+padding: 4px 8px;
+font-size: 12px;
+vertical-align: top;
+}
+.calendar-print th {
+background: #f0f0f0;
+font-weight: bold;
+text-align: center;
+}
+</style>
 </head>
 <body id="appBody">
-
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#1a2a1a,#0f1a0f);">
     <div style="width:100%;max-width:400px;">
@@ -30,63 +339,369 @@
                     <label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Email</label>
                     <input type="email" id="loginEmail" required placeholder="votre@email.fr" value="admin@milassoc.fr" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
                 </div>
-                <div style="text-align:left;margin-bottom:12px;">
+                <div style="text-align:left;margin-bottom:20px;">
                     <label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Mot de passe</label>
                     <input type="password" id="loginPass" required placeholder="••••••••" value="admin123" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
                 </div>
                 <div id="loginError" style="display:none;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#ef4444;text-align:left;"></div>
-                <button type="submit" id="loginBtn" style="width:100%;padding:14px;border-radius:10px;font-size:16px;font-weight:600;color:white;background:#4f7a3f;border:none;cursor:pointer;margin-bottom:12px;">Se connecter</button>
-                <button type="button" onclick="App.showForgotPassword()" style="width:100%;padding:10px;border-radius:8px;font-size:13px;color:#8a9a80;background:none;border:1px solid #2d402d;cursor:pointer;">Mot de passe oublié ?</button>
+                <button type="submit" id="loginBtn" style="width:100%;padding:14px;border-radius:10px;font-size:16px;font-weight:600;color:white;background:#4f7a3f;border:none;cursor:pointer;">Se connecter</button>
             </form>
             <button id="resetBtn" style="margin-top:16px;font-size:11px;color:#5a6a50;background:none;border:none;cursor:pointer;text-decoration:underline;">Réinitialiser les données</button>
         </div>
     </div>
 </div>
-
-<!-- APP SHELL -->
-<div id="appShell" style="display:none;">
-    <div id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;" onclick="App.closeSidebar()"></div>
-    <aside id="sidebar" style="position:fixed;left:0;top:0;height:100%;width:256px;z-index:50;display:flex;flex-direction:column;transition:transform .3s;background:var(--bg-card);border-right:1px solid var(--border);">
-        <div style="padding:20px;border-bottom:1px solid var(--border);flex-shrink:0;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div id="sidebarLogo" style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent);overflow:hidden;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitleMeta">MilAssoc Pro</title>
+<link id="favicon" rel="icon" type="image/png" href="">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.0.0/index.min.css" rel="stylesheet">
+<script>
+tailwind.config = {
+theme: { extend: { fontFamily: { sans: ['Fira Sans', 'system-ui', 'sans-serif'] } } }
+}
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Fira Sans', sans-serif; }
+.sidebar-overlay { display: none; }
+@media(max-width:1024px) {
+.sidebar-open { transform: translateX(0) !important; }
+.sidebar-overlay { display: block !important; }
+}
+.fade-in { animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(.5); }
+select option { background: var(--bg-card); color: var(--text); }
+.chat-scroll { scroll-behavior: smooth; }
+.pulse { animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+.tab-active { border-bottom: 2px solid var(--accent) !important; color: var(--accent) !important; }
+.progress-fill { transition: width .8s ease; }
+.card-hover { transition: all .25s ease; }
+.card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,.3); }
+.table-row:hover { background: rgba(79,122,63,.08); }
+.avatar-photo { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.clickable-zone { cursor: pointer; transition: all .2s; }
+.clickable-zone:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+.copy-btn { opacity: 0; transition: opacity .2s; cursor: pointer; font-size: 12px; }
+.table-row:hover .copy-btn { opacity: 1; }
+.color-picker-wrapper { display: flex; align-items: center; gap: 8px; }
+.color-picker-wrapper input[type="color"] { width: 40px; height: 32px; border: none; border-radius: 6px; cursor: pointer; padding: 0; }
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+.member-card-preview {
+width: 595px;
+height: 374px;
+background: linear-gradient(135deg, #e0e4e8 0%, #f0f0f0 25%, #ffffff 50%, #ffe8e0 75%, #e8d8d0 100%);
+border: 2px solid #b0b0b0;
+border-radius: 6px;
+position: relative;
+overflow: hidden;
+font-family: 'Georgia', 'Times New Roman', serif;
+box-shadow: 0 4px 20px rgba(0,0,0,.15);
+}
+.member-card-preview .card-header {
+display: flex;
+align-items: flex-start;
+padding: 10px 16px 6px;
+gap: 12px;
+}
+.member-card-preview .card-logo {
+width: 60px;
+height: 60px;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.member-card-preview .card-logo img {
+width: 100%;
+height: 100%;
+object-fit: contain;
+}
+.member-card-preview .card-org-block {
+flex: 1;
+text-align: left;
+padding-top: 2px;
+}
+.member-card-preview .card-org-name {
+font-size: 18px;
+font-weight: bold;
+color: #c0392b;
+line-height: 1.2;
+letter-spacing: 0.5px;
+}
+.member-card-preview .card-org-addr {
+font-size: 10px;
+color: #4a4a6a;
+margin-top: 2px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-org-decret {
+font-size: 8px;
+color: #777;
+font-style: italic;
+margin-top: 1px;
+}
+.member-card-preview .card-type-line {
+text-align: center;
+padding: 6px 0 4px;
+border-bottom: 1px solid #ccc;
+margin: 0 16px;
+}
+.member-card-preview .card-type {
+font-size: 17px;
+font-style: italic;
+color: #2c2c2c;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-number {
+font-size: 13px;
+font-style: normal;
+color: #555;
+font-weight: normal;
+}
+.member-card-preview .card-fields {
+padding: 6px 16px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-field {
+display: flex;
+align-items: baseline;
+margin-bottom: 5px;
+font-size: 12px;
+}
+.member-card-preview .card-field label {
+font-size: 10px;
+color: #666;
+min-width: 90px;
+flex-shrink: 0;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-field .value {
+font-size: 16px;
+font-weight: bold;
+color: #1a1a1a;
+border-bottom: 1px dotted #999;
+flex: 1;
+padding: 0 6px;
+min-height: 22px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-section {
+padding: 2px 16px;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-section .section-label {
+font-size: 10px;
+color: #666;
+font-weight: normal;
+}
+.member-card-preview .card-section .section-value {
+font-size: 14px;
+font-weight: bold;
+color: #1a1a1a;
+font-family: 'Georgia', serif;
+}
+.member-card-preview .card-footer {
+display: flex;
+justify-content: space-around;
+padding: 6px 12px 8px;
+margin-top: 4px;
+}
+.member-card-preview .card-signature {
+text-align: center;
+flex: 1;
+}
+.member-card-preview .card-signature .sig-img {
+width: 80px;
+height: 32px;
+margin: 0 auto 2px;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+overflow: hidden;
+}
+.member-card-preview .card-signature .sig-img img {
+max-width: 100%;
+max-height: 100%;
+object-fit: contain;
+}
+.member-card-preview .card-signature .sig-line {
+font-size: 14px;
+font-style: italic;
+color: #333;
+min-height: 20px;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+font-family: 'Brush Script MT', 'Segoe Script', cursive;
+}
+.member-card-preview .card-signature .sig-label {
+font-size: 7px;
+color: #888;
+font-family: 'Georgia', serif;
+}
+.attendance-sheet {
+font-family: 'Georgia', serif;
+background: white;
+color: black;
+}
+.attendance-sheet table {
+border-collapse: collapse;
+width: 100%;
+}
+.attendance-sheet th, .attendance-sheet td {
+border: 1px solid #333;
+padding: 6px 10px;
+font-size: 12px;
+}
+.attendance-sheet th {
+background: #f0f0f0;
+font-weight: bold;
+}
+.attendance-sheet .sig-col {
+width: 150px;
+height: 30px;
+}
+.calendar-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 2px;
+}
+.calendar-day-header {
+text-align: center;
+font-weight: 600;
+font-size: 12px;
+padding: 8px 4px;
+color: var(--text-dim);
+}
+.calendar-day {
+min-height: 80px;
+padding: 4px;
+border: 1px solid var(--border);
+border-radius: 4px;
+font-size: 11px;
+}
+.calendar-day.today {
+border-color: var(--accent);
+background: rgba(79,122,63,.1);
+}
+.calendar-day.other-month {
+opacity: .4;
+}
+.calendar-day-number {
+font-weight: 600;
+font-size: 13px;
+margin-bottom: 2px;
+}
+.calendar-event {
+font-size: 10px;
+padding: 1px 4px;
+border-radius: 3px;
+margin-bottom: 1px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+@media print {
+body * { visibility: hidden; }
+.print-area, .print-area * { visibility: visible; }
+.print-area { position: absolute; left: 0; top: 0; }
+.no-print { display: none !important; }
+}
+.sig-upload-area {
+border: 2px dashed var(--border);
+border-radius: 8px;
+padding: 12px;
+text-align: center;
+cursor: pointer;
+transition: border-color .2s;
+}
+.sig-upload-area:hover { border-color: var(--accent); }
+.sig-preview {
+width: 100px;
+height: 36px;
+margin: 0 auto;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.sig-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.view-toggle { display: flex; gap: 4px; }
+.view-toggle button {
+padding: 6px 12px;
+border-radius: 6px;
+font-size: 13px;
+cursor: pointer;
+border: 1px solid var(--border);
+background: var(--bg-input);
+color: var(--text-dim);
+transition: all .2s;
+}
+.view-toggle button.active {
+background: var(--accent);
+color: white;
+border-color: var(--accent);
+}
+.calendar-print {
+font-family: 'Georgia', serif;
+background: white;
+color: black;
+padding: 20px;
+}
+.calendar-print table {
+border-collapse: collapse;
+width: 100%;
+}
+.calendar-print th, .calendar-print td {
+border: 1px solid #333;
+padding: 4px 8px;
+font-size: 12px;
+vertical-align: top;
+}
+.calendar-print th {
+background: #f0f0f0;
+font-weight: bold;
+text-align: center;
+}
+</style>
+</head>
+<body id="appBody">
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#1a2a1a,#0f1a0f);">
+    <div style="width:100%;max-width:400px;">
+        <div style="background:#1a2a1a;border:1px solid #2d402d;border-radius:20px;padding:40px 32px;text-align:center;">
+            <div id="loginLogoContainer" style="width:72px;height:72px;border-radius:16px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#4f7a3f;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
+            </div>
+            <h1 id="loginAppTitle" style="font-size:26px;font-weight:700;margin-bottom:4px;color:#e0e8d8;">MilAssoc Pro</h1>
+            <p style="font-size:14px;margin-bottom:32px;color:#8a9a80;">Gestion d'Association Militaire</p>
+            <form id="loginForm" autocomplete="off">
+                <div style="text-align:left;margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="votre@email.fr" value="admin@milassoc.fr" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
                 </div>
-                <div style="min-width:0;"><h1 style="font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--accent-light);" id="appTitle">MILASSOC</h1><p style="font-size:11px;letter-spacing:1px;color:var(--text-dim);">PRO v5.2</p></div>
-            </div>
-        </div>
-        <nav style="flex:1;overflow-y:auto;padding:12px 8px;" id="sidebarNav"></nav>
-        <div style="padding:16px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg-card);">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div id="userAvatar" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;background:var(--accent);color:white;overflow:hidden;">CL</div>
-                <div style="flex:1;min-width:0;"><p style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="userName">Cdt. Lefebvre</p><p style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim);" id="userRole">Administrateur</p></div>
-                <button onclick="App.handleLogout()" style="padding:6px;border-radius:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
-            </div>
-        </div>
-    </aside>
-    <main style="margin-left:256px;min-height:100vh;display:flex;flex-direction:column;" id="mainContent">
-        <header style="position:sticky;top:0;z-index:30;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg-dark);border-bottom:1px solid var(--border);">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <button onclick="App.toggleSidebar()" style="display:none;padding:6px;border-radius:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);" id="menuBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-                <div id="headerLogo" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent);overflow:hidden;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
+                <div style="text-align:left;margin-bottom:20px;">
+                    <label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Mot de passe</label>
+                    <input type="password" id="loginPass" required placeholder="••••••••" value="admin123" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
                 </div>
-                <h2 style="font-size:18px;font-weight:600;color:var(--text);" id="pageTitle">Tableau de Bord</h2>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div style="position:relative;display:none;" id="searchWrap"><input type="text" placeholder="Rechercher..." style="border-radius:8px;padding:8px 12px 8px 36px;font-size:13px;outline:none;width:200px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);" id="globalSearch"><svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-                <button onclick="App.toggleNotifPanel()" style="position:relative;padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span style="position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:#ef4444;" class="pulse" id="notifDot"></span></button>
-                <button onclick="App.openQuickAction()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="qaLabel">Action rapide</span></button>
-            </div>
-        </header>
-        <div id="notifPanel" style="position:fixed;right:16px;top:56px;z-index:50;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);width:320px;max-height:384px;overflow-y:auto;display:none;background:var(--bg-card);border:1px solid var(--border);">
-            <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg-card);"><h4 style="font-weight:600;color:var(--text);">Notifications</h4><button onclick="App.clearNotifs()" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;">Tout marquer lu</button></div>
-            <div id="notifList"></div>
+                <div id="loginError" style="display:none;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#ef4444;text-align:left;"></div>
+                <button type="submit" id="loginBtn" style="width:100%;padding:14px;border-radius:10px;font-size:16px;font-weight:600;color:white;background:#4f7a3f;border:none;cursor:pointer;">Se connecter</button>
+            </form>
+            <button id="resetBtn" style="margin-top:16px;font-size:11px;color:#5a6a50;background:none;border:none;cursor:pointer;text-decoration:underline;">Réinitialiser les données</button>
         </div>
-        <div style="flex:1;padding:16px 24px;overflow-y:auto;" id="contentArea"></div>
-    </main>
+    </div>
 </div>
-
 <!-- Toast & Modals -->
 <div id="toast" style="position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.3);font-size:14px;font-weight:500;z-index:200;display:flex;align-items:center;gap:8px;max-width:320px;color:white;background:var(--accent);transform:translateY(100px);opacity:0;transition:all .3s;">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -107,8 +722,151 @@
     </div>
 </div>
 <div id="modalsContainer"></div>
-<!-- ⚠️ SEULEMENT LES LIENS VERS LES FICHIERS EXTERNES - PAS DE CODE INLINE ⚠️ -->
-<script src="js/database.js"></script>
-<script src="js/app.js"></script>
-</body>
-</html>
+
+<!-- ========================================== -->
+<!-- BASE DE DONNÉES (DB) -->
+<!-- ========================================== -->
+<script>
+const DB = {
+    PREFIX: 'milassoc_',
+    DEFAULTS: {
+        users: [
+            {id:1,email:'admin@milassoc.fr',pass:'admin123',name:'Cdt. Lefebvre',role:'Administrateur',status:'Actif',phone:'06 12 34 56 78',photo:null},
+            {id:2,email:'tresorier@milassoc.fr',pass:'treso123',name:'Lt. Bernard',role:'Trésorier',status:'Actif',phone:'06 23 45 67 89',photo:null},
+            {id:3,email:'secretaire@milassoc.fr',pass:'secre123',name:'Cne. Petit',role:'Secrétaire',status:'Actif',phone:'06 34 56 78 90',photo:null},
+            {id:4,email:'lecteur@milassoc.fr',pass:'lecteur123',name:'Sgt. Durand',role:'Lecteur seul',status:'Actif',phone:'',photo:null},
+            {id:5,email:'frederic.massez@gmail.com',pass:'massez123',name:'Frederic Massez',role:'Administrateur',status:'Actif',phone:'06 45 67 89 01',photo:null}
+        ],
+        members: [
+            {id:1,first:'Sophie',last:'Bernard',grade:'Lieutenant',section:'Bravo',status:'Actif',cot:'À jour',email:'s.bernard@mil.fr',mat:'FR-2021-0042',phone:'06 23 45 67 89',photo:null,address:''},
+            {id:2,first:'Claire',last:'Dubois',grade:'Lieutenant',section:'Bravo',status:'Actif',cot:'Non payée',email:'c.dubois@mil.fr',mat:'FR-2023-0071',phone:'',photo:null,address:''},
+            {id:3,first:'Martin',last:'Durand',grade:'Sergent',section:'Alpha',status:'Actif',cot:'À jour',email:'m.durand@mil.fr',mat:'FR-2026-0248',phone:'06 34 56 78 90',photo:null,address:'31 Rue de Tourcoing, 02100 St Quentin'},
+            {id:4,first:'Luc',last:'Fabre',grade:'Caporal',section:'Charlie',status:'Actif',cot:'À jour',email:'l.fabre@mil.fr',mat:'FR-2023-0091',phone:'',photo:null,address:''},
+            {id:5,first:'Henri',last:'Garcia',grade:'Général',section:'Alpha',status:'Actif',cot:'Exonéré',email:'h.garcia@mil.fr',mat:'FR-2010-0001',phone:'',photo:null,address:''},
+            {id:6,first:'Philippe',last:'Girard',grade:'Colonel',section:'Delta',status:'Actif',cot:'À jour',email:'p.girard@mil.fr',mat:'FR-2015-0012',phone:'',photo:null,address:''},
+            {id:7,first:'Antoine',last:'Laurent',grade:'Sergent',section:'Charlie',status:'Actif',cot:'À jour',email:'a.laurent@mil.fr',mat:'FR-2022-0056',phone:'',photo:null,address:''},
+            {id:8,first:'Marie',last:'Leroy',grade:'Caporal',section:'Delta',status:'Actif',cot:'À jour',email:'m.leroy@mil.fr',mat:'FR-2022-0088',phone:'',photo:null,address:''},
+            {id:9,first:'Pierre',last:'Moreau',grade:'Colonel',section:'Alpha',status:'Actif',cot:'À jour',email:'p.moreau@mil.fr',mat:'FR-2020-0001',phone:'06 12 34 56 78',photo:null,address:''},
+            {id:10,first:'Thomas',last:'Michel',grade:'Soldat',section:'Delta',status:'Inactif',cot:'Non payée',email:'t.michel@mil.fr',mat:'FR-2024-0134',phone:'',photo:null,address:''},
+            {id:11,first:'François',last:'Roux',grade:'Commandant',section:'Alpha',status:'Actif',cot:'À jour',email:'f.roux@mil.fr',mat:'FR-2018-0033',phone:'',photo:null,address:''},
+            {id:12,first:'Isabelle',last:'Simon',grade:'Capitaine',section:'Alpha',status:'Actif',cot:'À jour',email:'i.simon@mil.fr',mat:'FR-2017-0022',phone:'',photo:null,address:''},
+            {id:13,first:'Nathalie',last:'Thomas',grade:'Sergent',section:'Bravo',status:'Actif',cot:'À jour',email:'n.thomas@mil.fr',mat:'FR-2021-0067',phone:'',photo:null,address:''},
+            {id:14,first:'Emma',last:'Rousseau',grade:'Lieutenant',section:'Alpha',status:'Actif',cot:'En retard',email:'e.rousseau@mil.fr',mat:'FR-2022-0045',phone:'',photo:null,address:''},
+            {id:15,first:'Jean',last:'Petit',grade:'Capitaine',section:'Charlie',status:'Actif',cot:'En retard',email:'j.petit@mil.fr',mat:'FR-2019-0105',phone:'',photo:null,address:''},
+            {id:16,first:'Frederic',last:'Massez',grade:'Soldat',section:'Delta',status:'Actif',cot:'À jour',email:'frederic.massez@gmail.com',mat:'FR-2026-5534',phone:'06 45 67 89 01',photo:null,address:'14 rue le serrurier - Appartement 103'}
+        ],
+        events: [
+            {id:1,title:'Commémoration Armistice 11 Novembre',date:'2026-11-11',time:'09:00',loc:"Place de l'Étoile, Paris",type:'Cérémonie',desc:'Cérémonie annuelle.'},
+            {id:2,title:'Assemblée Générale Trimestrielle',date:'2026-11-18',time:'14:00',loc:'Salle de conférence',type:'Réunion',desc:'Bilan trimestriel.'},
+            {id:3,title:'Stage Secourisme Militaire',date:'2026-11-25',time:'08:30',loc:'Base de Camp, Fontainebleau',type:'Formation',desc:'Formation premiers secours.'},
+            {id:4,title:"Fête de l'Armée de Terre",date:'2026-06-24',time:'10:00',loc:'Esplanade des Invalides',type:'Cérémonie',desc:'Saint-Louis.'},
+            {id:5,title:'Repas cohésion Section Alpha',date:'2026-05-15',time:'19:30',loc:'Restaurant Le Bastion',type:'Social',desc:'Dîner annuel.'},
+            {id:6,title:'Réunion Bureau Exécutif',date:'2026-04-22',time:'10:00',loc:'Salle du Conseil',type:'Réunion',desc:'Budget T3.'},
+            {id:7,title:'Commémoration 8 Mai 1945',date:'2026-05-08',time:'09:30',loc:'Arc de Triomphe',type:'Cérémonie',desc:'Victoire 1945.'},
+            {id:8,title:'Formation Gestion de Conflit',date:'2026-06-10',time:'09:00',loc:'CNFPT, Paris',type:'Formation',desc:'Formation continue.'},
+            {id:9,title:'Journée Portes Ouvertes',date:'2026-05-30',time:'10:00',loc:'Siège association',type:'Social',desc:'Présentation publique.'}
+        ],
+        docs: [
+            {id:1,title:'PV AG 2025',type:'PV',date:'2026-01-15',size:'2.4 MB',author:'Cdt. Lefebvre',file:null},
+            {id:2,title:'Rapport Financier 2025',type:'Rapport',date:'2026-02-01',size:'5.1 MB',author:'Lt. Bernard',file:null},
+            {id:3,title:'Circulaire N°2026-03',type:'Circulaire',date:'2026-03-10',size:'840 KB',author:'Col. Moreau',file:null},
+            {id:4,title:'Statuts Association v3.2',type:'Statut',date:'2026-01-01',size:'1.2 MB',author:'Secrétariat',file:null},
+            {id:5,title:'Règlement Intérieur',type:'Statut',date:'2025-06-15',size:'680 KB',author:'Secrétariat',file:null}
+        ],
+        tx: [
+            {id:1,desc:'Cotisation — Sgt. Durand',amt:45,type:'income',date:'2026-04-08',category:'Cotisation'},
+            {id:2,desc:'Location salle',amt:850,type:'expense',date:'2026-04-07',category:'Location'},
+            {id:3,desc:'Subvention Ministère',amt:25000,type:'income',date:'2026-04-01',category:'Subvention'},
+            {id:4,desc:'Matériel formation',amt:1200,type:'expense',date:'2026-03-28',category:'Matériel'},
+            {id:5,desc:'Don anonyme',amt:500,type:'income',date:'2026-03-25',category:'Don'}
+        ],
+        units: [
+            {id:1,name:'Section Alpha',chief:'Col. Pierre Moreau',members:82,desc:'Officiers et sous-officiers seniors'},
+            {id:2,name:'Section Bravo',chief:'Cne. Sophie Bernard',members:67,desc:'Sous-officiers et caporaux'},
+            {id:3,name:'Section Charlie',chief:'Lt. Jean Petit',members:58,desc:'Jeunes militaires et réservistes'},
+            {id:4,name:'Section Delta',chief:'Sgt. Marie Leroy',members:40,desc:'Entraide et action humanitaire'}
+        ],
+        convs: [
+            {name:'Sgt. Martin Durand',init:'MD',online:true,unread:2,msgs:[{from:'me',text:'Bonjour Sergent, planning reçu ?',time:'14:00'},{from:'them',text:'Oui Cdt, section Alpha au complet.',time:'14:15'},{from:'them',text:'Arrivée à 08h30.',time:'14:16'},{from:'me',text:'Parfait, confirmez les tenues.',time:'14:30'}]},
+            {name:'Lt. Sophie Bernard',init:'SB',online:true,unread:1,msgs:[{from:'them',text:'Rapport financier prêt.',time:'11:15'}]},
+            {name:'Cne. Jean Petit',init:'JP',online:false,unread:0,msgs:[{from:'me',text:'Planning mai validé ?',time:'Hier'},{from:'them',text:'OK, même calendrier.',time:'Hier'}]},
+            {name:'Cpl. Marie Leroy',init:'ML',online:false,unread:2,msgs:[{from:'them',text:'Besoin autorisation stage.',time:'Lun'},{from:'them',text:'Pouvez-vous signer ?',time:'Lun'}]}
+        ],
+        grades: ['Général','Colonel','Commandant','Capitaine','Lieutenant','Sous-Lieutenant','Adjudant','Sergent-Chef','Sergent','Caporal-Chef','Caporal','Soldat'],
+        sections: ['Alpha','Bravo','Charlie','Delta'],
+        evtTypes: ['Cérémonie','Réunion','Formation','Social'],
+        docTypes: ['PV','Rapport','Circulaire','Statut'],
+        managers: [
+            {id:1,first:'Charles',last:'Lefebvre',email:'c.lefebvre@milassoc.fr',role:'Administrateur',status:'Actif',phone:'06 12 34 56 78',photo:null,sigNat:null,sigDep:null,sigSec:null},
+            {id:2,first:'Sophie',last:'Bernard',email:'s.bernard@milassoc.fr',role:'Trésorier',status:'Actif',phone:'06 23 45 67 89',photo:null,sigNat:null,sigDep:null,sigSec:null},
+            {id:3,first:'Pierre',last:'Moreau',email:'p.moreau@milassoc.fr',role:'Secrétaire',status:'Actif',phone:'',photo:null,sigNat:null,sigDep:null,sigSec:null},
+            {id:4,first:'Frederic',last:'Massez',email:'frederic.massez@gmail.com',role:'Administrateur',status:'Actif',phone:'06 45 67 89 01',photo:null,sigNat:null,sigDep:null,sigSec:null}
+        ],
+        notifs: [
+            {id:1,text:'Nouvelle inscription : <strong>Sgt. M. Durand</strong>',time:'Il y a 15 min',read:false},
+            {id:2,text:'<strong>31 cotisations</strong> en retard',time:'Il y a 1 heure',read:false},
+            {id:3,text:'AG dans <strong>7 jours</strong>',time:'Il y a 3 heures',read:false}
+        ],
+        config: {
+            theme:'clair_bleu',logo:null,logoBg:'#4f7a3f',favicon:null,appName:'MILASSOC PRO',bgColor:'#f0f5f8',customColors:{},
+            cardOrgName:'Union Nationale des Combattants',
+            cardOrgAddr:'18, rue Vezelay - 75008 PARIS',
+            cardOrgPhone:'01 53 89 04 04',
+            cardOrgDecret:"Reconnue d'utilité publique par décret du 20 Mai 1920.",
+            cardLogo:null,
+            cardPresNat:'',
+            cardPresDep:'',
+            cardPresSec:'',
+            cardSigNat:null,
+            cardSigDep:null,
+            cardSigSec:null,
+            cardFormat:'a6'
+        }
+    },
+    _get: function(key, def) { try { var v = localStorage.getItem(this.PREFIX + key); return v !== null ? JSON.parse(v) : def; } catch(e) { return def; } },
+    _set: function(key, v) { try { localStorage.setItem(this.PREFIX + key, JSON.stringify(v)); } catch(e) {} },
+    _def: function(key) { return this.DEFAULTS[key]; },
+    getUsers: function() { return this._get('users', this._def('users')); },
+    setUsers: function(v) { this._set('users', v); },
+    getMembers: function() { return this._get('members', this._def('members')); },
+    setMembers: function(v) { this._set('members', v); },
+    getEvents: function() { return this._get('events', this._def('events')); },
+    setEvents: function(v) { this._set('events', v); },
+    getDocs: function() { return this._get('docs', this._def('docs')); },
+    setDocs: function(v) { this._set('docs', v); },
+    getTx: function() { return this._get('tx', this._def('tx')); },
+    setTx: function(v) { this._set('tx', v); },
+    getUnits: function() { return this._get('units', this._def('units')); },
+    setUnits: function(v) { this._set('units', v); },
+    getConvs: function() { return this._get('convs', this._def('convs')); },
+    setConvs: function(v) { this._set('convs', v); },
+    getGrades: function() { return this._get('grades', this._def('grades')); },
+    setGrades: function(v) { this._set('grades', v); },
+    getSections: function() { return this._get('sections', this._def('sections')); },
+    setSections: function(v) { this._set('sections', v); },
+    getEventTypes: function() { return this._get('evtTypes', this._def('evtTypes')); },
+    setEventTypes: function(v) { this._set('evtTypes', v); },
+    getDocTypes: function() { return this._get('docTypes', this._def('docTypes')); },
+    setDocTypes: function(v) { this._set('docTypes', v); },
+    getManagers: function() { return this._get('managers', this._def('managers')); },
+    setManagers: function(v) { this._set('managers', v); },
+    getNotifs: function() { return this._get('notifs', this._def('notifs')); },
+    setNotifs: function(v) { this._set('notifs', v); },
+    getConfig: function() { return this._get('config', this._def('config')); },
+    setConfig: function(v) { this._set('config', v); },
+    exportAll: function() { return {users:this.getUsers(),members:this.getMembers(),events:this.getEvents(),docs:this.getDocs(),tx:this.getTx(),units:this.getUnits(),convs:this.getConvs(),grades:this.getGrades(),sections:this.getSections(),evtTypes:this.getEventTypes(),docTypes:this.getDocTypes(),managers:this.getManagers(),notifs:this.getNotifs(),config:this.getConfig()}; },
+    importAll: function(data) {
+        if (!data || typeof data !== 'object') return false;
+        if(data.users)this.setUsers(data.users);if(data.members)this.setMembers(data.members);
+        if(data.events)this.setEvents(data.events);if(data.docs)this.setDocs(data.docs);
+        if(data.tx)this.setTx(data.tx);if(data.units)this.setUnits(data.units);
+        if(data.convs)this.setConvs(data.convs);if(data.grades)this.setGrades(data.grades);
+        if(data.sections)this.setSections(data.sections);if(data.evtTypes)this.setEventTypes(data.evtTypes);
+        if(data.docTypes)this.setDocTypes(data.docTypes);if(data.managers)this.setManagers(data.managers);
+        if(data.notifs)this.setNotifs(data.notifs);if(data.config)this.setConfig(data.config);
+        return true;
+    },
+    resetAll: function() {
+        ['users','members','events','docs','tx','units','convs','grades','sections','evtTypes','docTypes','managers','notifs','config'].forEach(function(k){ localStorage.removeItem('milassoc_'+k); });
+    }
+};
