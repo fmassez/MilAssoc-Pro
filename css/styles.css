@@ -2007,3 +2007,14 @@ select option {
     bottom: 0;
     left: 0;
 }
+#contentArea {
+    min-height: calc(100vh - 120px);
+}
+
+#appShell {
+    display: none; /* Sera changé en '' par JS */
+}
+
+#appShell:not([style*="display: none"]) {
+    display: flex !important;
+}
