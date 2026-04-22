@@ -904,7 +904,526 @@ area.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,m
 '</div>'+
 '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><h3 style="font-size:18px;font-weight:600;">Prochains événements</h3><button onclick="App.navigateTo(\'events\')" style="font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;">Voir tout →</button></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">'+uh+'</div></div>';
 },
-// ... [Le code complet des autres modules est identique à la Knowledge Base] ...
+// ==================== MEMBRES ====================
+renderMembers: function() {
+    var members = DB.getMembers();
+    var area = document.getElementById('contentArea');
+    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Membres</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les membres de l\'association</p></div>'+
+    '<button onclick="App.openAddMember()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter un membre</button></div>'+
+    '<div style="border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);">'+
+    '<div style="display:grid;grid-template-columns:40px 1fr 1fr 120px 100px 80px;padding:12px 16px;background:var(--bg-input);font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;">'+
+    '<span></span><span>Nom</span><span>Grade</span><span>Section</span><span>Statut</span><span></span></div>';
+    
+    if(members.length === 0) {
+        h += '<div style="padding:40px;text-align:center;color:var(--text-dim);">Aucun membre</div>';
+    } else {
+        for(var i=0;i<members.length;i++) {
+            var m = members[i];
+            var statusColor = m.status === 'Actif' ? 'var(--accent)' : '#ef4444';
+            h += '<div style="display:grid;grid-template-columns:40px 1fr 1fr 120px 100px 80px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;">'+
+            '<div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--accent);color:white;">'+(m.first[0]+m.last[0]).toUpperCase()+'</div>'+
+            '<div><p style="font-weight:500;">'+m.first+' '+m.last+'</p><p style="font-size:12px;color:var(--text-dim);">'+m.mat+'</p></div>'+
+            '<div style="font-size:14px;">'+m.grade+'</div>'+
+            '<div style="font-size:14px;">'+m.section+'</div>'+
+            '<div><span style="padding:4px 12px;border-radius:9999px;font-size:12px;background:'+statusColor+'20;color:'+statusColor+';">'+m.status+'</span></div>'+
+            '<div style="display:flex;gap:4px;">'+
+            '<button onclick="App.editMember('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button>'+
+            '<button onclick="App.deleteMember('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button>'+
+            '</div></div>';
+        }
+    }
+    h += '</div>';
+    area.innerHTML = h;
+},
+
+openAddMember: function() {
+    var sections = DB.getSections();
+    var grades = DB.getGrades();
+    var h = '<form onsubmit="App.handleMemberSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+    '<input type="hidden" id="memberEditId" value="">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Prénom *</label><input type="text" id="memberFirst" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom *</label><input type="text" id="memberLast" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email</label><input type="email" id="memberEmail" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" id="memberPhone" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Grade</label><select id="memberGrade" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+grades.map(function(g){return '<option>'+g+'</option>';}).join('')+'</select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Section</label><select id="memberSection" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+sections.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select></div></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><textarea id="memberAddress" rows="3" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);resize:vertical;"></textarea></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Cotisation</label><select id="memberCot" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option>À jour</option><option>En retard</option><option>Non payée</option><option>Exonéré</option></select></div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+    this.showGenericModal('Ajouter un membre', h);
+},
+
+handleMemberSave: function(e) {
+    e.preventDefault();
+    var eid = document.getElementById('memberEditId').value;
+    var memberData = {
+        first: document.getElementById('memberFirst').value.trim(),
+        last: document.getElementById('memberLast').value.trim(),
+        email: document.getElementById('memberEmail').value.trim(),
+        phone: document.getElementById('memberPhone').value.trim(),
+        grade: document.getElementById('memberGrade').value,
+        section: document.getElementById('memberSection').value,
+        address: document.getElementById('memberAddress').value.trim(),
+        cot: document.getElementById('memberCot').value,
+        mat: 'FR-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*10000)).padStart(4,'0')
+    };
+    var members = DB.getMembers();
+    if(eid) {
+        for(var i=0;i<members.length;i++) {
+            if(members[i].id === parseInt(eid)) {
+                members[i] = Object.assign(members[i], memberData);
+                break;
+            }
+        }
+        this.showToast('Membre modifié');
+    } else {
+        memberData.id = members.length > 0 ? Math.max.apply(Math, members.map(function(m){return m.id;})) + 1 : 1;
+        memberData.status = 'Actif';
+        memberData.photo = null;
+        members.push(memberData);
+        this.showToast('Membre ajouté');
+    }
+    DB.setMembers(members);
+    this.closeAllModals();
+    this.renderMembers();
+    this.buildSidebar();
+},
+
+editMember: function(id) {
+    var m = DB.getMembers().find(function(x){return x.id===id;});
+    if(!m) return;
+    this.openAddMember();
+    setTimeout(function(){
+        document.getElementById('memberEditId').value = m.id;
+        document.getElementById('memberFirst').value = m.first;
+        document.getElementById('memberLast').value = m.last;
+        document.getElementById('memberEmail').value = m.email||'';
+        document.getElementById('memberPhone').value = m.phone||'';
+        document.getElementById('memberGrade').value = m.grade;
+        document.getElementById('memberSection').value = m.section;
+        document.getElementById('memberAddress').value = m.address||'';
+        document.getElementById('memberCot').value = m.cot;
+    }, 100);
+},
+
+deleteMember: function(id) {
+    var m = DB.getMembers().find(function(x){return x.id===id;});
+    if(!m) return;
+    this.showConfirm('Supprimer le membre ?', m.first+' '+m.last, function(){
+        DB.setMembers(DB.getMembers().filter(function(x){return x.id!==id;}));
+        App.renderMembers();
+        App.buildSidebar();
+        App.showToast('Membre supprimé');
+    });
+},
+
+// ==================== ÉVÉNEMENTS ====================
+renderEvents: function() {
+    var events = DB.getEvents();
+    var area = document.getElementById('contentArea');
+    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Événements</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les événements et cérémonies</p></div>'+
+    '<button onclick="App.openAddEvent()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
+    
+    events.sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+    var mois=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    
+    for(var i=0;i<events.length;i++) {
+        var e = events[i];
+        var d = new Date(e.date);
+        var day = String(d.getDate()).padStart(2,'0');
+        var month = mois[d.getMonth()];
+        h += '<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);cursor:pointer;" onclick="App.editEvent('+e.id+')">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'+
+        '<span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;background:var(--accent);color:white;">'+day+' '+month+'</span>'+
+        '<span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(37,99,235,.1);color:var(--accent);">'+e.type+'</span></div>'+
+        '<p style="font-size:16px;font-weight:600;margin-bottom:8px;">'+e.title+'</p>'+
+        '<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">🕐 '+e.time+'</p>'+
+        '<p style="font-size:13px;color:var(--text-dim);">📍 '+e.loc+'</p></div>';
+    }
+    h += '</div>';
+    area.innerHTML = h;
+},
+
+openAddEvent: function() {
+    var types = DB.getEventTypes();
+    var h = '<form onsubmit="App.handleEventSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+    '<input type="hidden" id="eventEditId" value="">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Titre *</label><input type="text" id="eventTitle" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Date *</label><input type="date" id="eventDate" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Heure *</label><input type="time" id="eventTime" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Lieu *</label><input type="text" id="eventLoc" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="eventType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Description</label><textarea id="eventDesc" rows="3" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);resize:vertical;"></textarea></div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+    this.showGenericModal('Ajouter un événement', h);
+},
+
+handleEventSave: function(e) {
+    e.preventDefault();
+    var eid = document.getElementById('eventEditId').value;
+    var eventData = {
+        title: document.getElementById('eventTitle').value.trim(),
+        date: document.getElementById('eventDate').value,
+        time: document.getElementById('eventTime').value,
+        loc: document.getElementById('eventLoc').value.trim(),
+        type: document.getElementById('eventType').value,
+        desc: document.getElementById('eventDesc').value.trim()
+    };
+    var events = DB.getEvents();
+    if(eid) {
+        for(var i=0;i<events.length;i++) {
+            if(events[i].id === parseInt(eid)) {
+                events[i] = Object.assign(events[i], eventData);
+                break;
+            }
+        }
+        this.showToast('Événement modifié');
+    } else {
+        eventData.id = events.length > 0 ? Math.max.apply(Math, events.map(function(ev){return ev.id;})) + 1 : 1;
+        events.push(eventData);
+        this.showToast('Événement ajouté');
+    }
+    DB.setEvents(events);
+    this.closeAllModals();
+    this.renderEvents();
+},
+
+editEvent: function(id) {
+    var e = DB.getEvents().find(function(x){return x.id===id;});
+    if(!e) return;
+    this.openAddEvent();
+    setTimeout(function(){
+        document.getElementById('eventEditId').value = e.id;
+        document.getElementById('eventTitle').value = e.title;
+        document.getElementById('eventDate').value = e.date;
+        document.getElementById('eventTime').value = e.time;
+        document.getElementById('eventLoc').value = e.loc;
+        document.getElementById('eventType').value = e.type;
+        document.getElementById('eventDesc').value = e.desc||'';
+    }, 100);
+},
+
+// ==================== FINANCES ====================
+renderFinance: function() {
+    var tx = DB.getTx();
+    var inc=0, exp=0;
+    for(var i=0;i<tx.length;i++) { if(tx[i].type==='income') inc+=tx[i].amt; else exp+=tx[i].amt; }
+    var area = document.getElementById('contentArea');
+    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Finances</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les transactions</p></div>'+
+    '<button onclick="App.openAddTx()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
+    '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Recettes</p><p style="font-size:28px;font-weight:700;color:var(--accent);">€ '+inc.toLocaleString('fr-FR')+'</p></div>'+
+    '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Dépenses</p><p style="font-size:28px;font-weight:700;color:#ef4444;">€ '+exp.toLocaleString('fr-FR')+'</p></div>'+
+    '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Solde</p><p style="font-size:28px;font-weight:700;color:'+(inc-exp>=0?'var(--accent)':'#ef4444')+';">€ '+(inc-exp).toLocaleString('fr-FR')+'</p></div></div>'+
+    '<div style="border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);">'+
+    '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;padding:12px 16px;background:var(--bg-input);font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;">'+
+    '<span>Description</span><span>Catégorie</span><span>Date</span><span>Montant</span></div>';
+    
+    tx.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    for(var i=0;i<tx.length;i++) {
+        var t = tx[i];
+        var color = t.type==='income' ? 'var(--accent)' : '#ef4444';
+        var sign = t.type==='income' ? '+' : '-';
+        h += '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;">'+
+        '<div style="font-weight:500;">'+t.desc+'</div>'+
+        '<div style="font-size:14px;color:var(--text-dim);">'+t.category+'</div>'+
+        '<div style="font-size:14px;color:var(--text-dim);">'+t.date+'</div>'+
+        '<div style="font-weight:600;color:'+color+';">'+sign+' € '+t.amt.toLocaleString('fr-FR')+'</div></div>';
+    }
+    h += '</div>';
+    area.innerHTML = h;
+},
+
+openAddTx: function() {
+    var h = '<form onsubmit="App.handleTxSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Description *</label><input type="text" id="txDesc" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="txType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="income">Recette</option><option value="expense">Dépense</option></select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Montant (€) *</label><input type="number" id="txAmt" step="0.01" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Catégorie</label><input type="text" id="txCategory" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Date *</label><input type="date" id="txDate" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+    this.showGenericModal('Ajouter une transaction', h);
+},
+
+handleTxSave: function(e) {
+    e.preventDefault();
+    var txData = {
+        desc: document.getElementById('txDesc').value.trim(),
+        type: document.getElementById('txType').value,
+        amt: parseFloat(document.getElementById('txAmt').value),
+        category: document.getElementById('txCategory').value.trim()||'Divers',
+        date: document.getElementById('txDate').value
+    };
+    var tx = DB.getTx();
+    txData.id = tx.length > 0 ? Math.max.apply(Math, tx.map(function(t){return t.id;})) + 1 : 1;
+    tx.push(txData);
+    DB.setTx(tx);
+    this.closeAllModals();
+    this.renderFinance();
+    this.showToast('Transaction ajoutée');
+},
+
+// ==================== DOCUMENTS ====================
+renderDocuments: function() {
+    var docs = DB.getDocs();
+    var area = document.getElementById('contentArea');
+    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Documents</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les documents</p></div>'+
+    '<button onclick="App.openUploadDoc()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Uploader</button></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">';
+    
+    for(var i=0;i<docs.length;i++) {
+        var d = docs[i];
+        h += '<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);cursor:pointer;" onclick="App.downloadDoc('+d.id+')">'+
+        '<div style="display:flex;align-items:start;gap:12px;margin-bottom:12px;">'+
+        '<div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>'+
+        '<div style="flex:1;"><p style="font-weight:600;margin-bottom:4px;">'+d.title+'</p><p style="font-size:12px;color:var(--text-dim);">'+d.type+' • '+d.size+'</p></div></div>'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim);">'+
+        '<span>📅 '+d.date+'</span><span>👤 '+d.author+'</span></div></div>';
+    }
+    h += '</div>';
+    area.innerHTML = h;
+},
+
+openUploadDoc: function() {
+    var types = DB.getDocTypes();
+    var h = '<form onsubmit="App.handleDocSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Titre *</label><input type="text" id="docTitle" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="docType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Auteur</label><input type="text" id="docAuthor" value="'+this.currentUser.name+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Fichier</label><input type="file" id="docFile" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+    this.showGenericModal('Ajouter un document', h);
+},
+
+handleDocSave: function(e) {
+    e.preventDefault();
+    var docData = {
+        title: document.getElementById('docTitle').value.trim(),
+        type: document.getElementById('docType').value,
+        author: document.getElementById('docAuthor').value.trim(),
+        date: new Date().toISOString().split('T')[0],
+        size: Math.floor(Math.random()*5+1)+' MB',
+        file: null
+    };
+    var docs = DB.getDocs();
+    docData.id = docs.length > 0 ? Math.max.apply(Math, docs.map(function(d){return d.id;})) + 1 : 1;
+    docs.push(docData);
+    DB.setDocs(docs);
+    this.closeAllModals();
+    this.renderDocuments();
+    this.showToast('Document ajouté');
+},
+
+downloadDoc: function(id) {
+    this.showToast('Téléchargement simulé');
+},
+
+// ==================== MESSAGES ====================
+renderMessages: function() {
+    var convs = DB.getConvs();
+    var area = document.getElementById('contentArea');
+    var h = '<div style="display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-card);height:calc(100vh - 200px);">'+
+    '<div style="border-right:1px solid var(--border);overflow-y:auto;">'+
+    '<div style="padding:16px;border-bottom:1px solid var(--border);"><h3 style="font-weight:600;">Conversations</h3></div>';
+    
+    for(var i=0;i<convs.length;i++) {
+        var c = convs[i];
+        var active = i===this.curConv ? 'background:var(--bg-input);' : '';
+        h += '<div onclick="App.openConversation('+i+')" style="padding:16px;cursor:pointer;'+active+'">'+
+        '<div style="display:flex;align-items:center;gap:12px;">'+
+        '<div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--accent);color:white;">'+c.init+'</div>'+
+        '<div style="flex:1;"><p style="font-weight:500;">'+c.name+'</p><p style="font-size:12px;color:var(--text-dim);">'+c.msgs[c.msgs.length-1].text.substring(0,30)+'...</p></div>'+
+        (c.unread>0?'<span style="background:var(--accent);color:white;padding:2px 8px;border-radius:9999px;font-size:11px;">'+c.unread+'</span>':'')+'</div></div>';
+    }
+    h += '</div><div style="display:flex;flex-direction:column;">';
+    
+    if(convs.length > 0) {
+        var c = convs[this.curConv];
+        h += '<div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">'+
+        '<div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--accent);color:white;">'+c.init+'</div>'+
+        '<div><p style="font-weight:600;">'+c.name+'</p><p style="font-size:12px;color:var(--text-dim);">'+(c.online?'En ligne':'Hors ligne')+'</p></div></div>'+
+        '<div style="flex:1;padding:16px;overflow-y:auto;" id="chatMessages">';
+        for(var j=0;j<c.msgs.length;j++) {
+            var m = c.msgs[j];
+            var align = m.from==='me' ? 'text-align:right;' : '';
+            var bg = m.from==='me' ? 'background:var(--accent);color:white;' : 'background:var(--bg-input);';
+            h += '<div style="margin-bottom:12px;'+align+'"><span style="display:inline-block;padding:8px 12px;border-radius:12px;'+bg+'">'+m.text+'</span><p style="font-size:11px;color:var(--text-dim);margin-top:4px;">'+m.time+'</p></div>';
+        }
+        h += '</div><div style="padding:16px;border-top:1px solid var(--border);"><form onsubmit="App.sendMessage(event)" style="display:flex;gap:8px;">'+
+        '<input type="text" id="chatInput" placeholder="Écrire un message..." style="flex:1;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+
+        '<button type="submit" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Envoyer</button></form></div>';
+    }
+    h += '</div></div>';
+    area.innerHTML = h;
+},
+
+openConversation: function(i) {
+    this.curConv = i;
+    var convs = DB.getConvs();
+    convs[i].unread = 0;
+    DB.setConvs(convs);
+    this.renderMessages();
+    this.buildSidebar();
+},
+
+sendMessage: function(e) {
+    e.preventDefault();
+    var input = document.getElementById('chatInput');
+    if(!input.value.trim()) return;
+    var convs = DB.getConvs();
+    convs[this.curConv].msgs.push({from:'me',text:input.value,time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})});
+    DB.setConvs(convs);
+    input.value = '';
+    this.renderMessages();
+},
+
+// ==================== UNITÉS ====================
+renderUnits: function() {
+    var units = DB.getUnits();
+    var area = document.getElementById('contentArea');
+    var h = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Unités</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les sections</p></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
+    
+    for(var i=0;i<units.length;i++) {
+        var u = units[i];
+        h += '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'+
+        '<div style="width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent);color:white;font-size:24px;">⭐</div>'+
+        '<div><p style="font-size:18px;font-weight:700;">'+u.name+'</p><p style="font-size:13px;color:var(--text-dim);">'+u.chief+'</p></div></div>'+
+        '<p style="font-size:14px;color:var(--text-dim);margin-bottom:16px;">'+u.desc+'</p>'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border);">'+
+        '<span style="font-size:14px;color:var(--text-dim);">'+u.members+' membres</span>'+
+        '<button onclick="App.viewUnit('+u.id+')" style="padding:6px 12px;border-radius:6px;font-size:13px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Voir détails</button></div></div>';
+    }
+    h += '</div>';
+    area.innerHTML = h;
+},
+
+viewUnit: function(id) {
+    this.showToast('Détails de l\'unité '+id);
+},
+
+// ==================== CARTES MEMBRES ====================
+renderCards: function() {
+    var area = document.getElementById('contentArea');
+    area.innerHTML = '<div style="padding:40px;text-align:center;"><h3 style="font-size:24px;font-weight:700;margin-bottom:8px;">Cartes de Membre</h3><p style="color:var(--text-dim);margin-bottom:24px;">Générez et imprimez les cartes de membre</p>'+
+    '<button onclick="App.generateAllCards()" style="padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Générer toutes les cartes</button></div>';
+},
+
+generateAllCards: function() {
+    this.showToast('Génération des cartes...');
+},
+
+// ==================== ADMINISTRATION ====================
+renderAdmin: function() {
+    var area = document.getElementById('contentArea');
+    area.innerHTML = '<div style="padding:40px;text-align:center;"><h3 style="font-size:24px;font-weight:700;margin-bottom:8px;">Administration</h3><p style="color:var(--text-dim);">Gérez les paramètres avancés</p></div>';
+},
+
+// ==================== PARAMÈTRES ====================
+renderSettings: function() {
+    var cfg = DB.getConfig();
+    var area = document.getElementById('contentArea');
+    var h = '<div style="max-width:600px;margin:0 auto;"><h3 style="font-size:24px;font-weight:700;margin-bottom:24px;">Paramètres</h3>'+
+    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);margin-bottom:16px;">'+
+    '<h4 style="font-weight:600;margin-bottom:16px;">Apparence</h4>'+
+    '<div style="margin-bottom:16px;"><label style="display:block;font-size:13px;margin-bottom:8px;color:var(--text-dim);">Thème</label>'+
+    '<select id="settingTheme" onchange="App.changeTheme(this.value)" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+
+    Object.keys(this.THEMES).map(function(k){return '<option value="'+k+'"'+(k===cfg.theme?' selected':'')+'>'+App.THEMES[k].name+'</option>';}).join('')+'</select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:8px;color:var(--text-dim);">Nom de l\'application</label>'+
+    '<input type="text" id="settingAppName" value="'+cfg.appName+'" onchange="App.saveSetting(\'appName\',this.value)" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);margin-bottom:16px;">'+
+    '<h4 style="font-weight:600;margin-bottom:16px;">Données</h4>'+
+    '<div style="display:flex;gap:12px;flex-wrap:wrap;">'+
+    '<button onclick="App.exportAllData()" style="padding:10px 20px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Exporter les données</button>'+
+    '<button onclick="App.importAllData()" style="padding:10px 20px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Importer les données</button>'+
+    '<button onclick="App.resetAllData()" style="padding:10px 20px;border-radius:8px;font-size:14px;background:rgba(239,68,68,.2);color:#ef4444;border:1px solid rgba(239,68,68,.3);cursor:pointer;">Réinitialiser</button></div></div></div>';
+    area.innerHTML = h;
+},
+
+changeTheme: function(theme) {
+    var cfg = DB.getConfig();
+    cfg.theme = theme;
+    DB.setConfig(cfg);
+    location.reload();
+},
+
+saveSetting: function(key, value) {
+    var cfg = DB.getConfig();
+    cfg[key] = value;
+    DB.setConfig(cfg);
+    this.showToast('Paramètre sauvegardé');
+},
+
+exportAllData: function() {
+    var data = DB.exportAll();
+    var blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'milassoc_backup_'+new Date().toISOString().split('T')[0]+'.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    this.showToast('Données exportées');
+},
+
+importAllData: function() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    var self = this;
+    input.onchange = function(e) {
+        var file = e.target.files[0];
+        if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                var data = JSON.parse(ev.target.result);
+                if(DB.importAll(data)) {
+                    self.showToast('Données importées');
+                    location.reload();
+                }
+            } catch(err) {
+                self.showToast('Erreur: fichier invalide');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+},
+
+resetAllData: function() {
+    this.showConfirm('Réinitialiser toutes les données ?', 'Cette action est irréversible', function(){
+        DB.resetAll();
+        location.reload();
+    });
+},
+
+// ==================== ACTION RAPIDE ====================
+openQuickAction: function() {
+    var cm=this.canEdit(), cf=this.canFinance();
+    var h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
+    if(cm) h += '<button onclick="App.closeAllModals();App.openAddMember()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">➕ Membre</button>';
+    if(cm) h += '<button onclick="App.closeAllModals();App.openAddEvent()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📅 Événement</button>';
+    if(cf) h += '<button onclick="App.closeAllModals();App.openAddTx()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">💰 Transaction</button>';
+    h += '<button onclick="App.closeAllModals();App.openUploadDoc()" style="padding:16px;border-radius:8px;text-align:center;background:var(--bg-input);border:1px solid var(--border);cursor:pointer;color:var(--text);">📄 Document</button>';
+    h += '</div>';
+    this.showGenericModal('Action rapide', h);
+}
 };
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
