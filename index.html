@@ -333,94 +333,93 @@ text-align: center;
 <body id="appBody">
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#1a2a1a,#0f1a0f);">
-    <div style="width:100%;max-width:400px;">
-        <div style="background:#1a2a1a;border:1px solid #2d402d;border-radius:20px;padding:40px 32px;text-align:center;">
-            <div id="loginLogoContainer" style="width:72px;height:72px;border-radius:16px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#4f7a3f;">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
-            </div>
-            <h1 id="loginAppTitle" style="font-size:26px;font-weight:700;margin-bottom:4px;color:#e0e8d8;">MilAssoc Pro</h1>
-            <p style="font-size:14px;margin-bottom:32px;color:#8a9a80;">Gestion d'Association Militaire</p>
-            <form id="loginForm" autocomplete="off">
-                <div style="text-align:left;margin-bottom:16px;">
-                    <label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Email</label>
-                    <input type="email" id="loginEmail" required placeholder="votre@email.fr" value="admin@milassoc.fr" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
-                </div>
-                <div style="text-align:left;margin-bottom:20px;">
-                    <label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Mot de passe</label>
-                    <input type="password" id="loginPass" required placeholder="••••••••" value="admin123" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
-                </div>
-                <div id="loginError" style="display:none;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#ef4444;text-align:left;"></div>
-                <button type="submit" id="loginBtn" style="width:100%;padding:14px;border-radius:10px;font-size:16px;font-weight:600;color:white;background:#4f7a3f;border:none;cursor:pointer;">Se connecter</button>
-            </form>
-            <button id="resetBtn" style="margin-top:16px;font-size:11px;color:#5a6a50;background:none;border:none;cursor:pointer;text-decoration:underline;">Réinitialiser les données</button>
-        </div>
-    </div>
+<div style="width:100%;max-width:400px;">
+<div style="background:#1a2a1a;border:1px solid #2d402d;border-radius:20px;padding:40px 32px;text-align:center;">
+<div id="loginLogoContainer" style="width:72px;height:72px;border-radius:16px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#4f7a3f;">
+<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
+</div>
+<h1 id="loginAppTitle" style="font-size:26px;font-weight:700;margin-bottom:4px;color:#e0e8d8;">MilAssoc Pro</h1>
+<p style="font-size:14px;margin-bottom:32px;color:#8a9a80;">Gestion d'Association Militaire</p>
+<form id="loginForm" autocomplete="off">
+<div style="text-align:left;margin-bottom:16px;">
+<label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Email</label>
+<input type="email" id="loginEmail" required placeholder="votre@email.fr" value="admin@milassoc.fr" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
+</div>
+<div style="text-align:left;margin-bottom:20px;">
+<label style="display:block;font-size:13px;margin-bottom:6px;color:#8a9a80;">Mot de passe</label>
+<input type="password" id="loginPass" required placeholder="••••••••" value="admin123" style="width:100%;border-radius:10px;padding:12px 16px;font-size:14px;outline:none;background:#243524;border:1px solid #2d402d;color:#e0e8d8;">
+</div>
+<div id="loginError" style="display:none;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#ef4444;text-align:left;"></div>
+<button type="submit" id="loginBtn" style="width:100%;padding:14px;border-radius:10px;font-size:16px;font-weight:600;color:white;background:#4f7a3f;border:none;cursor:pointer;">Se connecter</button>
+</form>
+<button id="resetBtn" style="margin-top:16px;font-size:11px;color:#5a6a50;background:none;border:none;cursor:pointer;text-decoration:underline;">Réinitialiser les données</button>
+</div>
+</div>
 </div>
 <!-- APP SHELL -->
 <div id="appShell" style="display:none;">
-    <div id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;" onclick="App.closeSidebar()"></div>
-    <aside id="sidebar" style="position:fixed;left:0;top:0;height:100%;width:256px;z-index:50;display:flex;flex-direction:column;transition:transform .3s;background:var(--bg-card);border-right:1px solid var(--border);">
-        <div style="padding:20px;border-bottom:1px solid var(--border);flex-shrink:0;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div id="sidebarLogo" style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent);overflow:hidden;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
-                </div>
-                <div style="min-width:0;"><h1 style="font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--accent-light);" id="appTitle">MILASSOC</h1><p style="font-size:11px;letter-spacing:1px;color:var(--text-dim);">PRO v5.2</p></div>
-            </div>
-        </div>
-        <nav style="flex:1;overflow-y:auto;padding:12px 8px;" id="sidebarNav"></nav>
-        <div style="padding:16px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg-card);">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div id="userAvatar" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;background:var(--accent);color:white;overflow:hidden;">CL</div>
-                <div style="flex:1;min-width:0;"><p style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="userName">Cdt. Lefebvre</p><p style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim);" id="userRole">Administrateur</p></div>
-                <button onclick="App.handleLogout()" style="padding:6px;border-radius:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
-            </div>
-        </div>
-    </aside>
-    <main style="margin-left:256px;min-height:100vh;display:flex;flex-direction:column;" id="mainContent">
-        <header style="position:sticky;top:0;z-index:30;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg-dark);border-bottom:1px solid var(--border);">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <button onclick="App.toggleSidebar()" style="display:none;padding:6px;border-radius:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);" id="menuBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-                <div id="headerLogo" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent);overflow:hidden;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
-                </div>
-                <h2 style="font-size:18px;font-weight:600;color:var(--text);" id="pageTitle">Tableau de Bord</h2>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div style="position:relative;display:none;" id="searchWrap"><input type="text" placeholder="Rechercher..." style="border-radius:8px;padding:8px 12px 8px 36px;font-size:13px;outline:none;width:200px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);" id="globalSearch"><svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-                <button onclick="App.toggleNotifPanel()" style="position:relative;padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span style="position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:#ef4444;" class="pulse" id="notifDot"></span></button>
-                <button onclick="App.openQuickAction()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="qaLabel">Action rapide</span></button>
-            </div>
-        </header>
-        <div id="notifPanel" style="position:fixed;right:16px;top:56px;z-index:50;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);width:320px;max-height:384px;overflow-y:auto;display:none;background:var(--bg-card);border:1px solid var(--border);">
-            <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg-card);"><h4 style="font-weight:600;color:var(--text);">Notifications</h4><button onclick="App.clearNotifs()" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;">Tout marquer lu</button></div>
-            <div id="notifList"></div>
-        </div>
-        <div style="flex:1;padding:16px 24px;overflow-y:auto;" id="contentArea"></div>
-    </main>
+<div id="sidebarOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;" onclick="App.closeSidebar()"></div>
+<aside id="sidebar" style="position:fixed;left:0;top:0;height:100%;width:256px;z-index:50;display:flex;flex-direction:column;transition:transform .3s;background:var(--bg-card);border-right:1px solid var(--border);">
+<div style="padding:20px;border-bottom:1px solid var(--border);flex-shrink:0;">
+<div style="display:flex;align-items:center;gap:12px;">
+<div id="sidebarLogo" style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent);overflow:hidden;">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
+</div>
+<div style="min-width:0;"><h1 style="font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--accent-light);" id="appTitle">MILASSOC</h1><p style="font-size:11px;letter-spacing:1px;color:var(--text-dim);">PRO v5.2</p></div>
+</div>
+</div>
+<nav style="flex:1;overflow-y:auto;padding:12px 8px;" id="sidebarNav"></nav>
+<div style="padding:16px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg-card);">
+<div style="display:flex;align-items:center;gap:12px;">
+<div id="userAvatar" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;background:var(--accent);color:white;overflow:hidden;">CL</div>
+<div style="flex:1;min-width:0;"><p style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="userName">Cdt. Lefebvre</p><p style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim);" id="userRole">Administrateur</p></div>
+<button onclick="App.handleLogout()" style="padding:6px;border-radius:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);" title="Déconnexion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+</div>
+</div>
+</aside>
+<main style="margin-left:256px;min-height:100vh;display:flex;flex-direction:column;" id="mainContent">
+<header style="position:sticky;top:0;z-index:30;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg-dark);border-bottom:1px solid var(--border);">
+<div style="display:flex;align-items:center;gap:12px;">
+<button onclick="App.toggleSidebar()" style="display:none;padding:6px;border-radius:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);" id="menuBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+<div id="headerLogo" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent);overflow:hidden;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M22 7L12 12 2 7"/></svg>
+</div>
+<h2 style="font-size:18px;font-weight:600;color:var(--text);" id="pageTitle">Tableau de Bord</h2>
+</div>
+<div style="display:flex;align-items:center;gap:8px;">
+<div style="position:relative;display:none;" id="searchWrap"><input type="text" placeholder="Rechercher..." style="border-radius:8px;padding:8px 12px 8px 36px;font-size:13px;outline:none;width:200px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);" id="globalSearch"><svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+<button onclick="App.toggleNotifPanel()" style="position:relative;padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span style="position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:#ef4444;" class="pulse" id="notifDot"></span></button>
+<button onclick="App.openQuickAction()" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="qaLabel">Action rapide</span></button>
+</div>
+</header>
+<div id="notifPanel" style="position:fixed;right:16px;top:56px;z-index:50;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.3);width:320px;max-height:384px;overflow-y:auto;display:none;background:var(--bg-card);border:1px solid var(--border);">
+<div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg-card);"><h4 style="font-weight:600;color:var(--text);">Notifications</h4><button onclick="App.clearNotifs()" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;">Tout marquer lu</button></div>
+<div id="notifList"></div>
+</div>
+<div style="flex:1;padding:16px 24px;overflow-y:auto;" id="contentArea"></div>
+</main>
 </div>
 <!-- Toast -->
 <div id="toast" style="position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.3);font-size:14px;font-weight:500;z-index:200;display:flex;align-items:center;gap:8px;max-width:320px;color:white;background:var(--accent);transform:translateY(100px);opacity:0;transition:all .3s;">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    <span id="toastMsg"></span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+<span id="toastMsg"></span>
 </div>
 <!-- Confirm Modal -->
 <div id="confirmModal" style="position:fixed;inset:0;z-index:150;display:none;">
-    <div style="position:absolute;inset:0;background:rgba(0,0,0,.6);" onclick="App.closeModal('confirmModal')"></div>
-    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:12px;border:1px solid var(--border);width:100%;max-width:380px;margin:0 16px;padding:24px;background:var(--bg-card);">
-        <div style="text-align:center;">
-            <div style="width:56px;height:56px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,.2);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
-            <h3 style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text);" id="cfmTitle">Confirmer</h3>
-            <p style="font-size:14px;margin-bottom:24px;color:var(--text-dim);" id="cfmMsg"></p>
-            <div style="display:flex;gap:12px;justify-content:center;">
-                <button onclick="App.closeModal('confirmModal')" style="padding:8px 20px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button>
-                <button onclick="App.execConfirm()" id="cfmBtn" style="padding:8px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:#c0392b;border:none;cursor:pointer;">Supprimer</button>
-            </div>
-        </div>
-    </div>
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.6);" onclick="App.closeModal('confirmModal')"></div>
+<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:12px;border:1px solid var(--border);width:100%;max-width:380px;margin:0 16px;padding:24px;background:var(--bg-card);">
+<div style="text-align:center;">
+<div style="width:56px;height:56px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,.2);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+<h3 style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text);" id="cfmTitle">Confirmer</h3>
+<p style="font-size:14px;margin-bottom:24px;color:var(--text-dim);" id="cfmMsg"></p>
+<div style="display:flex;gap:12px;justify-content:center;">
+<button onclick="App.closeModal('confirmModal')" style="padding:8px 20px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button>
+<button onclick="App.execConfirm()" id="cfmBtn" style="padding:8px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:#c0392b;border:none;cursor:pointer;">Supprimer</button>
+</div>
+</div>
+</div>
 </div>
 <div id="modalsContainer"></div>
-
 <script>
 // ==========================================
 // BASE DE DONNÉES
@@ -904,545 +903,538 @@ area.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,m
 '</div>'+
 '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><h3 style="font-size:18px;font-weight:600;">Prochains événements</h3><button onclick="App.navigateTo(\'events\')" style="font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;">Voir tout →</button></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">'+uh+'</div></div>';
 },
+
 // ==================== MEMBRES ====================
 renderMembers: function() {
-    var members = DB.getMembers();
-    var area = document.getElementById('contentArea');
-    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
-    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Membres</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les membres de l\'association</p></div>'+
-    '<button onclick="App.openAddMember()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter un membre</button></div>'+
-    '<div style="border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);">'+
-    '<div style="display:grid;grid-template-columns:40px 1fr 1fr 120px 100px 80px;padding:12px 16px;background:var(--bg-input);font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;">'+
-    '<span></span><span>Nom</span><span>Grade</span><span>Section</span><span>Statut</span><span></span></div>';
-    
-    if(members.length === 0) {
-        h += '<div style="padding:40px;text-align:center;color:var(--text-dim);">Aucun membre</div>';
-    } else {
-        for(var i=0;i<members.length;i++) {
-            var m = members[i];
-            var statusColor = m.status === 'Actif' ? 'var(--accent)' : '#ef4444';
-            h += '<div style="display:grid;grid-template-columns:40px 1fr 1fr 120px 100px 80px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;">'+
-            '<div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--accent);color:white;">'+(m.first[0]+m.last[0]).toUpperCase()+'</div>'+
-            '<div><p style="font-weight:500;">'+m.first+' '+m.last+'</p><p style="font-size:12px;color:var(--text-dim);">'+m.mat+'</p></div>'+
-            '<div style="font-size:14px;">'+m.grade+'</div>'+
-            '<div style="font-size:14px;">'+m.section+'</div>'+
-            '<div><span style="padding:4px 12px;border-radius:9999px;font-size:12px;background:'+statusColor+'20;color:'+statusColor+';">'+m.status+'</span></div>'+
-            '<div style="display:flex;gap:4px;">'+
-            '<button onclick="App.editMember('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button>'+
-            '<button onclick="App.deleteMember('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button>'+
-            '</div></div>';
-        }
-    }
-    h += '</div>';
-    area.innerHTML = h;
+var members = DB.getMembers();
+var area = document.getElementById('contentArea');
+var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+'<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Membres</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les membres de l\'association</p></div>'+
+'<button onclick="App.openAddMember()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter un membre</button></div>'+
+'<div style="border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);">'+
+'<div style="display:grid;grid-template-columns:40px 1fr 1fr 120px 100px 80px;padding:12px 16px;background:var(--bg-input);font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;">'+
+'<span></span><span>Nom</span><span>Grade</span><span>Section</span><span>Statut</span><span></span></div>';
+if(members.length === 0) {
+h += '<div style="padding:40px;text-align:center;color:var(--text-dim);">Aucun membre</div>';
+} else {
+for(var i=0;i<members.length;i++) {
+var m = members[i];
+var statusColor = m.status === 'Actif' ? 'var(--accent)' : '#ef4444';
+h += '<div style="display:grid;grid-template-columns:40px 1fr 1fr 120px 100px 80px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;">'+
+'<div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--accent);color:white;">'+(m.first[0]+m.last[0]).toUpperCase()+'</div>'+
+'<div><p style="font-weight:500;">'+m.first+' '+m.last+'</p><p style="font-size:12px;color:var(--text-dim);">'+m.mat+'</p></div>'+
+'<div style="font-size:14px;">'+m.grade+'</div>'+
+'<div style="font-size:14px;">'+m.section+'</div>'+
+'<div><span style="padding:4px 12px;border-radius:9999px;font-size:12px;background:'+statusColor+'20;color:'+statusColor+';">'+m.status+'</span></div>'+
+'<div style="display:flex;gap:4px;">'+
+'<button onclick="App.editMember('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button>'+
+'<button onclick="App.deleteMember('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button>'+
+'</div></div>';
+}
+}
+h += '</div>';
+area.innerHTML = h;
 },
 
 openAddMember: function() {
-    var sections = DB.getSections();
-    var grades = DB.getGrades();
-    var h = '<form onsubmit="App.handleMemberSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
-    '<input type="hidden" id="memberEditId" value="">'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Prénom *</label><input type="text" id="memberFirst" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom *</label><input type="text" id="memberLast" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email</label><input type="email" id="memberEmail" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" id="memberPhone" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Grade</label><select id="memberGrade" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+grades.map(function(g){return '<option>'+g+'</option>';}).join('')+'</select></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Section</label><select id="memberSection" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+sections.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select></div></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><textarea id="memberAddress" rows="3" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);resize:vertical;"></textarea></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Cotisation</label><select id="memberCot" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option>À jour</option><option>En retard</option><option>Non payée</option><option>Exonéré</option></select></div>'+
-    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
-    this.showGenericModal('Ajouter un membre', h);
+var sections = DB.getSections();
+var grades = DB.getGrades();
+var h = '<form onsubmit="App.handleMemberSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+'<input type="hidden" id="memberEditId" value="">'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Prénom *</label><input type="text" id="memberFirst" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom *</label><input type="text" id="memberLast" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email</label><input type="email" id="memberEmail" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" id="memberPhone" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Grade</label><select id="memberGrade" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+grades.map(function(g){return '<option>'+g+'</option>';}).join('')+'</select></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Section</label><select id="memberSection" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+sections.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select></div></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><textarea id="memberAddress" rows="3" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);resize:vertical;"></textarea></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Cotisation</label><select id="memberCot" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option>À jour</option><option>En retard</option><option>Non payée</option><option>Exonéré</option></select></div>'+
+'<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+this.showGenericModal('Ajouter un membre', h);
 },
 
 handleMemberSave: function(e) {
-    e.preventDefault();
-    var eid = document.getElementById('memberEditId').value;
-    var memberData = {
-        first: document.getElementById('memberFirst').value.trim(),
-        last: document.getElementById('memberLast').value.trim(),
-        email: document.getElementById('memberEmail').value.trim(),
-        phone: document.getElementById('memberPhone').value.trim(),
-        grade: document.getElementById('memberGrade').value,
-        section: document.getElementById('memberSection').value,
-        address: document.getElementById('memberAddress').value.trim(),
-        cot: document.getElementById('memberCot').value,
-        mat: 'FR-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*10000)).padStart(4,'0')
-    };
-    var members = DB.getMembers();
-    if(eid) {
-        for(var i=0;i<members.length;i++) {
-            if(members[i].id === parseInt(eid)) {
-                members[i] = Object.assign(members[i], memberData);
-                break;
-            }
-        }
-        this.showToast('Membre modifié');
-    } else {
-        memberData.id = members.length > 0 ? Math.max.apply(Math, members.map(function(m){return m.id;})) + 1 : 1;
-        memberData.status = 'Actif';
-        memberData.photo = null;
-        members.push(memberData);
-        this.showToast('Membre ajouté');
-    }
-    DB.setMembers(members);
-    this.closeAllModals();
-    this.renderMembers();
-    this.buildSidebar();
+e.preventDefault();
+var eid = document.getElementById('memberEditId').value;
+var memberData = {
+first: document.getElementById('memberFirst').value.trim(),
+last: document.getElementById('memberLast').value.trim(),
+email: document.getElementById('memberEmail').value.trim(),
+phone: document.getElementById('memberPhone').value.trim(),
+grade: document.getElementById('memberGrade').value,
+section: document.getElementById('memberSection').value,
+address: document.getElementById('memberAddress').value.trim(),
+cot: document.getElementById('memberCot').value,
+mat: 'FR-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*10000)).padStart(4,'0')
+};
+var members = DB.getMembers();
+if(eid) {
+for(var i=0;i<members.length;i++) {
+if(members[i].id === parseInt(eid)) {
+members[i] = Object.assign(members[i], memberData);
+break;
+}
+}
+this.showToast('Membre modifié');
+} else {
+memberData.id = members.length > 0 ? Math.max.apply(Math, members.map(function(m){return m.id;})) + 1 : 1;
+memberData.status = 'Actif';
+memberData.photo = null;
+members.push(memberData);
+this.showToast('Membre ajouté');
+}
+DB.setMembers(members);
+this.closeAllModals();
+this.renderMembers();
+this.buildSidebar();
 },
 
 editMember: function(id) {
-    var m = DB.getMembers().find(function(x){return x.id===id;});
-    if(!m) return;
-    this.openAddMember();
-    setTimeout(function(){
-        document.getElementById('memberEditId').value = m.id;
-        document.getElementById('memberFirst').value = m.first;
-        document.getElementById('memberLast').value = m.last;
-        document.getElementById('memberEmail').value = m.email||'';
-        document.getElementById('memberPhone').value = m.phone||'';
-        document.getElementById('memberGrade').value = m.grade;
-        document.getElementById('memberSection').value = m.section;
-        document.getElementById('memberAddress').value = m.address||'';
-        document.getElementById('memberCot').value = m.cot;
-    }, 100);
+var m = DB.getMembers().find(function(x){return x.id===id;});
+if(!m) return;
+this.openAddMember();
+setTimeout(function(){
+document.getElementById('memberEditId').value = m.id;
+document.getElementById('memberFirst').value = m.first;
+document.getElementById('memberLast').value = m.last;
+document.getElementById('memberEmail').value = m.email||'';
+document.getElementById('memberPhone').value = m.phone||'';
+document.getElementById('memberGrade').value = m.grade;
+document.getElementById('memberSection').value = m.section;
+document.getElementById('memberAddress').value = m.address||'';
+document.getElementById('memberCot').value = m.cot;
+}, 100);
 },
 
 deleteMember: function(id) {
-    var m = DB.getMembers().find(function(x){return x.id===id;});
-    if(!m) return;
-    this.showConfirm('Supprimer le membre ?', m.first+' '+m.last, function(){
-        DB.setMembers(DB.getMembers().filter(function(x){return x.id!==id;}));
-        App.renderMembers();
-        App.buildSidebar();
-        App.showToast('Membre supprimé');
-    });
+var m = DB.getMembers().find(function(x){return x.id===id;});
+if(!m) return;
+this.showConfirm('Supprimer le membre ?', m.first+' '+m.last, function(){
+DB.setMembers(DB.getMembers().filter(function(x){return x.id!==id;}));
+App.renderMembers();
+App.buildSidebar();
+App.showToast('Membre supprimé');
+});
 },
 
 // ==================== ÉVÉNEMENTS ====================
 renderEvents: function() {
-    var events = DB.getEvents();
-    var area = document.getElementById('contentArea');
-    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
-    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Événements</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les événements et cérémonies</p></div>'+
-    '<button onclick="App.openAddEvent()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button></div>'+
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
-    
-    events.sort(function(a,b){return new Date(a.date)-new Date(b.date);});
-    var mois=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-    
-    for(var i=0;i<events.length;i++) {
-        var e = events[i];
-        var d = new Date(e.date);
-        var day = String(d.getDate()).padStart(2,'0');
-        var month = mois[d.getMonth()];
-        h += '<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);cursor:pointer;" onclick="App.editEvent('+e.id+')">'+
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'+
-        '<span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;background:var(--accent);color:white;">'+day+' '+month+'</span>'+
-        '<span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(37,99,235,.1);color:var(--accent);">'+e.type+'</span></div>'+
-        '<p style="font-size:16px;font-weight:600;margin-bottom:8px;">'+e.title+'</p>'+
-        '<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">🕐 '+e.time+'</p>'+
-        '<p style="font-size:13px;color:var(--text-dim);">📍 '+e.loc+'</p></div>';
-    }
-    h += '</div>';
-    area.innerHTML = h;
+var events = DB.getEvents();
+var area = document.getElementById('contentArea');
+var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+'<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Événements</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les événements et cérémonies</p></div>'+
+'<button onclick="App.openAddEvent()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button></div>'+
+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
+events.sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+var mois=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+for(var i=0;i<events.length;i++) {
+var e = events[i];
+var d = new Date(e.date);
+var day = String(d.getDate()).padStart(2,'0');
+var month = mois[d.getMonth()];
+h += '<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);cursor:pointer;" onclick="App.editEvent('+e.id+')">'+
+'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'+
+'<span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:4px;background:var(--accent);color:white;">'+day+' '+month+'</span>'+
+'<span style="font-size:11px;padding:4px 8px;border-radius:4px;background:rgba(37,99,235,.1);color:var(--accent);">'+e.type+'</span></div>'+
+'<p style="font-size:16px;font-weight:600;margin-bottom:8px;">'+e.title+'</p>'+
+'<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">🕐 '+e.time+'</p>'+
+'<p style="font-size:13px;color:var(--text-dim);">📍 '+e.loc+'</p></div>';
+}
+h += '</div>';
+area.innerHTML = h;
 },
 
 openAddEvent: function() {
-    var types = DB.getEventTypes();
-    var h = '<form onsubmit="App.handleEventSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
-    '<input type="hidden" id="eventEditId" value="">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Titre *</label><input type="text" id="eventTitle" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Date *</label><input type="date" id="eventDate" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Heure *</label><input type="time" id="eventTime" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Lieu *</label><input type="text" id="eventLoc" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="eventType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Description</label><textarea id="eventDesc" rows="3" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);resize:vertical;"></textarea></div>'+
-    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
-    this.showGenericModal('Ajouter un événement', h);
+var types = DB.getEventTypes();
+var h = '<form onsubmit="App.handleEventSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+'<input type="hidden" id="eventEditId" value="">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Titre *</label><input type="text" id="eventTitle" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Date *</label><input type="date" id="eventDate" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Heure *</label><input type="time" id="eventTime" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Lieu *</label><input type="text" id="eventLoc" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="eventType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Description</label><textarea id="eventDesc" rows="3" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);resize:vertical;"></textarea></div>'+
+'<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+this.showGenericModal('Ajouter un événement', h);
 },
 
 handleEventSave: function(e) {
-    e.preventDefault();
-    var eid = document.getElementById('eventEditId').value;
-    var eventData = {
-        title: document.getElementById('eventTitle').value.trim(),
-        date: document.getElementById('eventDate').value,
-        time: document.getElementById('eventTime').value,
-        loc: document.getElementById('eventLoc').value.trim(),
-        type: document.getElementById('eventType').value,
-        desc: document.getElementById('eventDesc').value.trim()
-    };
-    var events = DB.getEvents();
-    if(eid) {
-        for(var i=0;i<events.length;i++) {
-            if(events[i].id === parseInt(eid)) {
-                events[i] = Object.assign(events[i], eventData);
-                break;
-            }
-        }
-        this.showToast('Événement modifié');
-    } else {
-        eventData.id = events.length > 0 ? Math.max.apply(Math, events.map(function(ev){return ev.id;})) + 1 : 1;
-        events.push(eventData);
-        this.showToast('Événement ajouté');
-    }
-    DB.setEvents(events);
-    this.closeAllModals();
-    this.renderEvents();
+e.preventDefault();
+var eid = document.getElementById('eventEditId').value;
+var eventData = {
+title: document.getElementById('eventTitle').value.trim(),
+date: document.getElementById('eventDate').value,
+time: document.getElementById('eventTime').value,
+loc: document.getElementById('eventLoc').value.trim(),
+type: document.getElementById('eventType').value,
+desc: document.getElementById('eventDesc').value.trim()
+};
+var events = DB.getEvents();
+if(eid) {
+for(var i=0;i<events.length;i++) {
+if(events[i].id === parseInt(eid)) {
+events[i] = Object.assign(events[i], eventData);
+break;
+}
+}
+this.showToast('Événement modifié');
+} else {
+eventData.id = events.length > 0 ? Math.max.apply(Math, events.map(function(ev){return ev.id;})) + 1 : 1;
+events.push(eventData);
+this.showToast('Événement ajouté');
+}
+DB.setEvents(events);
+this.closeAllModals();
+this.renderEvents();
 },
 
 editEvent: function(id) {
-    var e = DB.getEvents().find(function(x){return x.id===id;});
-    if(!e) return;
-    this.openAddEvent();
-    setTimeout(function(){
-        document.getElementById('eventEditId').value = e.id;
-        document.getElementById('eventTitle').value = e.title;
-        document.getElementById('eventDate').value = e.date;
-        document.getElementById('eventTime').value = e.time;
-        document.getElementById('eventLoc').value = e.loc;
-        document.getElementById('eventType').value = e.type;
-        document.getElementById('eventDesc').value = e.desc||'';
-    }, 100);
+var e = DB.getEvents().find(function(x){return x.id===id;});
+if(!e) return;
+this.openAddEvent();
+setTimeout(function(){
+document.getElementById('eventEditId').value = e.id;
+document.getElementById('eventTitle').value = e.title;
+document.getElementById('eventDate').value = e.date;
+document.getElementById('eventTime').value = e.time;
+document.getElementById('eventLoc').value = e.loc;
+document.getElementById('eventType').value = e.type;
+document.getElementById('eventDesc').value = e.desc||'';
+}, 100);
 },
 
 // ==================== FINANCES ====================
 renderFinance: function() {
-    var tx = DB.getTx();
-    var inc=0, exp=0;
-    for(var i=0;i<tx.length;i++) { if(tx[i].type==='income') inc+=tx[i].amt; else exp+=tx[i].amt; }
-    var area = document.getElementById('contentArea');
-    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
-    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Finances</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les transactions</p></div>'+
-    '<button onclick="App.openAddTx()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button></div>'+
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
-    '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Recettes</p><p style="font-size:28px;font-weight:700;color:var(--accent);">€ '+inc.toLocaleString('fr-FR')+'</p></div>'+
-    '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Dépenses</p><p style="font-size:28px;font-weight:700;color:#ef4444;">€ '+exp.toLocaleString('fr-FR')+'</p></div>'+
-    '<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Solde</p><p style="font-size:28px;font-weight:700;color:'+(inc-exp>=0?'var(--accent)':'#ef4444')+';">€ '+(inc-exp).toLocaleString('fr-FR')+'</p></div></div>'+
-    '<div style="border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);">'+
-    '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;padding:12px 16px;background:var(--bg-input);font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;">'+
-    '<span>Description</span><span>Catégorie</span><span>Date</span><span>Montant</span></div>';
-    
-    tx.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
-    for(var i=0;i<tx.length;i++) {
-        var t = tx[i];
-        var color = t.type==='income' ? 'var(--accent)' : '#ef4444';
-        var sign = t.type==='income' ? '+' : '-';
-        h += '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;">'+
-        '<div style="font-weight:500;">'+t.desc+'</div>'+
-        '<div style="font-size:14px;color:var(--text-dim);">'+t.category+'</div>'+
-        '<div style="font-size:14px;color:var(--text-dim);">'+t.date+'</div>'+
-        '<div style="font-weight:600;color:'+color+';">'+sign+' € '+t.amt.toLocaleString('fr-FR')+'</div></div>';
-    }
-    h += '</div>';
-    area.innerHTML = h;
+var tx = DB.getTx();
+var inc=0, exp=0;
+for(var i=0;i<tx.length;i++) { if(tx[i].type==='income') inc+=tx[i].amt; else exp+=tx[i].amt; }
+var area = document.getElementById('contentArea');
+var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+'<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Finances</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les transactions</p></div>'+
+'<button onclick="App.openAddTx()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button></div>'+
+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">'+
+'<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Recettes</p><p style="font-size:28px;font-weight:700;color:var(--accent);">€ '+inc.toLocaleString('fr-FR')+'</p></div>'+
+'<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Dépenses</p><p style="font-size:28px;font-weight:700;color:#ef4444;">€ '+exp.toLocaleString('fr-FR')+'</p></div>'+
+'<div style="border-radius:12px;padding:20px;border:1px solid var(--border);background:var(--bg-card);"><p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Solde</p><p style="font-size:28px;font-weight:700;color:'+(inc-exp>=0?'var(--accent)':'#ef4444')+';">€ '+(inc-exp).toLocaleString('fr-FR')+'</p></div></div>'+
+'<div style="border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);">'+
+'<div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;padding:12px 16px;background:var(--bg-input);font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;">'+
+'<span>Description</span><span>Catégorie</span><span>Date</span><span>Montant</span></div>';
+tx.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+for(var i=0;i<tx.length;i++) {
+var t = tx[i];
+var color = t.type==='income' ? 'var(--accent)' : '#ef4444';
+var sign = t.type==='income' ? '+' : '-';
+h += '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;">'+
+'<div style="font-weight:500;">'+t.desc+'</div>'+
+'<div style="font-size:14px;color:var(--text-dim);">'+t.category+'</div>'+
+'<div style="font-size:14px;color:var(--text-dim);">'+t.date+'</div>'+
+'<div style="font-weight:600;color:'+color+';">'+sign+' € '+t.amt.toLocaleString('fr-FR')+'</div></div>';
+}
+h += '</div>';
+area.innerHTML = h;
 },
 
 openAddTx: function() {
-    var h = '<form onsubmit="App.handleTxSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Description *</label><input type="text" id="txDesc" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="txType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="income">Recette</option><option value="expense">Dépense</option></select></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Montant (€) *</label><input type="number" id="txAmt" step="0.01" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Catégorie</label><input type="text" id="txCategory" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Date *</label><input type="date" id="txDate" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
-    this.showGenericModal('Ajouter une transaction', h);
+var h = '<form onsubmit="App.handleTxSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Description *</label><input type="text" id="txDesc" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="txType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="income">Recette</option><option value="expense">Dépense</option></select></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Montant (€) *</label><input type="number" id="txAmt" step="0.01" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Catégorie</label><input type="text" id="txCategory" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Date *</label><input type="date" id="txDate" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+this.showGenericModal('Ajouter une transaction', h);
 },
 
 handleTxSave: function(e) {
-    e.preventDefault();
-    var txData = {
-        desc: document.getElementById('txDesc').value.trim(),
-        type: document.getElementById('txType').value,
-        amt: parseFloat(document.getElementById('txAmt').value),
-        category: document.getElementById('txCategory').value.trim()||'Divers',
-        date: document.getElementById('txDate').value
-    };
-    var tx = DB.getTx();
-    txData.id = tx.length > 0 ? Math.max.apply(Math, tx.map(function(t){return t.id;})) + 1 : 1;
-    tx.push(txData);
-    DB.setTx(tx);
-    this.closeAllModals();
-    this.renderFinance();
-    this.showToast('Transaction ajoutée');
+e.preventDefault();
+var txData = {
+desc: document.getElementById('txDesc').value.trim(),
+type: document.getElementById('txType').value,
+amt: parseFloat(document.getElementById('txAmt').value),
+category: document.getElementById('txCategory').value.trim()||'Divers',
+date: document.getElementById('txDate').value
+};
+var tx = DB.getTx();
+txData.id = tx.length > 0 ? Math.max.apply(Math, tx.map(function(t){return t.id;})) + 1 : 1;
+tx.push(txData);
+DB.setTx(tx);
+this.closeAllModals();
+this.renderFinance();
+this.showToast('Transaction ajoutée');
 },
 
 // ==================== DOCUMENTS ====================
 renderDocuments: function() {
-    var docs = DB.getDocs();
-    var area = document.getElementById('contentArea');
-    var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
-    '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Documents</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les documents</p></div>'+
-    '<button onclick="App.openUploadDoc()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Uploader</button></div>'+
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">';
-    
-    for(var i=0;i<docs.length;i++) {
-        var d = docs[i];
-        h += '<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);cursor:pointer;" onclick="App.downloadDoc('+d.id+')">'+
-        '<div style="display:flex;align-items:start;gap:12px;margin-bottom:12px;">'+
-        '<div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>'+
-        '<div style="flex:1;"><p style="font-weight:600;margin-bottom:4px;">'+d.title+'</p><p style="font-size:12px;color:var(--text-dim);">'+d.type+' • '+d.size+'</p></div></div>'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim);">'+
-        '<span>📅 '+d.date+'</span><span>👤 '+d.author+'</span></div></div>';
-    }
-    h += '</div>';
-    area.innerHTML = h;
+var docs = DB.getDocs();
+var area = document.getElementById('contentArea');
+var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">'+
+'<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Documents</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les documents</p></div>'+
+'<button onclick="App.openUploadDoc()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
+'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Uploader</button></div>'+
+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;">';
+for(var i=0;i<docs.length;i++) {
+var d = docs[i];
+h += '<div style="border-radius:12px;border:1px solid var(--border);padding:16px;background:var(--bg-card);cursor:pointer;" onclick="App.downloadDoc('+d.id+')">'+
+'<div style="display:flex;align-items:start;gap:12px;margin-bottom:12px;">'+
+'<div style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(37,99,235,.1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>'+
+'<div style="flex:1;"><p style="font-weight:600;margin-bottom:4px;">'+d.title+'</p><p style="font-size:12px;color:var(--text-dim);">'+d.type+' • '+d.size+'</p></div></div>'+
+'<div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim);">'+
+'<span>📅 '+d.date+'</span><span>👤 '+d.author+'</span></div></div>';
+}
+h += '</div>';
+area.innerHTML = h;
 },
 
 openUploadDoc: function() {
-    var types = DB.getDocTypes();
-    var h = '<form onsubmit="App.handleDocSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Titre *</label><input type="text" id="docTitle" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="docType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Auteur</label><input type="text" id="docAuthor" value="'+this.currentUser.name+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Fichier</label><input type="file" id="docFile" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
-    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
-    this.showGenericModal('Ajouter un document', h);
+var types = DB.getDocTypes();
+var h = '<form onsubmit="App.handleDocSave(event)" style="display:flex;flex-direction:column;gap:16px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Titre *</label><input type="text" id="docTitle" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Type</label><select id="docType" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+types.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Auteur</label><input type="text" id="docAuthor" value="'+this.currentUser.name+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Fichier</label><input type="file" id="docFile" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+'<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Enregistrer</button></div></form>';
+this.showGenericModal('Ajouter un document', h);
 },
 
 handleDocSave: function(e) {
-    e.preventDefault();
-    var docData = {
-        title: document.getElementById('docTitle').value.trim(),
-        type: document.getElementById('docType').value,
-        author: document.getElementById('docAuthor').value.trim(),
-        date: new Date().toISOString().split('T')[0],
-        size: Math.floor(Math.random()*5+1)+' MB',
-        file: null
-    };
-    var docs = DB.getDocs();
-    docData.id = docs.length > 0 ? Math.max.apply(Math, docs.map(function(d){return d.id;})) + 1 : 1;
-    docs.push(docData);
-    DB.setDocs(docs);
-    this.closeAllModals();
-    this.renderDocuments();
-    this.showToast('Document ajouté');
+e.preventDefault();
+var docData = {
+title: document.getElementById('docTitle').value.trim(),
+type: document.getElementById('docType').value,
+author: document.getElementById('docAuthor').value.trim(),
+date: new Date().toISOString().split('T')[0],
+size: Math.floor(Math.random()*5+1)+' MB',
+file: null
+};
+var docs = DB.getDocs();
+docData.id = docs.length > 0 ? Math.max.apply(Math, docs.map(function(d){return d.id;})) + 1 : 1;
+docs.push(docData);
+DB.setDocs(docs);
+this.closeAllModals();
+this.renderDocuments();
+this.showToast('Document ajouté');
 },
 
 downloadDoc: function(id) {
-    this.showToast('Téléchargement simulé');
+this.showToast('Téléchargement simulé');
 },
 
 // ==================== MESSAGES ====================
 renderMessages: function() {
-    var convs = DB.getConvs();
-    var area = document.getElementById('contentArea');
-    var h = '<div style="display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-card);height:calc(100vh - 200px);">'+
-    '<div style="border-right:1px solid var(--border);overflow-y:auto;">'+
-    '<div style="padding:16px;border-bottom:1px solid var(--border);"><h3 style="font-weight:600;">Conversations</h3></div>';
-    
-    for(var i=0;i<convs.length;i++) {
-        var c = convs[i];
-        var active = i===this.curConv ? 'background:var(--bg-input);' : '';
-        h += '<div onclick="App.openConversation('+i+')" style="padding:16px;cursor:pointer;'+active+'">'+
-        '<div style="display:flex;align-items:center;gap:12px;">'+
-        '<div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--accent);color:white;">'+c.init+'</div>'+
-        '<div style="flex:1;"><p style="font-weight:500;">'+c.name+'</p><p style="font-size:12px;color:var(--text-dim);">'+c.msgs[c.msgs.length-1].text.substring(0,30)+'...</p></div>'+
-        (c.unread>0?'<span style="background:var(--accent);color:white;padding:2px 8px;border-radius:9999px;font-size:11px;">'+c.unread+'</span>':'')+'</div></div>';
-    }
-    h += '</div><div style="display:flex;flex-direction:column;">';
-    
-    if(convs.length > 0) {
-        var c = convs[this.curConv];
-        h += '<div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">'+
-        '<div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--accent);color:white;">'+c.init+'</div>'+
-        '<div><p style="font-weight:600;">'+c.name+'</p><p style="font-size:12px;color:var(--text-dim);">'+(c.online?'En ligne':'Hors ligne')+'</p></div></div>'+
-        '<div style="flex:1;padding:16px;overflow-y:auto;" id="chatMessages">';
-        for(var j=0;j<c.msgs.length;j++) {
-            var m = c.msgs[j];
-            var align = m.from==='me' ? 'text-align:right;' : '';
-            var bg = m.from==='me' ? 'background:var(--accent);color:white;' : 'background:var(--bg-input);';
-            h += '<div style="margin-bottom:12px;'+align+'"><span style="display:inline-block;padding:8px 12px;border-radius:12px;'+bg+'">'+m.text+'</span><p style="font-size:11px;color:var(--text-dim);margin-top:4px;">'+m.time+'</p></div>';
-        }
-        h += '</div><div style="padding:16px;border-top:1px solid var(--border);"><form onsubmit="App.sendMessage(event)" style="display:flex;gap:8px;">'+
-        '<input type="text" id="chatInput" placeholder="Écrire un message..." style="flex:1;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+
-        '<button type="submit" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Envoyer</button></form></div>';
-    }
-    h += '</div></div>';
-    area.innerHTML = h;
+var convs = DB.getConvs();
+var area = document.getElementById('contentArea');
+var h = '<div style="display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-card);height:calc(100vh - 200px);">'+
+'<div style="border-right:1px solid var(--border);overflow-y:auto;">'+
+'<div style="padding:16px;border-bottom:1px solid var(--border);"><h3 style="font-weight:600;">Conversations</h3></div>';
+for(var i=0;i<convs.length;i++) {
+var c = convs[i];
+var active = i===this.curConv ? 'background:var(--bg-input);' : '';
+h += '<div onclick="App.openConversation('+i+')" style="padding:16px;cursor:pointer;'+active+'">'+
+'<div style="display:flex;align-items:center;gap:12px;">'+
+'<div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--accent);color:white;">'+c.init+'</div>'+
+'<div style="flex:1;"><p style="font-weight:500;">'+c.name+'</p><p style="font-size:12px;color:var(--text-dim);">'+c.msgs[c.msgs.length-1].text.substring(0,30)+'...</p></div>'+
+(c.unread>0?'<span style="background:var(--accent);color:white;padding:2px 8px;border-radius:9999px;font-size:11px;">'+c.unread+'</span>':'')+'</div></div>';
+}
+h += '</div><div style="display:flex;flex-direction:column;">';
+if(convs.length > 0) {
+var c = convs[this.curConv];
+h += '<div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">'+
+'<div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:var(--accent);color:white;">'+c.init+'</div>'+
+'<div><p style="font-weight:600;">'+c.name+'</p><p style="font-size:12px;color:var(--text-dim);">'+(c.online?'En ligne':'Hors ligne')+'</p></div></div>'+
+'<div style="flex:1;padding:16px;overflow-y:auto;" id="chatMessages">';
+for(var j=0;j<c.msgs.length;j++) {
+var m = c.msgs[j];
+var align = m.from==='me' ? 'text-align:right;' : '';
+var bg = m.from==='me' ? 'background:var(--accent);color:white;' : 'background:var(--bg-input);';
+h += '<div style="margin-bottom:12px;'+align+'"><span style="display:inline-block;padding:8px 12px;border-radius:12px;'+bg+'">'+m.text+'</span><p style="font-size:11px;color:var(--text-dim);margin-top:4px;">'+m.time+'</p></div>';
+}
+h += '</div><div style="padding:16px;border-top:1px solid var(--border);"><form onsubmit="App.sendMessage(event)" style="display:flex;gap:8px;">'+
+'<input type="text" id="chatInput" placeholder="Écrire un message..." style="flex:1;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+
+'<button type="submit" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Envoyer</button></form></div>';
+}
+h += '</div></div>';
+area.innerHTML = h;
 },
 
 openConversation: function(i) {
-    this.curConv = i;
-    var convs = DB.getConvs();
-    convs[i].unread = 0;
-    DB.setConvs(convs);
-    this.renderMessages();
-    this.buildSidebar();
+this.curConv = i;
+var convs = DB.getConvs();
+convs[i].unread = 0;
+DB.setConvs(convs);
+this.renderMessages();
+this.buildSidebar();
 },
 
 sendMessage: function(e) {
-    e.preventDefault();
-    var input = document.getElementById('chatInput');
-    if(!input.value.trim()) return;
-    var convs = DB.getConvs();
-    convs[this.curConv].msgs.push({from:'me',text:input.value,time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})});
-    DB.setConvs(convs);
-    input.value = '';
-    this.renderMessages();
+e.preventDefault();
+var input = document.getElementById('chatInput');
+if(!input.value.trim()) return;
+var convs = DB.getConvs();
+convs[this.curConv].msgs.push({from:'me',text:input.value,time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})});
+DB.setConvs(convs);
+input.value = '';
+this.renderMessages();
 },
 
 // ==================== UNITÉS ====================
 renderUnits: function() {
-    var units = DB.getUnits();
-    var area = document.getElementById('contentArea');
-    var h = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Unités</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les sections</p></div>'+
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
-    
-    for(var i=0;i<units.length;i++) {
-        var u = units[i];
-        h += '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
-        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'+
-        '<div style="width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent);color:white;font-size:24px;">⭐</div>'+
-        '<div><p style="font-size:18px;font-weight:700;">'+u.name+'</p><p style="font-size:13px;color:var(--text-dim);">'+u.chief+'</p></div></div>'+
-        '<p style="font-size:14px;color:var(--text-dim);margin-bottom:16px;">'+u.desc+'</p>'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border);">'+
-        '<span style="font-size:14px;color:var(--text-dim);">'+u.members+' membres</span>'+
-        '<button onclick="App.viewUnit('+u.id+')" style="padding:6px 12px;border-radius:6px;font-size:13px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Voir détails</button></div></div>';
-    }
-    h += '</div>';
-    area.innerHTML = h;
+var units = DB.getUnits();
+var area = document.getElementById('contentArea');
+var h = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Unités</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les sections</p></div>'+
+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
+for(var i=0;i<units.length;i++) {
+var u = units[i];
+h += '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">'+
+'<div style="width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent);color:white;font-size:24px;">⭐</div>'+
+'<div><p style="font-size:18px;font-weight:700;">'+u.name+'</p><p style="font-size:13px;color:var(--text-dim);">'+u.chief+'</p></div></div>'+
+'<p style="font-size:14px;color:var(--text-dim);margin-bottom:16px;">'+u.desc+'</p>'+
+'<div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border);">'+
+'<span style="font-size:14px;color:var(--text-dim);">'+u.members+' membres</span>'+
+'<button onclick="App.viewUnit('+u.id+')" style="padding:6px 12px;border-radius:6px;font-size:13px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Voir détails</button></div></div>';
+}
+h += '</div>';
+area.innerHTML = h;
 },
 
 viewUnit: function(id) {
-    this.showToast('Détails de l\'unité '+id);
+this.showToast('Détails de l\'unité '+id);
 },
 
 // ==================== CARTES MEMBRES ====================
 renderCards: function() {
-    var members = DB.getMembers(), cfg = DB.getConfig();
-    var area = document.getElementById('contentArea');
-    var mgrs = DB.getManagers();
-    var natName='', depName='', secName='';
-    if(cfg.cardPresNat) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
-    if(cfg.cardPresDep) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
-    if(cfg.cardPresSec) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
-    var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:100%;height:100%;object-fit:contain;">' : '<div style="width:100%;height:100%;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
-    area.innerHTML = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Cartes de Membre</h3><p style="font-size:14px;color:var(--text-dim);">Générez les cartes au format UNC</p></div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">'+
-    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
-    '<h4 style="font-weight:600;margin-bottom:16px;">Configuration (modifiable dans Administration)</h4>'+
-    '<div style="display:flex;flex-direction:column;gap:12px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom de l\'association</label><input type="text" value="'+(cfg.cardOrgName||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" value="'+(cfg.cardOrgAddr||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président National</label><input type="text" value="'+natName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président Départemental</label><input type="text" value="'+depName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président de Section</label><input type="text" value="'+secName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Format</label><select id="cardFormat" onchange="App.previewCard()" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="a6"'+(cfg.cardFormat==='a6'?' selected':'')+'>A6 (105×148mm)</option><option value="a5"'+(cfg.cardFormat==='a5'?' selected':'')+'>A5 (148×210mm)</option></select></div>'+
-    '</div>'+
-    '</div></div>'+
-    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
-    '<h4 style="font-weight:600;margin-bottom:16px;">Sélectionner un membre</h4>'+
-    '<select id="cardMemberSelect" onchange="App.previewCard()" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:16px;"><option value="">-- Choisir un membre --</option>'+members.map(function(m){return '<option value="'+m.id+'">'+m.grade+' '+m.first+' '+m.last+' ('+m.section+')</option>';}).join('')+'</select>'+
-    '<div id="cardPreviewContainer" style="display:flex;justify-content:center;align-items:center;min-height:300px;">'+
-    '<p style="color:var(--text-dim);">Sélectionnez un membre pour prévisualiser la carte</p>'+
-    '</div>'+
-    '<div id="cardActions" style="display:none;margin-top:16px;display:flex;gap:8px;justify-content:center;">'+
-    '<button onclick="App.printCard()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">🖨️ Imprimer</button>'+
-    '<button onclick="App.generateAllCards()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent-light);border:none;cursor:pointer;">📋 Générer toutes les cartes</button>'+
-    '</div>'+
-    '</div></div>';
+var members = DB.getMembers(), cfg = DB.getConfig();
+var area = document.getElementById('contentArea');
+var mgrs = DB.getManagers();
+var natName='', depName='', secName='';
+if(cfg.cardPresNat) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
+if(cfg.cardPresDep) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
+if(cfg.cardPresSec) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
+var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:100%;height:100%;object-fit:contain;">' : '<div style="width:100%;height:100%;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
+area.innerHTML = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Cartes de Membre</h3><p style="font-size:14px;color:var(--text-dim);">Générez les cartes au format UNC</p></div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">'+
+'<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+'<h4 style="font-weight:600;margin-bottom:16px;">Configuration (modifiable dans Administration)</h4>'+
+'<div style="display:flex;flex-direction:column;gap:12px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom de l\'association</label><input type="text" value="'+(cfg.cardOrgName||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" value="'+(cfg.cardOrgAddr||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président National</label><input type="text" value="'+natName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président Départemental</label><input type="text" value="'+depName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président de Section</label><input type="text" value="'+secName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+'<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Format</label><select id="cardFormat" onchange="App.previewCard()" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="a6"'+(cfg.cardFormat==='a6'?' selected':'')+'>A6 (105×148mm)</option><option value="a5"'+(cfg.cardFormat==='a5'?' selected':'')+'>A5 (148×210mm)</option></select></div>'+
+'</div>'+
+'</div></div>'+
+'<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+'<h4 style="font-weight:600;margin-bottom:16px;">Sélectionner un membre</h4>'+
+'<select id="cardMemberSelect" onchange="App.previewCard()" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:16px;"><option value="">-- Choisir un membre --</option>'+members.map(function(m){return '<option value="'+m.id+'">'+m.grade+' '+m.first+' '+m.last+' ('+m.section+')</option>';}).join('')+'</select>'+
+'<div id="cardPreviewContainer" style="display:flex;justify-content:center;align-items:center;min-height:300px;">'+
+'<p style="color:var(--text-dim);">Sélectionnez un membre pour prévisualiser la carte</p>'+
+'</div>'+
+'<div id="cardActions" style="display:none;margin-top:16px;display:flex;gap:8px;justify-content:center;">'+
+'<button onclick="App.printCard()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">🖨️ Imprimer</button>'+
+'<button onclick="App.generateAllCards()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent-light);border:none;cursor:pointer;">📋 Générer toutes les cartes</button>'+
+'</div>'+
+'</div></div>';
 },
 
 previewCard: function() {
-    var mid = document.getElementById('cardMemberSelect').value;
-    if(!mid) { document.getElementById('cardPreviewContainer').innerHTML = '<p style="color:var(--text-dim);">Sélectionnez un membre</p>'; document.getElementById('cardActions').style.display = 'none'; return; }
-    var m = DB.getMembers().find(function(x){return x.id===parseInt(mid);});
-    if(!m) return;
-    var cfg = DB.getConfig();
-    var format = document.getElementById('cardFormat').value;
-    var w = format==='a5' ? 595 : 420;
-    var h = format==='a5' ? 374 : 264;
-    var mgrs = DB.getManagers();
-    var natName='', depName='', secName='';
-    if(cfg.cardPresNat) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
-    if(cfg.cardPresDep) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
-    if(cfg.cardPresSec) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
-    var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">' : '<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
-    var cardHtml = '<div class="member-card-preview print-area" style="width:'+w+'px;height:'+h+'px;" id="memberCardPrint">'+
-    '<div class="card-header">'+logoHtml+
-    '<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
-    '<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
-    '<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
-    '<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
-    '<div class="card-fields">'+
-    '<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
-    '<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
-    '</div>'+
-    '<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
-    '<div class="card-footer">'+
-    '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(natName||'')+'</div><div class="sig-label">Le Président National</div></div>'+
-    '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(depName||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
-    '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(secName||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
-    '</div></div>';
-    document.getElementById('cardPreviewContainer').innerHTML = cardHtml;
-    document.getElementById('cardActions').style.display = 'flex';
+var mid = document.getElementById('cardMemberSelect').value;
+if(!mid) { document.getElementById('cardPreviewContainer').innerHTML = '<p style="color:var(--text-dim);">Sélectionnez un membre</p>'; document.getElementById('cardActions').style.display = 'none'; return; }
+var m = DB.getMembers().find(function(x){return x.id===parseInt(mid);});
+if(!m) return;
+var cfg = DB.getConfig();
+var format = document.getElementById('cardFormat').value;
+var w = format==='a5' ? 595 : 420;
+var h = format==='a5' ? 374 : 264;
+var mgrs = DB.getManagers();
+var natName='', depName='', secName='';
+if(cfg.cardPresNat) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
+if(cfg.cardPresDep) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
+if(cfg.cardPresSec) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
+var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">' : '<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
+var cardHtml = '<div class="member-card-preview print-area" style="width:'+w+'px;height:'+h+'px;" id="memberCardPrint">'+
+'<div class="card-header">'+logoHtml+
+'<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
+'<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
+'<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
+'<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
+'<div class="card-fields">'+
+'<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
+'<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
+'</div>'+
+'<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
+'<div class="card-footer">'+
+'<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(natName||'')+'</div><div class="sig-label">Le Président National</div></div>'+
+'<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(depName||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
+'<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(secName||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
+'</div></div>';
+document.getElementById('cardPreviewContainer').innerHTML = cardHtml;
+document.getElementById('cardActions').style.display = 'flex';
 },
 
 printCard: function() {
-    var card = document.getElementById('memberCardPrint');
-    if(!card) return;
-    var win = window.open('', '', 'width=650,height=450');
-    win.document.write('<html><head><title>Carte de Membre</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#fff;}@media print{body{margin:0;}}</style></head><body>');
-    win.document.write(card.outerHTML);
-    win.document.write('</body></html>');
-    win.document.close();
-    setTimeout(function(){win.print();}, 500);
+var card = document.getElementById('memberCardPrint');
+if(!card) return;
+var win = window.open('', '', 'width=650,height=450');
+win.document.write('<html><head><title>Carte de Membre</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#fff;}@media print{body{margin:0;}}</style></head><body>');
+win.document.write(card.outerHTML);
+win.document.write('</body></html>');
+win.document.close();
+setTimeout(function(){win.print();}, 500);
 },
 
 generateAllCards: function() {
-    var members = DB.getMembers().filter(function(m){return m.status==='Actif';});
-    if(!members.length) { this.showToast('Aucun membre actif'); return; }
-    var cfg = DB.getConfig();
-    var format = document.getElementById('cardFormat').value;
-    var w = format==='a5' ? 595 : 420;
-    var h = format==='a5' ? 374 : 264;
-    var mgrs = DB.getManagers();
-    var natName='', depName='', secName='';
-    if(cfg.cardPresNat) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
-    if(cfg.cardPresDep) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
-    if(cfg.cardPresSec) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
-    var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">' : '<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
-    var html = '<html><head><title>Cartes de Membres</title><style>body{margin:0;padding:20px;font-family:Georgia,serif;}.page-break{page-break-after:always;}.member-card-preview{width:'+w+'px;height:'+h+'px;background:linear-gradient(135deg,#e0e4e8 0%,#f0f0f0 25%,#ffffff 50%,#ffe8e0 75%,#e8d8d0 100%);border:2px solid #b0b0b0;border-radius:6px;position:relative;overflow:hidden;margin:10px auto;box-shadow:0 2px 8px rgba(0,0,0,.1);}.card-header{display:flex;align-items:flex-start;padding:10px 16px 6px;gap:12px;}.card-org-name{font-size:18px;font-weight:bold;color:#c0392b;line-height:1.2;letter-spacing:0.5px;}.card-org-addr{font-size:10px;color:#4a4a6a;margin-top:2px;}.card-org-decret{font-size:8px;color:#777;font-style:italic;}.card-type-line{text-align:center;padding:6px 0 4px;border-bottom:1px solid #ccc;margin:0 16px;}.card-type{font-size:17px;font-style:italic;color:#2c2c2c;}.card-number{font-size:13px;font-style:normal;color:#555;}.card-fields{padding:6px 16px;}.card-field{display:flex;align-items:baseline;margin-bottom:5px;font-size:12px;}.card-field label{font-size:10px;color:#666;min-width:90px;}.card-field .value{font-size:16px;font-weight:bold;color:#1a1a1a;border-bottom:1px dotted #999;flex:1;padding:0 6px;min-height:22px;}.card-section{padding:2px 16px;}.card-section .section-label{font-size:10px;color:#666;}.card-section .section-value{font-size:14px;font-weight:bold;color:#1a1a1a;}.card-footer{display:flex;justify-content:space-around;padding:6px 12px 8px;margin-top:4px;}.card-signature{text-align:center;flex:1;}.card-signature .sig-img{width:80px;height:32px;margin:0 auto 2px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}.card-signature .sig-img img{max-width:100%;max-height:100%;object-fit:contain;}.card-signature .sig-line{font-size:14px;font-style:italic;color:#333;min-height:20px;display:flex;align-items:flex-end;justify-content:center;font-family:\'Brush Script MT\',cursive;}.card-signature .sig-label{font-size:7px;color:#888;}@media print{.member-card-preview{box-shadow:none;border:2px solid #b0b0b0;}}</style></head><body>';
-    members.forEach(function(m){
-        html += '<div class="member-card-preview">'+
-        '<div class="card-header">'+logoHtml+
-        '<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
-        '<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
-        '<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
-        '<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
-        '<div class="card-fields">'+
-        '<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
-        '<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
-        '</div>'+
-        '<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
-        '<div class="card-footer">'+
-        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(natName||'')+'</div><div class="sig-label">Le Président National</div></div>'+
-        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(depName||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
-        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(secName||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
-        '</div></div><div class="page-break"></div>';
-    });
-    html += '</body></html>';
-    var win = window.open('', '', 'width=800,height=600');
-    win.document.write(html);
-    win.document.close();
-    setTimeout(function(){win.print();}, 500);
-}
+var members = DB.getMembers().filter(function(m){return m.status==='Actif';});
+if(!members.length) { this.showToast('Aucun membre actif'); return; }
+var cfg = DB.getConfig();
+var format = document.getElementById('cardFormat').value;
+var w = format==='a5' ? 595 : 420;
+var h = format==='a5' ? 374 : 264;
+var mgrs = DB.getManagers();
+var natName='', depName='', secName='';
+if(cfg.cardPresNat) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
+if(cfg.cardPresDep) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
+if(cfg.cardPresSec) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
+var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">' : '<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
+var html = '<html><head><title>Cartes de Membres</title><style>body{margin:0;padding:20px;font-family:Georgia,serif;}.page-break{page-break-after:always;}.member-card-preview{width:'+w+'px;height:'+h+'px;background:linear-gradient(135deg,#e0e4e8 0%,#f0f0f0 25%,#ffffff 50%,#ffe8e0 75%,#e8d8d0 100%);border:2px solid #b0b0b0;border-radius:6px;position:relative;overflow:hidden;margin:10px auto;box-shadow:0 2px 8px rgba(0,0,0,.1);}.card-header{display:flex;align-items:flex-start;padding:10px 16px 6px;gap:12px;}.card-org-name{font-size:18px;font-weight:bold;color:#c0392b;line-height:1.2;letter-spacing:0.5px;}.card-org-addr{font-size:10px;color:#4a4a6a;margin-top:2px;}.card-org-decret{font-size:8px;color:#777;font-style:italic;}.card-type-line{text-align:center;padding:6px 0 4px;border-bottom:1px solid #ccc;margin:0 16px;}.card-type{font-size:17px;font-style:italic;color:#2c2c2c;}.card-number{font-size:13px;font-style:normal;color:#555;}.card-fields{padding:6px 16px;}.card-field{display:flex;align-items:baseline;margin-bottom:5px;font-size:12px;}.card-field label{font-size:10px;color:#666;min-width:90px;}.card-field .value{font-size:16px;font-weight:bold;color:#1a1a1a;border-bottom:1px dotted #999;flex:1;padding:0 6px;min-height:22px;}.card-section{padding:2px 16px;}.card-section .section-label{font-size:10px;color:#666;}.card-section .section-value{font-size:14px;font-weight:bold;color:#1a1a1a;}.card-footer{display:flex;justify-content:space-around;padding:6px 12px 8px;margin-top:4px;}.card-signature{text-align:center;flex:1;}.card-signature .sig-img{width:80px;height:32px;margin:0 auto 2px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}.card-signature .sig-img img{max-width:100%;max-height:100%;object-fit:contain;}.card-signature .sig-line{font-size:14px;font-style:italic;color:#333;min-height:20px;display:flex;align-items:flex-end;justify-content:center;font-family:\'Brush Script MT\',cursive;}.card-signature .sig-label{font-size:7px;color:#888;}@media print{.member-card-preview{box-shadow:none;border:2px solid #b0b0b0;}}</style></head><body>';
+members.forEach(function(m){
+html += '<div class="member-card-preview">'+
+'<div class="card-header">'+logoHtml+
+'<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
+'<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
+'<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
+'<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
+'<div class="card-fields">'+
+'<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
+'<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
+'</div>'+
+'<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
+'<div class="card-footer">'+
+'<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(natName||'')+'</div><div class="sig-label">Le Président National</div></div>'+
+'<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(depName||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
+'<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(secName||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
+'</div></div><div class="page-break"></div>';
+});
+html += '</body></html>';
+var win = window.open('', '', 'width=800,height=600');
+win.document.write(html);
+win.document.close();
+setTimeout(function(){win.print();}, 500);
+},
 // ==================== ADMINISTRATION ====================
 renderAdmin: function() {
     var area = document.getElementById('contentArea');
     var h = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Administration</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les paramètres avancés de l\'application</p></div>'+
-    '<div style="display:flex;gap:12px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:12px;">'+
+    '<div style="display:flex;gap:12px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:12px;overflow-x:auto;white-space:nowrap;">'+
     '<button onclick="App.renderAdminGrades()" class="tab-active" id="tabGrades" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Grades</button>'+
     '<button onclick="App.renderAdminSections()" id="tabSections" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Sections</button>'+
     '<button onclick="App.renderAdminEvtTypes()" id="tabEvtTypes" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Types événements</button>'+
@@ -1453,7 +1445,6 @@ renderAdmin: function() {
     area.innerHTML = h;
     this.renderAdminGrades();
 },
-
 renderAdminGrades: function() {
     document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
     document.getElementById('tabGrades').classList.add('tab-active');
@@ -1466,7 +1457,6 @@ renderAdminGrades: function() {
     h += '</div></div>';
     c.innerHTML = h;
 },
-
 addGrade: function() {
     var inp = document.getElementById('newGradeInput');
     if(!inp) return;
@@ -1480,7 +1470,6 @@ addGrade: function() {
     this.renderAdminGrades();
     this.showToast('Ajouté');
 },
-
 editGradeItem: function(i) {
     var nv = prompt('Modifier:', DB.getGrades()[i]);
     if(nv && nv.trim()) {
@@ -1497,7 +1486,6 @@ editGradeItem: function(i) {
         this.showToast('Modifié');
     }
 },
-
 delGradeItem: function(i) {
     this.showConfirm('Supprimer?', DB.getGrades()[i], function(){
         var g = DB.getGrades();
@@ -1507,7 +1495,6 @@ delGradeItem: function(i) {
         App.showToast('Supprimé');
     });
 },
-
 renderAdminSections: function() {
     document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
     document.getElementById('tabSections').classList.add('tab-active');
@@ -1523,7 +1510,6 @@ renderAdminSections: function() {
     h += '</div></div>';
     c.innerHTML = h;
 },
-
 addSection: function() {
     var inp = document.getElementById('newSectionInput');
     if(!inp) return;
@@ -1537,7 +1523,6 @@ addSection: function() {
     this.renderAdminSections();
     this.showToast('Ajouté');
 },
-
 editSectionItem: function(i) {
     var nv = prompt('Modifier:', DB.getSections()[i]);
     if(nv && nv.trim()) {
@@ -1552,7 +1537,6 @@ editSectionItem: function(i) {
         this.showToast('Modifié');
     }
 },
-
 delSectionItem: function(i) {
     var members = DB.getMembers();
     for(var j=0;j<members.length;j++) { if(members[j].section === DB.getSections()[i]) { this.showToast('Impossible: membres dans cette section'); return; } }
@@ -1564,7 +1548,6 @@ delSectionItem: function(i) {
         App.showToast('Supprimé');
     });
 },
-
 renderAdminEvtTypes: function() {
     document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
     document.getElementById('tabEvtTypes').classList.add('tab-active');
@@ -1575,7 +1558,6 @@ renderAdminEvtTypes: function() {
     h += '</div></div>';
     c.innerHTML = h;
 },
-
 addEvtType: function() {
     var inp = document.getElementById('newEvtTypeInput');
     if(!inp) return;
@@ -1589,7 +1571,6 @@ addEvtType: function() {
     this.renderAdminEvtTypes();
     this.showToast('Ajouté');
 },
-
 editEvtTypeItem: function(i) {
     var nv = prompt('Modifier:', DB.getEventTypes()[i]);
     if(nv && nv.trim()) {
@@ -1604,7 +1585,6 @@ editEvtTypeItem: function(i) {
         this.showToast('Modifié');
     }
 },
-
 delEvtTypeItem: function(i) {
     this.showConfirm('Supprimer?', DB.getEventTypes()[i], function(){
         var t = DB.getEventTypes();
@@ -1614,7 +1594,6 @@ delEvtTypeItem: function(i) {
         App.showToast('Supprimé');
     });
 },
-
 renderAdminDocTypes: function() {
     document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
     document.getElementById('tabDocTypes').classList.add('tab-active');
@@ -1625,7 +1604,6 @@ renderAdminDocTypes: function() {
     h += '</div></div>';
     c.innerHTML = h;
 },
-
 addDocType: function() {
     var inp = document.getElementById('newDocTypeInput');
     if(!inp) return;
@@ -1639,7 +1617,6 @@ addDocType: function() {
     this.renderAdminDocTypes();
     this.showToast('Ajouté');
 },
-
 editDocTypeItem: function(i) {
     var nv = prompt('Modifier:', DB.getDocTypes()[i]);
     if(nv && nv.trim()) {
@@ -1654,7 +1631,6 @@ editDocTypeItem: function(i) {
         this.showToast('Modifié');
     }
 },
-
 delDocTypeItem: function(i) {
     this.showConfirm('Supprimer?', DB.getDocTypes()[i], function(){
         var t = DB.getDocTypes();
@@ -1664,7 +1640,6 @@ delDocTypeItem: function(i) {
         App.showToast('Supprimé');
     });
 },
-
 renderAdminManagers: function() {
     document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
     document.getElementById('tabManagers').classList.add('tab-active');
@@ -1686,7 +1661,6 @@ renderAdminManagers: function() {
     h += '</div>';
     c.innerHTML = h;
 },
-
 openAddManager: function() {
     var h = '<form onsubmit="App.handleManagerSave(event)" style="display:flex;flex-direction:column;gap:16px;"><input type="hidden" id="mgrEditId">'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Prénom *</label><input type="text" id="mgrfFirst" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom *</label><input type="text" id="mgrfLast" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
@@ -1698,7 +1672,6 @@ openAddManager: function() {
     '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Ajouter</button></div></form>';
     this.showGenericModal('Gestionnaire', h);
 },
-
 openEditManager: function(id) {
     var m = DB.getManagers().find(function(x){return x.id===id;});
     if(!m) return;
@@ -1712,7 +1685,6 @@ openEditManager: function(id) {
     '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Sauvegarder</button></div></form>';
     this.showGenericModal('Gestionnaire', h);
 },
-
 handleManagerSave: function(e) {
     e.preventDefault();
     var eid = document.getElementById('mgrEditId').value;
@@ -1762,7 +1734,6 @@ handleManagerSave: function(e) {
         }
     }
 },
-
 delManager: function(id) {
     var m = DB.getManagers().find(function(x){return x.id===id;});
     if(!m) return;
@@ -1772,7 +1743,6 @@ delManager: function(id) {
         App.showToast('Supprimé');
     });
 },
-
 renderAdminCards: function() {
     document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
     document.getElementById('tabCards').classList.add('tab-active');
@@ -1802,7 +1772,6 @@ renderAdminCards: function() {
     '</div>';
     c.innerHTML = h;
 },
-
 saveCardConfigFromAdmin: function() {
     var cfg = DB.getConfig();
     cfg.cardOrgName = document.getElementById('cardOrgName').value;
@@ -1825,7 +1794,7 @@ saveCardConfigFromAdmin: function() {
     } else {
         save();
     }
-}
+},
 // ==================== PARAMÈTRES ====================
 renderSettings: function() {
     var cfg = DB.getConfig(), area = document.getElementById('contentArea');
@@ -1875,7 +1844,6 @@ renderSettings: function() {
     '<button onclick="App.clearAllData()" style="padding:10px 16px;border-radius:8px;font-size:14px;background:rgba(239,68,68,.2);color:#ef4444;border:1px solid rgba(239,68,68,.3);cursor:pointer;">Réinitialiser</button>'+
     '</div></div></div>';
 },
-
 saveSettings: function() {
     var cfg = DB.getConfig();
     var nameEl = document.getElementById('settName');
@@ -1886,7 +1854,6 @@ saveSettings: function() {
     document.getElementById('pageTitleMeta').textContent = cfg.appName;
     this.showToast('Paramètres sauvegardés');
 },
-
 handleLogoUpload: function(input) {
     var file = input.files[0]; if(!file) return;
     if(file.size > 2*1024*1024) { this.showToast('Trop volumineux'); return; }
@@ -1895,9 +1862,7 @@ handleLogoUpload: function(input) {
     reader.onload = function(e) { self.applyLogo(e.target.result); self.renderSettings(); self.showToast('Logo mis à jour'); };
     reader.readAsDataURL(file);
 },
-
 removeLogo: function() { this.applyLogo(null); this.renderSettings(); this.showToast('Logo supprimé'); },
-
 handleFaviconUpload: function(input) {
     var file = input.files[0]; if(!file) return;
     if(file.size > 2*1024*1024) { this.showToast('Trop volumineux'); return; }
@@ -1906,20 +1871,17 @@ handleFaviconUpload: function(input) {
     reader.onload = function(e) { self.applyFavicon(e.target.result); self.renderSettings(); self.showToast('Favicon mis à jour'); };
     reader.readAsDataURL(file);
 },
-
 removeFavicon: function() {
     var cfg = DB.getConfig(); cfg.favicon = null; DB.setConfig(cfg);
     document.getElementById('favicon').href = '';
     this.renderSettings(); this.showToast('Favicon supprimé');
 },
-
 updateCustomColor: function(key, value) {
     var cfg = DB.getConfig();
     if(!cfg.customColors) cfg.customColors = {};
     cfg.customColors[key] = value;
     DB.setConfig(cfg);
 },
-
 applyTheme: function(key) {
     var t = this.THEMES[key];
     if(!t) return;
@@ -1933,7 +1895,6 @@ applyTheme: function(key) {
     this.renderSettings();
     this.showToast('Thème "'+t.name+'" appliqué');
 },
-
 updateLogoBg: function(color) {
     var cfg = DB.getConfig(); cfg.logoBg = color; DB.setConfig(cfg);
     if(!cfg.logo) {
@@ -1945,14 +1906,12 @@ updateLogoBg: function(color) {
     }
     this.showToast('Couleur de fond mise à jour');
 },
-
 exportAllData: function() {
     var data = DB.exportAll();
     var blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}), url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url; a.download = 'milassoc_'+new Date().toISOString().split('T')[0]+'.json'; a.click(); URL.revokeObjectURL(url);
     this.showToast('Données exportées');
 },
-
 importAllData: function() {
     var input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
     var self = this;
@@ -1974,14 +1933,12 @@ importAllData: function() {
     };
     input.click();
 },
-
 clearAllData: function() {
     this.showConfirm('Réinitialiser toutes les données ?', 'Cette action est irréversible. Toutes les données seront perdues.', function(){
         DB.resetAll();
         location.reload();
     });
-}
-
+},
 // ==================== ACTION RAPIDE ====================
 openQuickAction: function() {
     var cm=this.canEdit(), cf=this.canFinance();
@@ -1994,9 +1951,10 @@ openQuickAction: function() {
     this.showGenericModal('Action rapide', h);
 }
 };
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-App.init();
+    App.init();
 });
 </script>
 </body>
