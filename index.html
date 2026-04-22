@@ -1319,99 +1319,668 @@ viewUnit: function(id) {
 
 // ==================== CARTES MEMBRES ====================
 renderCards: function() {
+    var members = DB.getMembers(), cfg = DB.getConfig();
     var area = document.getElementById('contentArea');
-    area.innerHTML = '<div style="padding:40px;text-align:center;"><h3 style="font-size:24px;font-weight:700;margin-bottom:8px;">Cartes de Membre</h3><p style="color:var(--text-dim);margin-bottom:24px;">Générez et imprimez les cartes de membre</p>'+
-    '<button onclick="App.generateAllCards()" style="padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Générer toutes les cartes</button></div>';
+    var mgrs = DB.getManagers();
+    var natName='', depName='', secName='';
+    if(cfg.cardPresNat) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresDep) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresSec) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
+    var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:100%;height:100%;object-fit:contain;">' : '<div style="width:100%;height:100%;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
+    area.innerHTML = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Cartes de Membre</h3><p style="font-size:14px;color:var(--text-dim);">Générez les cartes au format UNC</p></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">'+
+    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+    '<h4 style="font-weight:600;margin-bottom:16px;">Configuration (modifiable dans Administration)</h4>'+
+    '<div style="display:flex;flex-direction:column;gap:12px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom de l\'association</label><input type="text" value="'+(cfg.cardOrgName||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" value="'+(cfg.cardOrgAddr||'')+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président National</label><input type="text" value="'+natName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président Départemental</label><input type="text" value="'+depName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président de Section</label><input type="text" value="'+secName+'" readonly style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text-dim);"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Format</label><select id="cardFormat" onchange="App.previewCard()" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option value="a6"'+(cfg.cardFormat==='a6'?' selected':'')+'>A6 (105×148mm)</option><option value="a5"'+(cfg.cardFormat==='a5'?' selected':'')+'>A5 (148×210mm)</option></select></div>'+
+    '</div>'+
+    '</div></div>'+
+    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+    '<h4 style="font-weight:600;margin-bottom:16px;">Sélectionner un membre</h4>'+
+    '<select id="cardMemberSelect" onchange="App.previewCard()" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:16px;"><option value="">-- Choisir un membre --</option>'+members.map(function(m){return '<option value="'+m.id+'">'+m.grade+' '+m.first+' '+m.last+' ('+m.section+')</option>';}).join('')+'</select>'+
+    '<div id="cardPreviewContainer" style="display:flex;justify-content:center;align-items:center;min-height:300px;">'+
+    '<p style="color:var(--text-dim);">Sélectionnez un membre pour prévisualiser la carte</p>'+
+    '</div>'+
+    '<div id="cardActions" style="display:none;margin-top:16px;display:flex;gap:8px;justify-content:center;">'+
+    '<button onclick="App.printCard()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">🖨️ Imprimer</button>'+
+    '<button onclick="App.generateAllCards()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent-light);border:none;cursor:pointer;">📋 Générer toutes les cartes</button>'+
+    '</div>'+
+    '</div></div>';
+},
+
+previewCard: function() {
+    var mid = document.getElementById('cardMemberSelect').value;
+    if(!mid) { document.getElementById('cardPreviewContainer').innerHTML = '<p style="color:var(--text-dim);">Sélectionnez un membre</p>'; document.getElementById('cardActions').style.display = 'none'; return; }
+    var m = DB.getMembers().find(function(x){return x.id===parseInt(mid);});
+    if(!m) return;
+    var cfg = DB.getConfig();
+    var format = document.getElementById('cardFormat').value;
+    var w = format==='a5' ? 595 : 420;
+    var h = format==='a5' ? 374 : 264;
+    var mgrs = DB.getManagers();
+    var natName='', depName='', secName='';
+    if(cfg.cardPresNat) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresDep) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresSec) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
+    var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">' : '<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
+    var cardHtml = '<div class="member-card-preview print-area" style="width:'+w+'px;height:'+h+'px;" id="memberCardPrint">'+
+    '<div class="card-header">'+logoHtml+
+    '<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
+    '<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
+    '<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
+    '<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
+    '<div class="card-fields">'+
+    '<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
+    '<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
+    '</div>'+
+    '<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
+    '<div class="card-footer">'+
+    '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(natName||'')+'</div><div class="sig-label">Le Président National</div></div>'+
+    '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(depName||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
+    '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(secName||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
+    '</div></div>';
+    document.getElementById('cardPreviewContainer').innerHTML = cardHtml;
+    document.getElementById('cardActions').style.display = 'flex';
+},
+
+printCard: function() {
+    var card = document.getElementById('memberCardPrint');
+    if(!card) return;
+    var win = window.open('', '', 'width=650,height=450');
+    win.document.write('<html><head><title>Carte de Membre</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#fff;}@media print{body{margin:0;}}</style></head><body>');
+    win.document.write(card.outerHTML);
+    win.document.write('</body></html>');
+    win.document.close();
+    setTimeout(function(){win.print();}, 500);
 },
 
 generateAllCards: function() {
-    this.showToast('Génération des cartes...');
-},
-
+    var members = DB.getMembers().filter(function(m){return m.status==='Actif';});
+    if(!members.length) { this.showToast('Aucun membre actif'); return; }
+    var cfg = DB.getConfig();
+    var format = document.getElementById('cardFormat').value;
+    var w = format==='a5' ? 595 : 420;
+    var h = format==='a5' ? 374 : 264;
+    var mgrs = DB.getManagers();
+    var natName='', depName='', secName='';
+    if(cfg.cardPresNat) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresDep) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresSec) { var mgr = mgrs.find(function(mgr){return mgr.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
+    var logoHtml = cfg.cardLogo ? '<img src="'+cfg.cardLogo+'" style="width:56px;height:56px;object-fit:contain;">' : '<div style="width:56px;height:56px;background:linear-gradient(135deg,#002395,#ffffff,#ed2939);border-radius:4px;display:flex;align-items:center;justify-content:center;"><div style="text-align:center;"><div style="font-size:10px;font-weight:bold;color:#002395;">U N C</div><div style="font-size:20px;margin:2px 0;">🎖️</div><div style="font-size:7px;color:#333;">Combattants</div></div></div>';
+    var html = '<html><head><title>Cartes de Membres</title><style>body{margin:0;padding:20px;font-family:Georgia,serif;}.page-break{page-break-after:always;}.member-card-preview{width:'+w+'px;height:'+h+'px;background:linear-gradient(135deg,#e0e4e8 0%,#f0f0f0 25%,#ffffff 50%,#ffe8e0 75%,#e8d8d0 100%);border:2px solid #b0b0b0;border-radius:6px;position:relative;overflow:hidden;margin:10px auto;box-shadow:0 2px 8px rgba(0,0,0,.1);}.card-header{display:flex;align-items:flex-start;padding:10px 16px 6px;gap:12px;}.card-org-name{font-size:18px;font-weight:bold;color:#c0392b;line-height:1.2;letter-spacing:0.5px;}.card-org-addr{font-size:10px;color:#4a4a6a;margin-top:2px;}.card-org-decret{font-size:8px;color:#777;font-style:italic;}.card-type-line{text-align:center;padding:6px 0 4px;border-bottom:1px solid #ccc;margin:0 16px;}.card-type{font-size:17px;font-style:italic;color:#2c2c2c;}.card-number{font-size:13px;font-style:normal;color:#555;}.card-fields{padding:6px 16px;}.card-field{display:flex;align-items:baseline;margin-bottom:5px;font-size:12px;}.card-field label{font-size:10px;color:#666;min-width:90px;}.card-field .value{font-size:16px;font-weight:bold;color:#1a1a1a;border-bottom:1px dotted #999;flex:1;padding:0 6px;min-height:22px;}.card-section{padding:2px 16px;}.card-section .section-label{font-size:10px;color:#666;}.card-section .section-value{font-size:14px;font-weight:bold;color:#1a1a1a;}.card-footer{display:flex;justify-content:space-around;padding:6px 12px 8px;margin-top:4px;}.card-signature{text-align:center;flex:1;}.card-signature .sig-img{width:80px;height:32px;margin:0 auto 2px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}.card-signature .sig-img img{max-width:100%;max-height:100%;object-fit:contain;}.card-signature .sig-line{font-size:14px;font-style:italic;color:#333;min-height:20px;display:flex;align-items:flex-end;justify-content:center;font-family:\'Brush Script MT\',cursive;}.card-signature .sig-label{font-size:7px;color:#888;}@media print{.member-card-preview{box-shadow:none;border:2px solid #b0b0b0;}}</style></head><body>';
+    members.forEach(function(m){
+        html += '<div class="member-card-preview">'+
+        '<div class="card-header">'+logoHtml+
+        '<div class="card-org-block"><div class="card-org-name">'+(cfg.cardOrgName||'Union Nationale des Combattants')+'</div>'+
+        '<div class="card-org-addr">'+(cfg.cardOrgAddr||'18, rue Vezelay - 75008 PARIS')+' - Tél. '+(cfg.cardOrgPhone||'01 53 89 04 04')+'</div>'+
+        '<div class="card-org-decret">'+(cfg.cardOrgDecret||'')+'</div></div></div>'+
+        '<div class="card-type-line"><span class="card-type">Membre Actif</span> <span class="card-number">N° '+m.mat+'</span></div>'+
+        '<div class="card-fields">'+
+        '<div class="card-field"><label>Nom et Prénom</label><div class="value">'+m.last.toUpperCase()+' '+m.first+'</div></div>'+
+        '<div class="card-field"><label>Adresse</label><div class="value">'+(m.address||'')+'</div></div>'+
+        '</div>'+
+        '<div class="card-section"><span class="section-label">Section</span> <span class="section-value">'+(m.section||'')+'</span></div>'+
+        '<div class="card-footer">'+
+        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigNat?'<img src="'+cfg.cardSigNat+'">':'')+'</div><div class="sig-line">'+(natName||'')+'</div><div class="sig-label">Le Président National</div></div>'+
+        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigDep?'<img src="'+cfg.cardSigDep+'">':'')+'</div><div class="sig-line">'+(depName||'')+'</div><div class="sig-label">Le Président Départemental</div></div>'+
+        '<div class="card-signature"><div class="sig-img">'+(cfg.cardSigSec?'<img src="'+cfg.cardSigSec+'">':'')+'</div><div class="sig-line">'+(secName||'')+'</div><div class="sig-label">Le Président de Section</div></div>'+
+        '</div></div><div class="page-break"></div>';
+    });
+    html += '</body></html>';
+    var win = window.open('', '', 'width=800,height=600');
+    win.document.write(html);
+    win.document.close();
+    setTimeout(function(){win.print();}, 500);
+}
 // ==================== ADMINISTRATION ====================
 renderAdmin: function() {
     var area = document.getElementById('contentArea');
-    area.innerHTML = '<div style="padding:40px;text-align:center;"><h3 style="font-size:24px;font-weight:700;margin-bottom:8px;">Administration</h3><p style="color:var(--text-dim);">Gérez les paramètres avancés</p></div>';
+    var h = '<div style="margin-bottom:24px;"><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Administration</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les paramètres avancés de l\'application</p></div>'+
+    '<div style="display:flex;gap:12px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:12px;">'+
+    '<button onclick="App.renderAdminGrades()" class="tab-active" id="tabGrades" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Grades</button>'+
+    '<button onclick="App.renderAdminSections()" id="tabSections" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Sections</button>'+
+    '<button onclick="App.renderAdminEvtTypes()" id="tabEvtTypes" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Types événements</button>'+
+    '<button onclick="App.renderAdminDocTypes()" id="tabDocTypes" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Types documents</button>'+
+    '<button onclick="App.renderAdminManagers()" id="tabManagers" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Gestionnaires</button>'+
+    '<button onclick="App.renderAdminCards()" id="tabCards" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Cartes</button></div>'+
+    '<div id="adminContent"></div>';
+    area.innerHTML = h;
+    this.renderAdminGrades();
 },
 
+renderAdminGrades: function() {
+    document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
+    document.getElementById('tabGrades').classList.add('tab-active');
+    var c = document.getElementById('adminContent');
+    var grades = DB.getGrades();
+    var h = '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;"><h4 style="font-weight:600;">Grades militaires</h4><div style="display:flex;gap:8px;"><input type="text" id="newGradeInput" placeholder="Nouveau grade..." style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:200px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><button onclick="App.addGrade()" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Ajouter</button></div></div><div style="display:flex;flex-direction:column;gap:8px;">';
+    for(var i=0;i<grades.length;i++) {
+        h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-radius:8px;background:var(--bg-input);"><span>'+grades[i]+'</span><div style="display:flex;gap:4px;"><button onclick="App.editGradeItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button><button onclick="App.delGradeItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button></div></div>';
+    }
+    h += '</div></div>';
+    c.innerHTML = h;
+},
+
+addGrade: function() {
+    var inp = document.getElementById('newGradeInput');
+    if(!inp) return;
+    var v = inp.value.trim();
+    if(!v) return;
+    if(DB.getGrades().indexOf(v) > -1) { this.showToast('Existant'); return; }
+    var g = DB.getGrades();
+    g.push(v);
+    DB.setGrades(g);
+    inp.value = '';
+    this.renderAdminGrades();
+    this.showToast('Ajouté');
+},
+
+editGradeItem: function(i) {
+    var nv = prompt('Modifier:', DB.getGrades()[i]);
+    if(nv && nv.trim()) {
+        var old = DB.getGrades()[i];
+        var g = DB.getGrades();
+        g[i] = nv.trim();
+        DB.setGrades(g);
+        var members = DB.getMembers();
+        for(var j=0; j<members.length; j++) {
+            if(members[j].grade === old) members[j].grade = nv.trim();
+        }
+        DB.setMembers(members);
+        this.renderAdminGrades();
+        this.showToast('Modifié');
+    }
+},
+
+delGradeItem: function(i) {
+    this.showConfirm('Supprimer?', DB.getGrades()[i], function(){
+        var g = DB.getGrades();
+        g.splice(i, 1);
+        DB.setGrades(g);
+        App.renderAdminGrades();
+        App.showToast('Supprimé');
+    });
+},
+
+renderAdminSections: function() {
+    document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
+    document.getElementById('tabSections').classList.add('tab-active');
+    var c = document.getElementById('adminContent');
+    var sections = DB.getSections();
+    var h = '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;"><h4 style="font-weight:600;">Sections</h4><div style="display:flex;gap:8px;"><input type="text" id="newSectionInput" placeholder="Nouvelle..." style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:180px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><button onclick="App.addSection()" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Ajouter</button></div></div><div style="display:flex;flex-direction:column;gap:8px;">';
+    for(var i=0;i<sections.length;i++) {
+        var mc = 0;
+        var members = DB.getMembers();
+        for(var j=0;j<members.length;j++) { if(members[j].section === sections[i]) mc++; }
+        h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-radius:8px;background:var(--bg-input);"><div><span>'+sections[i]+'</span><span style="font-size:12px;margin-left:8px;color:var(--text-dim);">('+mc+' membres)</span></div><div style="display:flex;gap:4px;"><button onclick="App.editSectionItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button><button onclick="App.delSectionItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button></div></div>';
+    }
+    h += '</div></div>';
+    c.innerHTML = h;
+},
+
+addSection: function() {
+    var inp = document.getElementById('newSectionInput');
+    if(!inp) return;
+    var v = inp.value.trim();
+    if(!v) return;
+    if(DB.getSections().indexOf(v) > -1) { this.showToast('Existant'); return; }
+    var s = DB.getSections();
+    s.push(v);
+    DB.setSections(s);
+    inp.value = '';
+    this.renderAdminSections();
+    this.showToast('Ajouté');
+},
+
+editSectionItem: function(i) {
+    var nv = prompt('Modifier:', DB.getSections()[i]);
+    if(nv && nv.trim()) {
+        var old = DB.getSections()[i];
+        var s = DB.getSections();
+        s[i] = nv.trim();
+        DB.setSections(s);
+        var members = DB.getMembers();
+        for(var j=0;j<members.length;j++) { if(members[j].section === old) members[j].section = nv.trim(); }
+        DB.setMembers(members);
+        this.renderAdminSections();
+        this.showToast('Modifié');
+    }
+},
+
+delSectionItem: function(i) {
+    var members = DB.getMembers();
+    for(var j=0;j<members.length;j++) { if(members[j].section === DB.getSections()[i]) { this.showToast('Impossible: membres dans cette section'); return; } }
+    this.showConfirm('Supprimer?', DB.getSections()[i], function(){
+        var s = DB.getSections();
+        s.splice(i, 1);
+        DB.setSections(s);
+        App.renderAdminSections();
+        App.showToast('Supprimé');
+    });
+},
+
+renderAdminEvtTypes: function() {
+    document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
+    document.getElementById('tabEvtTypes').classList.add('tab-active');
+    var c = document.getElementById('adminContent');
+    var types = DB.getEventTypes();
+    var h = '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;"><h4 style="font-weight:600;">Types événements</h4><div style="display:flex;gap:8px;"><input type="text" id="newEvtTypeInput" placeholder="Nouveau..." style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:180px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><button onclick="App.addEvtType()" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Ajouter</button></div></div><div style="display:flex;flex-direction:column;gap:8px;">';
+    for(var i=0;i<types.length;i++) h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-radius:8px;background:var(--bg-input);"><span>'+types[i]+'</span><div style="display:flex;gap:4px;"><button onclick="App.editEvtTypeItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button><button onclick="App.delEvtTypeItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button></div></div>';
+    h += '</div></div>';
+    c.innerHTML = h;
+},
+
+addEvtType: function() {
+    var inp = document.getElementById('newEvtTypeInput');
+    if(!inp) return;
+    var v = inp.value.trim();
+    if(!v) return;
+    if(DB.getEventTypes().indexOf(v) > -1) { this.showToast('Existant'); return; }
+    var t = DB.getEventTypes();
+    t.push(v);
+    DB.setEventTypes(t);
+    inp.value = '';
+    this.renderAdminEvtTypes();
+    this.showToast('Ajouté');
+},
+
+editEvtTypeItem: function(i) {
+    var nv = prompt('Modifier:', DB.getEventTypes()[i]);
+    if(nv && nv.trim()) {
+        var old = DB.getEventTypes()[i];
+        var t = DB.getEventTypes();
+        t[i] = nv.trim();
+        DB.setEventTypes(t);
+        var evts = DB.getEvents();
+        for(var j=0;j<evts.length;j++) { if(evts[j].type === old) evts[j].type = nv.trim(); }
+        DB.setEvents(evts);
+        this.renderAdminEvtTypes();
+        this.showToast('Modifié');
+    }
+},
+
+delEvtTypeItem: function(i) {
+    this.showConfirm('Supprimer?', DB.getEventTypes()[i], function(){
+        var t = DB.getEventTypes();
+        t.splice(i, 1);
+        DB.setEventTypes(t);
+        App.renderAdminEvtTypes();
+        App.showToast('Supprimé');
+    });
+},
+
+renderAdminDocTypes: function() {
+    document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
+    document.getElementById('tabDocTypes').classList.add('tab-active');
+    var c = document.getElementById('adminContent');
+    var types = DB.getDocTypes();
+    var h = '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;"><h4 style="font-weight:600;">Types documents</h4><div style="display:flex;gap:8px;"><input type="text" id="newDocTypeInput" placeholder="Nouveau..." style="border-radius:8px;padding:8px 12px;font-size:13px;outline:none;width:180px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><button onclick="App.addDocType()" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Ajouter</button></div></div><div style="display:flex;flex-direction:column;gap:8px;">';
+    for(var i=0;i<types.length;i++) h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-radius:8px;background:var(--bg-input);"><span>'+types[i]+'</span><div style="display:flex;gap:4px;"><button onclick="App.editDocTypeItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button><button onclick="App.delDocTypeItem('+i+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button></div></div>';
+    h += '</div></div>';
+    c.innerHTML = h;
+},
+
+addDocType: function() {
+    var inp = document.getElementById('newDocTypeInput');
+    if(!inp) return;
+    var v = inp.value.trim();
+    if(!v) return;
+    if(DB.getDocTypes().indexOf(v) > -1) { this.showToast('Existant'); return; }
+    var t = DB.getDocTypes();
+    t.push(v);
+    DB.setDocTypes(t);
+    inp.value = '';
+    this.renderAdminDocTypes();
+    this.showToast('Ajouté');
+},
+
+editDocTypeItem: function(i) {
+    var nv = prompt('Modifier:', DB.getDocTypes()[i]);
+    if(nv && nv.trim()) {
+        var old = DB.getDocTypes()[i];
+        var t = DB.getDocTypes();
+        t[i] = nv.trim();
+        DB.setDocTypes(t);
+        var docs = DB.getDocs();
+        for(var j=0;j<docs.length;j++) { if(docs[j].type === old) docs[j].type = nv.trim(); }
+        DB.setDocs(docs);
+        this.renderAdminDocTypes();
+        this.showToast('Modifié');
+    }
+},
+
+delDocTypeItem: function(i) {
+    this.showConfirm('Supprimer?', DB.getDocTypes()[i], function(){
+        var t = DB.getDocTypes();
+        t.splice(i, 1);
+        DB.setDocTypes(t);
+        App.renderAdminDocTypes();
+        App.showToast('Supprimé');
+    });
+},
+
+renderAdminManagers: function() {
+    document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
+    document.getElementById('tabManagers').classList.add('tab-active');
+    var c = document.getElementById('adminContent');
+    var mgrs = DB.getManagers();
+    var h = '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><h4 style="font-weight:600;">Gestionnaires</h4><button onclick="App.openAddManager()" style="padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">+ Ajouter</button></div>';
+    for(var i=0;i<mgrs.length;i++) {
+        var m = mgrs[i];
+        var photoHtml = m.photo ? '<img src="'+m.photo+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">' : '<div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--accent);color:white;">'+m.first[0]+m.last[0]+'</div>';
+        h += '<div style="display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);">'+photoHtml+
+        '<div style="flex:1;"><p style="font-weight:500;">'+m.first+' '+m.last+'</p><p style="font-size:12px;color:var(--text-dim);">'+m.email+' | '+m.role+'</p></div>'+
+        '<div style="display:flex;gap:8px;align-items:center;">'+
+        '<span class="copy-btn" style="opacity:1;font-size:16px;" onclick="App.copyToClipboard(\''+m.email+'\')" title="Copier email">📧</span>'+
+        (m.phone?'<span class="copy-btn" style="opacity:1;font-size:16px;" onclick="App.copyToClipboard(\''+m.phone+'\')" title="Copier téléphone">📞</span>':'')+
+        '<button onclick="App.openEditManager('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">✏️</button>'+
+        '<button onclick="App.delManager('+m.id+')" style="padding:6px;background:none;border:none;cursor:pointer;color:var(--text-dim);">🗑️</button>'+
+        '</div></div>';
+    }
+    h += '</div>';
+    c.innerHTML = h;
+},
+
+openAddManager: function() {
+    var h = '<form onsubmit="App.handleManagerSave(event)" style="display:flex;flex-direction:column;gap:16px;"><input type="hidden" id="mgrEditId">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Prénom *</label><input type="text" id="mgrfFirst" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom *</label><input type="text" id="mgrfLast" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email *</label><input type="email" id="mgrfEmail" required style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" id="mgrfPhone" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Photo</label><input type="file" id="mgrfPhoto" accept="image/*" style="width:100%;border-radius:8px;padding:8px;font-size:13px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Rôle</label><select id="mgrfRole" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option>Administrateur</option><option>Trésorier</option><option>Secrétaire</option><option>Gestionnaire</option><option>Lecteur seul</option></select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Statut</label><select id="mgrfStatus" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option>Actif</option><option>Inactif</option></select></div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Ajouter</button></div></form>';
+    this.showGenericModal('Gestionnaire', h);
+},
+
+openEditManager: function(id) {
+    var m = DB.getManagers().find(function(x){return x.id===id;});
+    if(!m) return;
+    var h = '<form onsubmit="App.handleManagerSave(event)" style="display:flex;flex-direction:column;gap:16px;"><input type="hidden" id="mgrEditId" value="'+m.id+'">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Prénom *</label><input type="text" id="mgrfFirst" required value="'+m.first+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div><div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom *</label><input type="text" id="mgrfLast" required value="'+m.last+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email *</label><input type="email" id="mgrfEmail" required value="'+m.email+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" id="mgrfPhone" value="'+(m.phone||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Photo</label><input type="file" id="mgrfPhoto" accept="image/*" style="width:100%;border-radius:8px;padding:8px;font-size:13px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+(m.photo?'<img src="'+m.photo+'" style="width:48px;height:48px;border-radius:50%;margin-top:8px;object-fit:cover;">':'')+'</div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Rôle</label><select id="mgrfRole" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+'Administrateur,Trésorier,Secrétaire,Gestionnaire,Lecteur seul'.split(',').map(function(r){return '<option'+(r===m.role?' selected':'')+'>'+r+'</option>';}).join('')+'</select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Statut</label><select id="mgrfStatus" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"><option'+(m.status==='Actif'?' selected':'')+'>Actif</option><option'+(m.status==='Inactif'?' selected':'')+'>Inactif</option></select></div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:12px;"><button type="button" onclick="App.closeAllModals()" style="padding:8px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:none;cursor:pointer;">Annuler</button><button type="submit" style="padding:8px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Sauvegarder</button></div></form>';
+    this.showGenericModal('Gestionnaire', h);
+},
+
+handleManagerSave: function(e) {
+    e.preventDefault();
+    var eid = document.getElementById('mgrEditId').value;
+    var photoFile = document.getElementById('mgrfPhoto');
+    var self = this;
+    var processSave = function(photoData) {
+        var d = {
+            first: document.getElementById('mgrfFirst').value.trim(),
+            last: document.getElementById('mgrfLast').value.trim(),
+            email: document.getElementById('mgrfEmail').value.trim(),
+            phone: document.getElementById('mgrfPhone') ? document.getElementById('mgrfPhone').value.trim() : '',
+            role: document.getElementById('mgrfRole').value,
+            status: document.getElementById('mgrfStatus').value,
+            photo: photoData
+        };
+        var mgrs = DB.getManagers();
+        if(eid) {
+            for(var i=0;i<mgrs.length;i++) {
+                if(mgrs[i].id === parseInt(eid)) {
+                    for(var k in d) { if(d[k] !== null && d[k] !== undefined) mgrs[i][k] = d[k]; }
+                    break;
+                }
+            }
+            DB.setManagers(mgrs);
+            self.showToast(d.first+' '+d.last+' modifié');
+        } else {
+            var mx = 0;
+            for(var i=0;i<mgrs.length;i++) { if(mgrs[i].id > mx) mx = mgrs[i].id; }
+            d.id = mx + 1;
+            mgrs.push(d);
+            DB.setManagers(mgrs);
+            self.showToast(d.first+' '+d.last+' ajouté');
+        }
+        self.closeAllModals();
+        self.renderAdminManagers();
+    };
+    if(photoFile && photoFile.files && photoFile.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(ev) { processSave(ev.target.result); };
+        reader.readAsDataURL(photoFile.files[0]);
+    } else {
+        if(eid) {
+            var old = DB.getManagers().find(function(x){return x.id===parseInt(eid);});
+            processSave(old ? old.photo : null);
+        } else {
+            processSave(null);
+        }
+    }
+},
+
+delManager: function(id) {
+    var m = DB.getManagers().find(function(x){return x.id===id;});
+    if(!m) return;
+    this.showConfirm('Supprimer ?', m.first+' '+m.last, function(){
+        DB.setManagers(DB.getManagers().filter(function(x){return x.id!==id;}));
+        App.renderAdminManagers();
+        App.showToast('Supprimé');
+    });
+},
+
+renderAdminCards: function() {
+    document.querySelectorAll('[id^="tab"]').forEach(function(b){b.classList.remove('tab-active');});
+    document.getElementById('tabCards').classList.add('tab-active');
+    var c = document.getElementById('adminContent');
+    var cfg = DB.getConfig();
+    var mgrs = DB.getManagers();
+    var natName='', depName='', secName='';
+    if(cfg.cardPresNat) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresNat;}); if(mgr) natName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresDep) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresDep;}); if(mgr) depName = mgr.first+' '+mgr.last; }
+    if(cfg.cardPresSec) { var mgr = mgrs.find(function(m){return m.id==cfg.cardPresSec;}); if(mgr) secName = mgr.first+' '+mgr.last; }
+    var h = '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);">'+
+    '<h4 style="font-weight:600;margin-bottom:16px;">Configuration des cartes de membre</h4>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom de l\'association</label><input type="text" id="cardOrgName" value="'+(cfg.cardOrgName||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" id="cardOrgAddr" value="'+(cfg.cardOrgAddr||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="text" id="cardOrgPhone" value="'+(cfg.cardOrgPhone||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Décret</label><input type="text" id="cardOrgDecret" value="'+(cfg.cardOrgDecret||'')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '</div>'+
+    '<div style="margin-top:16px;"><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Logo de l\'association</label><input type="file" id="cardLogo" accept="image/*" style="width:100%;border-radius:8px;padding:8px;font-size:13px;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+(cfg.cardLogo?'<img src="'+cfg.cardLogo+'" style="width:60px;height:60px;margin-top:8px;object-fit:contain;border:1px solid var(--border);border-radius:4px;">':'')+'</div>'+
+    '<h4 style="font-weight:600;margin:20px 0 12px;">Présidents et signatures</h4>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président National</label><select id="cardPresNat" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:8px;"><option value="">-- Aucun --</option>'+mgrs.filter(function(m){return m.status==='Actif';}).map(function(m){return '<option value="'+m.id+'"'+(m.id==cfg.cardPresNat?' selected':'')+'>'+m.first+' '+m.last+'</option>';}).join('')+'</select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président Départemental</label><select id="cardPresDep" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:8px;"><option value="">-- Aucun --</option>'+mgrs.filter(function(m){return m.status==='Actif';}).map(function(m){return '<option value="'+m.id+'"'+(m.id==cfg.cardPresDep?' selected':'')+'>'+m.first+' '+m.last+'</option>';}).join('')+'</select></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Président de Section</label><select id="cardPresSec" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);margin-bottom:8px;"><option value="">-- Aucun --</option>'+mgrs.filter(function(m){return m.status==='Actif';}).map(function(m){return '<option value="'+m.id+'"'+(m.id==cfg.cardPresSec?' selected':'')+'>'+m.first+' '+m.last+'</option>';}).join('')+'</select></div>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;"><button onclick="App.saveCardConfigFromAdmin()" style="padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Sauvegarder la configuration</button></div>'+
+    '</div>';
+    c.innerHTML = h;
+},
+
+saveCardConfigFromAdmin: function() {
+    var cfg = DB.getConfig();
+    cfg.cardOrgName = document.getElementById('cardOrgName').value;
+    cfg.cardOrgAddr = document.getElementById('cardOrgAddr').value;
+    cfg.cardOrgPhone = document.getElementById('cardOrgPhone').value;
+    cfg.cardOrgDecret = document.getElementById('cardOrgDecret').value;
+    cfg.cardPresNat = document.getElementById('cardPresNat').value;
+    cfg.cardPresDep = document.getElementById('cardPresDep').value;
+    cfg.cardPresSec = document.getElementById('cardPresSec').value;
+    var logoFile = document.getElementById('cardLogo');
+    var self = this;
+    var save = function() {
+        DB.setConfig(cfg);
+        self.showToast('Configuration des cartes sauvegardée');
+    };
+    if(logoFile && logoFile.files && logoFile.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(ev) { cfg.cardLogo = ev.target.result; save(); };
+        reader.readAsDataURL(logoFile.files[0]);
+    } else {
+        save();
+    }
+}
 // ==================== PARAMÈTRES ====================
 renderSettings: function() {
-    var cfg = DB.getConfig();
-    var area = document.getElementById('contentArea');
-    var h = '<div style="max-width:600px;margin:0 auto;"><h3 style="font-size:24px;font-weight:700;margin-bottom:24px;">Paramètres</h3>'+
-    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);margin-bottom:16px;">'+
-    '<h4 style="font-weight:600;margin-bottom:16px;">Apparence</h4>'+
-    '<div style="margin-bottom:16px;"><label style="display:block;font-size:13px;margin-bottom:8px;color:var(--text-dim);">Thème</label>'+
-    '<select id="settingTheme" onchange="App.changeTheme(this.value)" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);">'+
-    Object.keys(this.THEMES).map(function(k){return '<option value="'+k+'"'+(k===cfg.theme?' selected':'')+'>'+App.THEMES[k].name+'</option>';}).join('')+'</select></div>'+
-    '<div><label style="display:block;font-size:13px;margin-bottom:8px;color:var(--text-dim);">Nom de l\'application</label>'+
-    '<input type="text" id="settingAppName" value="'+cfg.appName+'" onchange="App.saveSetting(\'appName\',this.value)" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div></div>'+
-    '<div style="border-radius:12px;border:1px solid var(--border);padding:20px;background:var(--bg-card);margin-bottom:16px;">'+
-    '<h4 style="font-weight:600;margin-bottom:16px;">Données</h4>'+
-    '<div style="display:flex;gap:12px;flex-wrap:wrap;">'+
-    '<button onclick="App.exportAllData()" style="padding:10px 20px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Exporter les données</button>'+
-    '<button onclick="App.importAllData()" style="padding:10px 20px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Importer les données</button>'+
-    '<button onclick="App.resetAllData()" style="padding:10px 20px;border-radius:8px;font-size:14px;background:rgba(239,68,68,.2);color:#ef4444;border:1px solid rgba(239,68,68,.3);cursor:pointer;">Réinitialiser</button></div></div></div>';
-    area.innerHTML = h;
+    var cfg = DB.getConfig(), area = document.getElementById('contentArea');
+    var customColors = cfg.customColors || {};
+    area.innerHTML = '<div style="max-width:768px;display:flex;flex-direction:column;gap:24px;">'+
+    '<div style="border-radius:12px;border:1px solid var(--border);padding:24px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Informations</h3>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Nom</label><input type="text" id="settName" value="'+(cfg.appName||'MILASSOC PRO')+'" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">RNA / SIRET</label><input type="text" value="W751234567890" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Email</label><input type="email" value="contact@milassoc.fr" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Téléphone</label><input type="tel" value="+33 1 42 68 53 00" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '<div style="grid-column:1/-1;"><label style="display:block;font-size:13px;margin-bottom:4px;color:var(--text-dim);">Adresse</label><input type="text" value="12 Rue de la Paix, 75002 Paris" style="width:100%;border-radius:8px;padding:10px 14px;font-size:14px;outline:none;background:var(--bg-input);border:1px solid var(--border);color:var(--text);"></div>'+
+    '</div><div style="margin-top:20px;display:flex;justify-content:flex-end;"><button onclick="App.saveSettings()" style="padding:10px 24px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;">Sauvegarder</button></div></div>'+
+    '<div style="border-radius:12px;border:1px solid var(--border);padding:24px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Apparence</h3>'+
+    '<div style="display:flex;flex-direction:column;gap:20px;">'+
+    '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Thème prédéfini</label><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">'+
+    Object.keys(this.THEMES).map(function(key){
+        if(key==='custom') return '';
+        var t = App.THEMES[key], active = key===cfg.theme;
+        return '<button onclick="App.applyTheme(\''+key+'\');App.renderSettings();" style="border-radius:8px;padding:12px;border:2px solid '+(active?'var(--accent)':'transparent')+';transition:all .2s;cursor:pointer;background:'+t.bgDark+';"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:16px;height:16px;border-radius:50%;background:'+t.accent+';"></div><div style="width:16px;height:16px;border-radius:50%;background:'+t.accentLight+';"></div></div><p style="font-size:12px;color:'+t.text+';">'+t.name+(t.light?' (Clair)':'')+'</p></button>';
+    }).join('')+
+    '</div></div>'+
+    '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Couleurs personnalisées</label>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Fond principal</label><input type="color" id="customBgDark" value="'+(customColors.bgDark||cfg.bgDark||'#0f1a0f')+'" onchange="App.updateCustomColor(\'bgDark\',this.value)"></div>'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Fond carte</label><input type="color" id="customBgCard" value="'+(customColors.bgCard||'#1a2a1a')+'" onchange="App.updateCustomColor(\'bgCard\',this.value)"></div>'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Couleur accent</label><input type="color" id="customAccent" value="'+(customColors.accent||'#4f7a3f')+'" onchange="App.updateCustomColor(\'accent\',this.value)"></div>'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Accent clair</label><input type="color" id="customAccentLight" value="'+(customColors.accentLight||'#6b9e55')+'" onchange="App.updateCustomColor(\'accentLight\',this.value)"></div>'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Texte</label><input type="color" id="customText" value="'+(customColors.text||'#e0e8d8')+'" onchange="App.updateCustomColor(\'text\',this.value)"></div>'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Texte dim</label><input type="color" id="customTextDim" value="'+(customColors.textDim||'#8a9a80')+'" onchange="App.updateCustomColor(\'textDim\',this.value)"></div>'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Bordure</label><input type="color" id="customBorder" value="'+(customColors.border||'#2d402d')+'" onchange="App.updateCustomColor(\'border\',this.value)"></div>'+
+    '<div class="color-picker-wrapper"><label style="font-size:13px;color:var(--text-dim);min-width:100px;">Fond input</label><input type="color" id="customBgInput" value="'+(customColors.bgInput||'#243524')+'" onchange="App.updateCustomColor(\'bgInput\',this.value)"></div>'+
+    '</div>'+
+    '<button onclick="App.applyTheme(\'custom\')" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;margin-top:8px;">Appliquer couleurs personnalisées</button>'+
+    '</div>'+
+    '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Logo du site</label><div style="display:flex;align-items:center;gap:16px;">'+
+    '<div style="width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg-input);border:1px solid var(--border);">'+(cfg.logo?'<img src="'+cfg.logo+'" style="width:100%;height:100%;object-fit:cover;">':'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>')+'</div>'+
+    '<div><label style="display:inline-block;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);cursor:pointer;" for="logoUpload">Choisir</label><input type="file" id="logoUpload" accept="image/*" style="display:none;" onchange="App.handleLogoUpload(this)"><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">PNG, JPG — Max 2MB</p>'+(cfg.logo?'<button onclick="App.removeLogo()" style="font-size:12px;margin-top:8px;color:var(--danger);background:none;border:none;cursor:pointer;">Supprimer</button>':'')+'</div></div></div>'+
+    '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Favicon</label><div style="display:flex;align-items:center;gap:16px;">'+
+    '<div style="width:32px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg-input);border:1px solid var(--border);">'+(cfg.favicon?'<img src="'+cfg.favicon+'" style="width:100%;height:100%;object-fit:cover;">':'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/></svg>')+'</div>'+
+    '<div><label style="display:inline-block;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:white;background:var(--accent);cursor:pointer;" for="faviconUpload">Choisir</label><input type="file" id="faviconUpload" accept="image/*" style="display:none;" onchange="App.handleFaviconUpload(this)"><p style="font-size:12px;margin-top:4px;color:var(--text-dim);">PNG, ICO — 32×32 recommandé</p>'+(cfg.favicon?'<button onclick="App.removeFavicon()" style="font-size:12px;margin-top:8px;color:var(--danger);background:none;border:none;cursor:pointer;">Supprimer</button>':'')+'</div></div></div>'+
+    '<div><label style="display:block;font-size:14px;margin-bottom:12px;color:var(--text-dim);">Couleur de fond du logo</label><div class="color-picker-wrapper"><input type="color" id="logoBgColor" value="'+(cfg.logoBg||'#4f7a3f')+'" onchange="App.updateLogoBg(this.value)"><span style="font-size:13px;color:var(--text-dim);">Utilisé quand aucun logo n\'est défini</span></div></div>'+
+    '</div></div>'+
+    '<div style="border-radius:12px;border:1px solid var(--border);padding:24px;background:var(--bg-card);"><h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Données</h3><div style="display:flex;flex-wrap:wrap;gap:12px;">'+
+    '<button onclick="App.exportAllData()" style="padding:10px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Exporter JSON</button>'+
+    '<button onclick="App.importAllData()" style="padding:10px 16px;border-radius:8px;font-size:14px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">Importer JSON</button>'+
+    '<button onclick="App.clearAllData()" style="padding:10px 16px;border-radius:8px;font-size:14px;background:rgba(239,68,68,.2);color:#ef4444;border:1px solid rgba(239,68,68,.3);cursor:pointer;">Réinitialiser</button>'+
+    '</div></div></div>';
 },
 
-changeTheme: function(theme) {
+saveSettings: function() {
     var cfg = DB.getConfig();
-    cfg.theme = theme;
+    var nameEl = document.getElementById('settName');
+    if(nameEl) { cfg.appName = nameEl.value.trim() || 'MILASSOC PRO'; }
     DB.setConfig(cfg);
-    location.reload();
+    document.getElementById('loginAppTitle').textContent = cfg.appName;
+    document.getElementById('appTitle').textContent = cfg.appName;
+    document.getElementById('pageTitleMeta').textContent = cfg.appName;
+    this.showToast('Paramètres sauvegardés');
 },
 
-saveSetting: function(key, value) {
+handleLogoUpload: function(input) {
+    var file = input.files[0]; if(!file) return;
+    if(file.size > 2*1024*1024) { this.showToast('Trop volumineux'); return; }
+    var self = this;
+    var reader = new FileReader();
+    reader.onload = function(e) { self.applyLogo(e.target.result); self.renderSettings(); self.showToast('Logo mis à jour'); };
+    reader.readAsDataURL(file);
+},
+
+removeLogo: function() { this.applyLogo(null); this.renderSettings(); this.showToast('Logo supprimé'); },
+
+handleFaviconUpload: function(input) {
+    var file = input.files[0]; if(!file) return;
+    if(file.size > 2*1024*1024) { this.showToast('Trop volumineux'); return; }
+    var self = this;
+    var reader = new FileReader();
+    reader.onload = function(e) { self.applyFavicon(e.target.result); self.renderSettings(); self.showToast('Favicon mis à jour'); };
+    reader.readAsDataURL(file);
+},
+
+removeFavicon: function() {
+    var cfg = DB.getConfig(); cfg.favicon = null; DB.setConfig(cfg);
+    document.getElementById('favicon').href = '';
+    this.renderSettings(); this.showToast('Favicon supprimé');
+},
+
+updateCustomColor: function(key, value) {
     var cfg = DB.getConfig();
-    cfg[key] = value;
+    if(!cfg.customColors) cfg.customColors = {};
+    cfg.customColors[key] = value;
     DB.setConfig(cfg);
-    this.showToast('Paramètre sauvegardé');
+},
+
+applyTheme: function(key) {
+    var t = this.THEMES[key];
+    if(!t) return;
+    var cfg = DB.getConfig();
+    if(key==='custom' && cfg.customColors) {
+        for(var k in cfg.customColors) { t[k] = cfg.customColors[k]; }
+    }
+    cfg.theme = key;
+    DB.setConfig(cfg);
+    this.applyThemeObject(t);
+    this.renderSettings();
+    this.showToast('Thème "'+t.name+'" appliqué');
+},
+
+updateLogoBg: function(color) {
+    var cfg = DB.getConfig(); cfg.logoBg = color; DB.setConfig(cfg);
+    if(!cfg.logo) {
+        var ids = ['sidebarLogo','loginLogoContainer','headerLogo'];
+        for(var i=0;i<ids.length;i++) {
+            var el = document.getElementById(ids[i]);
+            if(el) el.style.background = color;
+        }
+    }
+    this.showToast('Couleur de fond mise à jour');
 },
 
 exportAllData: function() {
     var data = DB.exportAll();
-    var blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'milassoc_backup_'+new Date().toISOString().split('T')[0]+'.json';
-    a.click();
-    URL.revokeObjectURL(url);
+    var blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}), url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = 'milassoc_'+new Date().toISOString().split('T')[0]+'.json'; a.click(); URL.revokeObjectURL(url);
     this.showToast('Données exportées');
 },
 
 importAllData: function() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
+    var input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
     var self = this;
     input.onchange = function(e) {
-        var file = e.target.files[0];
-        if(!file) return;
+        var file = e.target.files[0]; if(!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
             try {
                 var data = JSON.parse(ev.target.result);
                 if(DB.importAll(data)) {
-                    self.showToast('Données importées');
+                    self.showToast('Données importées avec succès');
                     location.reload();
+                } else {
+                    self.showToast('Erreur: fichier invalide');
                 }
-            } catch(err) {
-                self.showToast('Erreur: fichier invalide');
-            }
+            } catch(err) { self.showToast('Erreur de lecture du fichier'); }
         };
         reader.readAsText(file);
     };
     input.click();
 },
 
-resetAllData: function() {
-    this.showConfirm('Réinitialiser toutes les données ?', 'Cette action est irréversible', function(){
+clearAllData: function() {
+    this.showConfirm('Réinitialiser toutes les données ?', 'Cette action est irréversible. Toutes les données seront perdues.', function(){
         DB.resetAll();
         location.reload();
     });
-},
+}
 
 // ==================== ACTION RAPIDE ====================
 openQuickAction: function() {
