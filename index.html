@@ -487,8 +487,9 @@ const DB = {
 // APPLICATION
 // ==========================================
 const App = {
-  currentUser: null,
-};
+    currentUser: null,
+    curPage: 'dashboard',
+    memSort: {field:'last', dir:1},
 // ==================== MEMBRES ====================
 renderMembers: function() {
     var members = DB.getMembers();
