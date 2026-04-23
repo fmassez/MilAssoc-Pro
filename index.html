@@ -472,19 +472,10 @@ users: [
 {id:3,email:'secretaire@milassoc.fr',pass:'secre123',name:'Cne. Petit',role:'Secrétaire',status:'Actif',phone:'06 34 56 78 90',photo:null},
 {id:4,email:'lecteur@milassoc.fr',pass:'lecteur123',name:'Sgt. Durand',role:'Lecteur seul',status:'Actif',phone:'',photo:null},
 {id:5,email:'frederic.massez@gmail.com',pass:'massez123',name:'Frederic Massez',role:'Administrateur',status:'Actif',phone:'06 45 67 89 01',photo:null}
-],
-    // ==========================================
-// SUITE DE L'APPLICATION (OBJET App)
-// ==========================================
-
+};
 const App = {
-    // ... (Le début de l'objet App contenant init, checkAuth, handleLogin, etc. a déjà été fourni ou est implicite) ...
-    // Assurez-vous que le code précédent est bien en place.
-    // Voici la suite des méthodes de rendu (render*) mises à jour.
 
-    // ... [Code précédent de l'objet App supposé présent ici] ...
-
-    // ==================== MEMBRES (Avec Tri) ====================
+// ==================== MEMBRES (Avec Tri) ====================
     renderMembers: function() {
         var members = DB.getMembers();
         var area = document.getElementById('contentArea');
