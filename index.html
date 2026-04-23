@@ -464,17 +464,31 @@ font-weight: 700;
 // BASE DE DONNÉES
 // ==========================================
 const DB = {
-PREFIX: 'milassoc_',
-DEFAULTS: {
-users: [
-{id:1,email:'admin@milassoc.fr',pass:'admin123',name:'Cdt. Lefebvre',role:'Administrateur',status:'Actif',phone:'06 12 34 56 78',photo:null},
-{id:2,email:'tresorier@milassoc.fr',pass:'treso123',name:'Lt. Bernard',role:'Trésorier',status:'Actif',phone:'06 23 45 67 89',photo:null},
-{id:3,email:'secretaire@milassoc.fr',pass:'secre123',name:'Cne. Petit',role:'Secrétaire',status:'Actif',phone:'06 34 56 78 90',photo:null},
-{id:4,email:'lecteur@milassoc.fr',pass:'lecteur123',name:'Sgt. Durand',role:'Lecteur seul',status:'Actif',phone:'',photo:null},
-{id:5,email:'frederic.massez@gmail.com',pass:'massez123',name:'Frederic Massez',role:'Administrateur',status:'Actif',phone:'06 45 67 89 01',photo:null}
-]
+  PREFIX: 'milassoc_',
+  DEFAULTS: {
+    users: [
+      {id:1,email:'admin@milassoc.fr',pass:'admin123',name:'Cdt. Lefebvre',role:'Administrateur',status:'Actif',phone:'06 12 34 56 78',photo:null},
+      {id:2,email:'tresorier@milassoc.fr',pass:'treso123',name:'Lt. Bernard',role:'Trésorier',status:'Actif',phone:'06 23 45 67 89',photo:null},
+      {id:3,email:'secretaire@milassoc.fr',pass:'secre123',name:'Cne. Petit',role:'Secrétaire',status:'Actif',phone:'06 34 56 78 90',photo:null},
+      {id:4,email:'lecteur@milassoc.fr',pass:'lecteur123',name:'Sgt. Durand',role:'Lecteur seul',status:'Actif',phone:'',photo:null},
+      {id:5,email:'frederic.massez@gmail.com',pass:'massez123',name:'Frederic Massez',role:'Administrateur',status:'Actif',phone:'06 45 67 89 01',photo:null}
+    ],  // ← 1. Fermer le tableau users avec ]
+  },  // ← 2. Fermer DEFAULTS avec }
+  
+  // ← 3. Toutes les méthodes DB (_get, _set, getUsers, etc.) doivent être ici
+  
+  resetAll: function() {
+    ['users','members','events','docs','tx','units','convs','grades','sections','evtTypes','docTypes','managers','notifs','config'].forEach(function(k){ 
+      localStorage.removeItem('milassoc_'+k); 
+    });
+  }
+};
+// ==========================================
+// APPLICATION
+// ==========================================
 const App = {
-
+  currentUser: null,
+};
 // ==================== MEMBRES ====================
 renderMembers: function() {
     var members = DB.getMembers();
