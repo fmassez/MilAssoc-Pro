@@ -495,7 +495,7 @@ renderMembers: function() {
     var members = DB.getMembers();
     var area = document.getElementById('contentArea');
     
-    // Tri des membres (version simplifiée sans .bind)
+    // Tri des membres
     if (!this.memSort) this.memSort = { field: 'last', dir: 1 };
     var self = this;
     var field = this.memSort.field;
@@ -512,18 +512,17 @@ renderMembers: function() {
     var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'+
             '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Membres</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les membres de l\'association</p></div>'+
             '<div style="display:flex;gap:8px;">'+
-            // Supprimez la ligne export si la fonction n'existe pas encore :
-            // '<button onclick="App.exportTableToCSV(DB.getMembers(), \'membres.csv\')" style="padding:8px 12px;border-radius:6px;font-size:13px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">📥 Export</button>'+
+            '<button onclick="App.exportTableToCSV(DB.getMembers(), \'membres.csv\')" style="padding:8px 12px;border-radius:6px;font-size:13px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">📥 Export CSV</button>'+
             '<button onclick="App.openAddMember()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button>'+
             '</div></div>'+
             '<div style="border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);overflow-x:auto;">'+
             '<table style="width:100%;border-collapse:collapse;min-width:600px;">'+
             '<thead><tr style="background:var(--bg-input);text-align:left;">'+
-            '<th class="sortable" onclick="App.sortMembers(\'last\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Nom</th>'+
-            '<th class="sortable" onclick="App.sortMembers(\'grade\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Grade</th>'+
-            '<th class="sortable" onclick="App.sortMembers(\'section\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Section</th>'+
-            '<th class="sortable" onclick="App.sortMembers(\'status\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Statut</th>'+
+            '<th class="sortable" onclick="App.sortMembers(\'last\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Nom ▲▼</th>'+
+            '<th class="sortable" onclick="App.sortMembers(\'grade\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Grade ▲▼</th>'+
+            '<th class="sortable" onclick="App.sortMembers(\'section\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Section ▲▼</th>'+
+            '<th class="sortable" onclick="App.sortMembers(\'status\')" style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;cursor:pointer;">Statut ▲▼</th>'+
             '<th style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;text-align:right;">Actions</th>'+
             '</tr></thead><tbody>';
 
@@ -548,6 +547,7 @@ renderMembers: function() {
     area.innerHTML = h;
 },
 
+// Fonction de tri à ajouter dans l'objet App
 sortMembers: function(field) {
     if(this.memSort.field === field) {
         this.memSort.dir = this.memSort.dir === 1 ? -1 : 1;
@@ -556,6 +556,28 @@ sortMembers: function(field) {
         this.memSort.dir = 1;
     }
     this.renderMembers();
+},
+
+// Fonction d'export CSV à ajouter dans l'objet App
+exportTableToCSV: function(data, filename) {
+    if(!data || data.length===0) { this.showToast('Aucune donnée à exporter'); return; }
+    var keys = Object.keys(data[0]);
+    var csv = keys.join(';') + '\n';
+    data.forEach(function(row) {
+        csv += keys.map(function(key) {
+            var val = row[key];
+            if(val === null || val === undefined) val = '';
+            return '"' + String(val).replace(/"/g, '""') + '"';
+        }).join(';') + '\n';
+    });
+    var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.showToast('Exporté: ' + filename);
 },
     // ==================== MODIFICATIONS FINANCIÈRES ====================
 renderFinance: function() {
