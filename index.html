@@ -494,20 +494,25 @@ renderMembers: function() {
     var members = DB.getMembers();
     var area = document.getElementById('contentArea');
     
-    // Tri des membres
+    // Tri des membres (version simplifiée sans .bind)
     if (!this.memSort) this.memSort = { field: 'last', dir: 1 };
+    var self = this;
+    var field = this.memSort.field;
+    var dir = this.memSort.dir;
+    
     members.sort(function(a, b) {
-        var valA = (a[this.memSort.field] || '').toLowerCase();
-        var valB = (b[this.memSort.field] || '').toLowerCase();
-        if (valA < valB) return -1 * this.memSort.dir;
-        if (valA > valB) return 1 * this.memSort.dir;
+        var valA = (a[field] || '').toLowerCase();
+        var valB = (b[field] || '').toLowerCase();
+        if (valA < valB) return -1 * dir;
+        if (valA > valB) return 1 * dir;
         return 0;
-    }.bind(this));
+    });
 
     var h = '<div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'+
             '<div><h3 style="font-size:24px;font-weight:700;margin-bottom:4px;">Membres</h3><p style="font-size:14px;color:var(--text-dim);">Gérez les membres de l\'association</p></div>'+
             '<div style="display:flex;gap:8px;">'+
-            '<button onclick="App.exportTableToCSV(DB.getMembers(), \'membres.csv\')" style="padding:8px 12px;border-radius:6px;font-size:13px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">📥 Export</button>'+
+            // Supprimez la ligne export si la fonction n'existe pas encore :
+            // '<button onclick="App.exportTableToCSV(DB.getMembers(), \'membres.csv\')" style="padding:8px 12px;border-radius:6px;font-size:13px;background:var(--bg-input);color:var(--text);border:1px solid var(--border);cursor:pointer;">📥 Export</button>'+
             '<button onclick="App.openAddMember()" style="padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;color:white;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">'+
             '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter</button>'+
             '</div></div>'+
